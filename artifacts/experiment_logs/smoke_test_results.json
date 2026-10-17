@@ -1,0 +1,241 @@
+{
+  "passed": 39,
+  "failed": 0,
+  "total": 39,
+  "tests": [
+    {
+      "status": "PASS",
+      "name": "YAML loading - data.yaml",
+      "duration_ms": 75.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "DataConfig.from_dict()",
+      "duration_ms": 57.2,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "ModelConfig defaults",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "TrainingConfig defaults",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Split ratios sum to 1.0",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "load_all_configs()",
+      "duration_ms": 44.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Config ignores unknown keys",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Perfect predictions -> acc=auroc=1.0",
+      "duration_ms": 2942.1,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Mixed predictions -> valid ranges",
+      "duration_ms": 42.1,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Cross-dataset drop computation",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Robustness drop computation",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Zero baseline -> no division error",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "EER in [0,1]",
+      "duration_ms": 6.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Confusion matrix is 2x2",
+      "duration_ms": 52.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "JPEG compression output shape",
+      "duration_ms": 220.3,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Gaussian blur output shape",
+      "duration_ms": 13.8,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Resize re-encode output shape",
+      "duration_ms": 2.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Color jitter output shape",
+      "duration_ms": 14.6,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Horizontal flip (deterministic)",
+      "duration_ms": 2.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Eval mode -> zero augmentations applied",
+      "duration_ms": 0.1,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "ComposeTransforms chains correctly",
+      "duration_ms": 1.5,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Robustness transform: jpeg",
+      "duration_ms": 7.6,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Robustness transform: combined stress",
+      "duration_ms": 7.5,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Create experiment -> valid ID",
+      "duration_ms": 7921.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Get experiment by ID",
+      "duration_ms": 21.4,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Log and retrieve metrics",
+      "duration_ms": 33.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Complete experiment -> status updated",
+      "duration_ms": 33.1,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "List all experiments",
+      "duration_ms": 33.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Nonexistent ID -> None",
+      "duration_ms": 7.4,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Filter experiments by type",
+      "duration_ms": 33.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Export results to JSON",
+      "duration_ms": 38.5,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Hardware info fields present",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Logger setup and retrieval",
+      "duration_ms": 0.2,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "data.yaml: face_size=224, augments defined",
+      "duration_ms": 14.4,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "models.yaml: efficientnet_b0 and vit_base exist",
+      "duration_ms": 10.8,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "training.yaml: epochs > 0, seed = 42",
+      "duration_ms": 12.9,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "experiments.yaml: exactly 6 cross-dataset pairs",
+      "duration_ms": 35.1,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "All 50 required source files present",
+      "duration_ms": 0.0,
+      "error": null
+    },
+    {
+      "status": "PASS",
+      "name": "Artifact directories creatable",
+      "duration_ms": 2.1,
+      "error": null
+    }
+  ]
+}

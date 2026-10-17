@@ -1,0 +1,120 @@
+name: CI - Lint, Test & Smoke
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHONIOENCODING: utf-8
+
+jobs:
+  lint:
+    name: Lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install linter
+      run: |
+        pip install flake8
+    - name: Critical errors only (E9 / F63 / F7 / F82)
+      run: |
+        flake8 src/ scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+    - name: Style check (non-blocking)
+      run: |
+        flake8 src/ scripts/ --count --max-complexity=15 --max-line-length=120 --statistics || true
+
+  test:
+    name: Unit Tests (Python ${{ matrix.python-version }})
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install CPU-only dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install PyTorch CPU-only build to save CI time/disk
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        # Install rest (skip torch re-install)
+        pip install timm scikit-learn numpy pandas pyyaml pillow opencv-python-headless
+        pip install matplotlib plotly seaborn streamlit
+        pip install pytest pytest-cov pydantic
+
+    - name: Run lightweight unit tests
+      run: |
+        pytest tests/test_metrics.py tests/test_data.py tests/test_config_and_tracker.py -v \
+          --tb=short --no-header -q
+
+    - name: Run model architecture tests
+      run: |
+        pytest tests/test_models.py -v --tb=short -q
+
+    - name: Run integration tests
+      run: |
+        pytest tests/test_integration.py -v --tb=short -q --timeout=120
+
+  smoke:
+    name: Standalone Smoke Test (no PyTorch needed)
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install minimal deps
+      run: |
+        pip install pyyaml numpy
+    - name: Run standalone smoke test
+      run: |
+        python smoke_test_standalone.py
+
+  api-check:
+    name: API Import Check
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install API deps
+      run: |
+        pip install fastapi uvicorn pydantic torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        pip install timm numpy pillow scikit-learn pyyaml
+    - name: Check API can be imported
+      run: |
+        python -c "
+        import sys; sys.path.insert(0, '.')
+        from src.api.app import app
+        print('API app imported OK:', app.title)
+        routes = [r.path for r in app.routes]
+        print('Routes:', routes[:8])
+        assert '/health' in routes, '/health route missing'
+        assert '/predict' in routes, '/predict route missing'
+        assert '/experiments' in routes, '/experiments route missing'
+        print('All critical routes present.')
+        "

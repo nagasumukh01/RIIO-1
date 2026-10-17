@@ -1,0 +1,72 @@
+# Data Pipeline Configuration
+data:
+  # Face crop size
+  face_size: 224
+  # Frame sampling
+  frames_per_video: 16
+  sampling_strategy: "uniform"  # uniform, random, keyframe
+  # Face detection
+  face_detector: "retinaface"  # retinaface, mtcnn, dlib
+  face_confidence_threshold: 0.9
+  face_margin: 0.3
+  # Normalization (ImageNet)
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std: [0.229, 0.224, 0.225]
+  # Split ratios (video-level)
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  # Cache
+  cache_dir: "artifacts/cache"
+  use_cache: true
+
+datasets:
+  faceforensics:
+    name: "FaceForensics++"
+    root_dir: "data/faceforensics"
+    manipulation_methods: ["Deepfakes", "Face2Face", "FaceSwap", "NeuralTextures"]
+    compression: ["c23", "c40"]
+    license: "Academic use - requires agreement"
+    download_url: "https://github.com/ondyari/FaceForensics"
+
+  celebdf:
+    name: "Celeb-DF"
+    root_dir: "data/celebdf"
+    version: "v2"
+    license: "Research use only"
+    download_url: "https://github.com/yuezunli/celeb-deepfakeforensics"
+
+  dfdc:
+    name: "DFDC"
+    root_dir: "data/dfdc"
+    subset_size: 5000  # Use subset for feasibility
+    license: "Research use - Kaggle agreement"
+    download_url: "https://www.kaggle.com/c/deepfake-detection-challenge"
+
+  diffusion:
+    name: "Diffusion-Generated"
+    root_dir: "data/diffusion"
+    status: "pending"
+    notes: "Interface implemented; data collection documented in docs/dataset_protocol.md"
+
+augmentation:
+  # Training-only augmentations
+  jpeg_compression:
+    enabled: false
+    quality_range: [30, 95]
+  gaussian_blur:
+    enabled: false
+    kernel_range: [3, 7]
+    sigma_range: [0.1, 2.0]
+  resize_reencode:
+    enabled: false
+    scale_range: [0.5, 0.9]
+  color_jitter:
+    enabled: false
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+  horizontal_flip:
+    enabled: true
+    probability: 0.5

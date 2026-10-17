@@ -1,0 +1,52 @@
+# Training Configuration
+training:
+  # General
+  seed: 42
+  device: "auto"  # auto, cpu, cuda
+  mixed_precision: false
+  num_workers: 2
+  pin_memory: true
+
+  # Optimization
+  optimizer: "adamw"
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  momentum: 0.9  # for SGD
+  betas: [0.9, 0.999]  # for Adam/AdamW
+
+  # Schedule
+  scheduler: "cosine"  # cosine, step, plateau
+  warmup_epochs: 2
+  min_lr: 0.000001
+
+  # Training loop
+  epochs: 30
+  batch_size: 16
+  gradient_clip: 1.0
+  accumulation_steps: 1
+
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 7
+    monitor: "val_auroc"
+    mode: "max"
+    min_delta: 0.001
+
+  # Checkpointing
+  checkpoint_dir: "artifacts/checkpoints"
+  save_best_only: true
+  save_every_n_epochs: 5
+
+  # Loss
+  loss_function: "cross_entropy"  # cross_entropy, focal, weighted_bce
+  focal_loss_gamma: 2.0
+  focal_loss_alpha: 0.25
+  class_weights: "auto"  # auto, null, or [w0, w1]
+
+  # Class balancing
+  balance_strategy: "weighted_sampler"  # weighted_sampler, oversample, undersample, none
+
+  # Logging
+  log_interval: 10
+  val_interval: 1  # validate every N epochs

@@ -1,0 +1,58 @@
+# Model Configuration
+models:
+  efficientnet_b0:
+    name: "EfficientNet-B0"
+    type: "cnn"
+    backbone: "efficientnet_b0"
+    pretrained: true
+    pretrained_source: "imagenet"
+    num_classes: 2
+    dropout: 0.3
+    input_size: 224
+    parameters_approx: "5.3M"
+
+  efficientnet_b4:
+    name: "EfficientNet-B4"
+    type: "cnn"
+    backbone: "efficientnet_b4"
+    pretrained: true
+    pretrained_source: "imagenet"
+    num_classes: 2
+    dropout: 0.4
+    input_size: 224
+    parameters_approx: "19.3M"
+
+  vit_base:
+    name: "ViT-Base/16"
+    type: "vit"
+    backbone: "vit_base_patch16_224"
+    pretrained: true
+    pretrained_source: "imagenet21k"
+    num_classes: 2
+    dropout: 0.1
+    input_size: 224
+    patch_size: 16
+    parameters_approx: "86.6M"
+
+  vit_small:
+    name: "ViT-Small/16"
+    type: "vit"
+    backbone: "vit_small_patch16_224"
+    pretrained: true
+    pretrained_source: "imagenet21k"
+    num_classes: 2
+    dropout: 0.1
+    input_size: 224
+    patch_size: 16
+    parameters_approx: "22.1M"
+
+  # Optional hybrid
+  hybrid_cnn_vit:
+    name: "Hybrid CNN-ViT"
+    type: "hybrid"
+    cnn_backbone: "efficientnet_b0"
+    vit_backbone: "vit_small_patch16_224"
+    pretrained: true
+    num_classes: 2
+    dropout: 0.2
+    input_size: 224

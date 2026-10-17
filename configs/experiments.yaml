@@ -1,0 +1,89 @@
+# Experiment Configuration
+experiments:
+  # Database for tracking
+  db_path: "artifacts/experiment_logs/experiments.db"
+  results_dir: "artifacts/experiment_logs"
+  figures_dir: "artifacts/figures"
+
+  # Cross-dataset evaluation pairs
+  cross_dataset_pairs:
+    - train: "faceforensics"
+      test: "celebdf"
+    - train: "faceforensics"
+      test: "dfdc"
+    - train: "celebdf"
+      test: "faceforensics"
+    - train: "celebdf"
+      test: "dfdc"
+    - train: "dfdc"
+      test: "faceforensics"
+    - train: "dfdc"
+      test: "celebdf"
+
+  # Ablation: Augmentation strategies
+  augmentation_ablation:
+    strategies:
+      - name: "none"
+        config: {}
+      - name: "jpeg_only"
+        config:
+          jpeg_compression: {enabled: true, quality_range: [30, 95]}
+      - name: "blur_only"
+        config:
+          gaussian_blur: {enabled: true, kernel_range: [3, 7]}
+      - name: "resize_reencode"
+        config:
+          resize_reencode: {enabled: true, scale_range: [0.5, 0.9]}
+      - name: "compression_blur"
+        config:
+          jpeg_compression: {enabled: true, quality_range: [30, 95]}
+          gaussian_blur: {enabled: true, kernel_range: [3, 7]}
+      - name: "full_augmentation"
+        config:
+          jpeg_compression: {enabled: true, quality_range: [30, 95]}
+          gaussian_blur: {enabled: true, kernel_range: [3, 7]}
+          color_jitter: {enabled: true}
+          horizontal_flip: {enabled: true}
+
+  # Ablation: Loss functions
+  loss_ablation:
+    losses:
+      - name: "cross_entropy"
+        config: {loss_function: "cross_entropy"}
+      - name: "focal_loss"
+        config: {loss_function: "focal", focal_loss_gamma: 2.0, focal_loss_alpha: 0.25}
+      - name: "weighted_bce"
+        config: {loss_function: "weighted_bce"}
+
+  # Ablation: Backbone capacity
+  backbone_ablation:
+    backbones:
+      - name: "efficientnet_b0"
+        model_config: "efficientnet_b0"
+      - name: "efficientnet_b4"
+        model_config: "efficientnet_b4"
+      - name: "vit_small"
+        model_config: "vit_small"
+      - name: "vit_base"
+        model_config: "vit_base"
+
+  # Robustness stress tests (applied at evaluation time only)
+  robustness_tests:
+    - name: "jpeg_q30"
+      transform: "jpeg_compression"
+      params: {quality: 30}
+    - name: "jpeg_q50"
+      transform: "jpeg_compression"
+      params: {quality: 50}
+    - name: "blur_k5"
+      transform: "gaussian_blur"
+      params: {kernel_size: 5, sigma: 1.0}
+    - name: "blur_k7"
+      transform: "gaussian_blur"
+      params: {kernel_size: 7, sigma: 2.0}
+    - name: "resize_0.5x"
+      transform: "resize"
+      params: {scale: 0.5}
+    - name: "combined_stress"
+      transform: "combined"
+      params: {jpeg_quality: 50, blur_kernel: 5, resize_scale: 0.7}

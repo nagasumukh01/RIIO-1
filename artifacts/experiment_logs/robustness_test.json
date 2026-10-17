@@ -1,0 +1,188 @@
+{
+  "clean": {
+    "accuracy": 0.125,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_score": 0.0,
+    "auroc": 0.14285714285714285,
+    "eer": 0.9285714285714286,
+    "eer_threshold": 0.4753406345844269,
+    "fpr": 0.0,
+    "fnr": 1.0,
+    "average_precision": 0.8260204081632654,
+    "confusion_matrix": [
+      [
+        1,
+        0
+      ],
+      [
+        7,
+        0
+      ]
+    ],
+    "tp": 0,
+    "fp": 0,
+    "tn": 1,
+    "fn": 7,
+    "threshold": 0.5,
+    "total_samples": 8,
+    "positive_samples": 7,
+    "negative_samples": 1,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        1.0
+      ]
+    },
+    "eval_time_s": 2.1807494163513184,
+    "dataset_name": "synthetic_test",
+    "avg_latency_ms": 272.5936770439148,
+    "video_level": {
+      "accuracy": 0.125,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "auroc": 0.14285714285714285,
+      "eer": 0.9285714285714286,
+      "eer_threshold": 0.4753406345844269,
+      "fpr": 0.0,
+      "fnr": 1.0,
+      "average_precision": 0.8260204081632654,
+      "confusion_matrix": [
+        [
+          1,
+          0
+        ],
+        [
+          7,
+          0
+        ]
+      ],
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 7,
+      "threshold": 0.5,
+      "total_samples": 8,
+      "positive_samples": 7,
+      "negative_samples": 1,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.14285714285714285,
+          0.14285714285714285,
+          1.0
+        ]
+      },
+      "num_videos": 8
+    }
+  },
+  "jpeg_q50": {
+    "accuracy": 0.125,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_score": 0.0,
+    "auroc": 0.14285714285714285,
+    "eer": 0.9285714285714286,
+    "eer_threshold": 0.4753406047821045,
+    "fpr": 0.0,
+    "fnr": 1.0,
+    "average_precision": 0.8260204081632654,
+    "confusion_matrix": [
+      [
+        1,
+        0
+      ],
+      [
+        7,
+        0
+      ]
+    ],
+    "tp": 0,
+    "fp": 0,
+    "tn": 1,
+    "fn": 7,
+    "threshold": 0.5,
+    "total_samples": 8,
+    "positive_samples": 7,
+    "negative_samples": 1,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        1.0
+      ]
+    },
+    "perturbation": "jpeg_q50",
+    "eval_time_s": 2.4336159229278564,
+    "robustness_drop_pct": 0.0
+  },
+  "blur_k5": {
+    "accuracy": 0.125,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_score": 0.0,
+    "auroc": 0.14285714285714285,
+    "eer": 0.9285714285714286,
+    "eer_threshold": 0.4753406047821045,
+    "fpr": 0.0,
+    "fnr": 1.0,
+    "average_precision": 0.8260204081632654,
+    "confusion_matrix": [
+      [
+        1,
+        0
+      ],
+      [
+        7,
+        0
+      ]
+    ],
+    "tp": 0,
+    "fp": 0,
+    "tn": 1,
+    "fn": 7,
+    "threshold": 0.5,
+    "total_samples": 8,
+    "positive_samples": 7,
+    "negative_samples": 1,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        1.0
+      ]
+    },
+    "perturbation": "blur_k5",
+    "eval_time_s": 2.623929262161255,
+    "robustness_drop_pct": 0.0
+  }
+}
