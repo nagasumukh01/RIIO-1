@@ -1,7 +1,53 @@
+# Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
 .venv/
 venv/
+env/
+
+# Environment variables
 .env
 .env.*
 !.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PyTorch checkpoints & model weights (large binary files)
+artifacts/checkpoints/**/*.pt
+artifacts/checkpoints/**/*.pth
+artifacts/checkpoints/**/*.ckpt
+
+# Experiment runtime outputs (regenerated on each run)
+artifacts/experiment_logs/*.db
+artifacts/experiment_logs/*.log
+artifacts/experiment_logs/run_ml_smoke.py
+
+# Keep directory structure
+!artifacts/checkpoints/.gitkeep
+!artifacts/experiment_logs/.gitkeep
+!artifacts/figures/.gitkeep
+!data/.gitkeep
+
+# Pytest / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# HuggingFace cache
+.cache/

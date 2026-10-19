@@ -98,14 +98,26 @@ def save_checkpoint(
 def get_model_size(model: nn.Module) -> Dict:
     """Calculate model size information."""
     import tempfile
+    import os
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    # Estimate checkpoint size
-    with tempfile.NamedTemporaryFile(suffix='.pt', delete=True) as f:
-        torch.save(model.state_dict(), f.name)
-        import os
-        checkpoint_size_mb = os.path.getsize(f.name) / (1024 * 1024)
+    # Estimate checkpoint size (Windows-compatible: delete=False + manual cleanup)
+    checkpoint_size_mb = 0.0
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
+            tmp_path = f.name
+        torch.save(model.state_dict(), tmp_path)
+        checkpoint_size_mb = os.path.getsize(tmp_path) / (1024 * 1024)
+    except Exception:
+        checkpoint_size_mb = total_params * 4 / (1024 * 1024)  # Estimate: 4 bytes per float32
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
 
     return {
         'total_parameters': total_params,

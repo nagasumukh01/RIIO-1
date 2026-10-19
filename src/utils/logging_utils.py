@@ -28,7 +28,13 @@ def setup_logger(
     )
 
     if console:
-        ch = logging.StreamHandler(sys.stdout)
+        # Force UTF-8 on stdout to avoid cp1252 issues on Windows
+        try:
+            ch = logging.StreamHandler(
+                open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
+            )
+        except Exception:
+            ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(level)
         ch.setFormatter(formatter)
         logger.addHandler(ch)
@@ -37,7 +43,7 @@ def setup_logger(
         log_dir = Path(log_dir)
         log_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        fh = logging.FileHandler(log_dir / f"{name}_{timestamp}.log")
+        fh = logging.FileHandler(log_dir / f"{name}_{timestamp}.log", encoding="utf-8")
         fh.setLevel(level)
         fh.setFormatter(formatter)
         logger.addHandler(fh)

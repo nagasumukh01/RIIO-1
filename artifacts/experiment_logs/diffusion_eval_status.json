@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-10-19T14:17:38.761876",
+  "evaluation_type": "diffusion_generated",
+  "data_status": {
+    "data_available": false,
+    "data_dir": "data\\diffusion",
+    "metadata_found": false,
+    "real_dir_found": false,
+    "fake_dir_found": false,
+    "real_count": 0,
+    "fake_count": 0,
+    "status": "PENDING \u2014 DATA ACCESS LIMITED"
+  },
+  "warning": "PENDING \u2014 Diffusion evaluation data not found at data\\diffusion. See data_status field for setup instructions.",
+  "metrics": null,
+  "status": "PENDING \u2014 DATA ACCESS LIMITED",
+  "pipeline_validation": {
+    "note": "SYNTHETIC DATA \u2014 pipeline validation only. These numbers validate the evaluation wiring, NOT model capability.",
+    "metrics": {
+      "accuracy": 0.5,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "auroc": 0.47624999999999995,
+      "eer": 0.475,
+      "eer_threshold": 0.49078699946403503,
+      "fpr": 0.0,
+      "fnr": 1.0,
+      "average_precision": 0.4928698468039938,
+      "confusion_matrix": [
+        [
+          20,
+          0
+        ],
+        [
+          20,
+          0
+        ]
+      ],
+      "tp": 0,
+      "fp": 0,
+      "tn": 20,
+      "fn": 20,
+      "threshold": 0.5,
+      "total_samples": 40,
+      "positive_samples": 20,
+      "negative_samples": 20,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.05,
+          0.05,
+          0.2,
+          0.3,
+          0.35,
+          0.45,
+          0.55,
+          0.65,
+          0.7,
+          0.75,
+          0.85,
+          0.9,
+          0.95,
+          0.95,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.0,
+          0.05,
+          0.15,
+          0.3,
+          0.35,
+          0.5,
+          0.6,
+          0.6,
+          0.6,
+          0.7,
+          0.75,
+          0.8,
+          0.9,
+          0.95,
+          1.0
+        ]
+      }
+    }
+  }
+}
