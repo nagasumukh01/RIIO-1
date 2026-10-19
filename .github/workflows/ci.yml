@@ -61,7 +61,7 @@ jobs:
         # Install rest (skip torch re-install)
         pip install timm scikit-learn numpy pandas pyyaml pillow opencv-python-headless
         pip install matplotlib plotly seaborn streamlit
-        pip install pytest pytest-cov pydantic
+        pip install pytest pytest-cov pydantic pytest-timeout
 
     - name: Create required runtime directories
       run: |
@@ -91,7 +91,7 @@ jobs:
         python-version: '3.11'
     - name: Install minimal deps
       run: |
-        pip install pyyaml numpy
+        pip install pyyaml numpy scikit-learn pillow opencv-python-headless
     - name: Run standalone smoke test
       run: |
         python smoke_test_standalone.py
@@ -107,7 +107,7 @@ jobs:
         python-version: '3.11'
     - name: Install API deps
       run: |
-        pip install fastapi uvicorn pydantic torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        pip install fastapi uvicorn pydantic python-multipart torch torchvision --index-url https://download.pytorch.org/whl/cpu
         pip install timm numpy pillow scikit-learn pyyaml
     - name: Check API can be imported
       run: |
