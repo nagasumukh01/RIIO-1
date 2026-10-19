@@ -1,0 +1,92 @@
+{
+  "accuracy": 0.84,
+  "precision": 0.7714285714285715,
+  "recall": 1.0,
+  "f1_score": 0.8709677419354839,
+  "auroc": 1.0,
+  "eer": 0.0,
+  "eer_threshold": 0.5853727459907532,
+  "fpr": 0.34782608695652173,
+  "fnr": 0.0,
+  "average_precision": 1.0,
+  "confusion_matrix": [
+    [
+      15,
+      8
+    ],
+    [
+      0,
+      27
+    ]
+  ],
+  "tp": 27,
+  "fp": 8,
+  "tn": 15,
+  "fn": 0,
+  "threshold": 0.5,
+  "total_samples": 50,
+  "positive_samples": 27,
+  "negative_samples": 23,
+  "roc_curve": {
+    "fpr": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "tpr": [
+      0.0,
+      0.037037037037037035,
+      1.0,
+      1.0
+    ]
+  },
+  "eval_time_s": 18.34844183921814,
+  "dataset_name": "aug_none_test",
+  "avg_latency_ms": 366.9688367843628,
+  "video_level": {
+    "accuracy": 0.84,
+    "precision": 0.7714285714285715,
+    "recall": 1.0,
+    "f1_score": 0.8709677419354839,
+    "auroc": 1.0,
+    "eer": 0.0,
+    "eer_threshold": 0.5853727459907532,
+    "fpr": 0.34782608695652173,
+    "fnr": 0.0,
+    "average_precision": 1.0,
+    "confusion_matrix": [
+      [
+        15,
+        8
+      ],
+      [
+        0,
+        27
+      ]
+    ],
+    "tp": 27,
+    "fp": 8,
+    "tn": 15,
+    "fn": 0,
+    "threshold": 0.5,
+    "total_samples": 50,
+    "positive_samples": 27,
+    "negative_samples": 23,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.037037037037037035,
+        1.0,
+        1.0
+      ]
+    },
+    "num_videos": 50
+  }
+}

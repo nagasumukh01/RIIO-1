@@ -1,0 +1,358 @@
+{
+  "experiment_id": "adafa2b2_20261019_223428",
+  "dataset_name": "loss_focal_loss_test",
+  "timestamp": "2026-10-19T22:36:33.813597",
+  "num_samples": 50,
+  "predictions": [
+    {
+      "label": 0,
+      "score": 0.49292927980422974,
+      "prediction": 0,
+      "video_id": "synthetic_0",
+      "path": "synthetic_0.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5170602798461914,
+      "prediction": 1,
+      "video_id": "synthetic_1",
+      "path": "synthetic_1.png"
+    },
+    {
+      "label": 1,
+      "score": 0.580574095249176,
+      "prediction": 1,
+      "video_id": "synthetic_2",
+      "path": "synthetic_2.png"
+    },
+    {
+      "label": 0,
+      "score": 0.4689246118068695,
+      "prediction": 0,
+      "video_id": "synthetic_3",
+      "path": "synthetic_3.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5190746188163757,
+      "prediction": 1,
+      "video_id": "synthetic_4",
+      "path": "synthetic_4.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5812366008758545,
+      "prediction": 1,
+      "video_id": "synthetic_5",
+      "path": "synthetic_5.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5770054459571838,
+      "prediction": 1,
+      "video_id": "synthetic_6",
+      "path": "synthetic_6.png"
+    },
+    {
+      "label": 0,
+      "score": 0.47632211446762085,
+      "prediction": 0,
+      "video_id": "synthetic_7",
+      "path": "synthetic_7.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5744436979293823,
+      "prediction": 1,
+      "video_id": "synthetic_8",
+      "path": "synthetic_8.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5136376023292542,
+      "prediction": 1,
+      "video_id": "synthetic_9",
+      "path": "synthetic_9.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5851773619651794,
+      "prediction": 1,
+      "video_id": "synthetic_10",
+      "path": "synthetic_10.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5323945879936218,
+      "prediction": 1,
+      "video_id": "synthetic_11",
+      "path": "synthetic_11.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5153189897537231,
+      "prediction": 1,
+      "video_id": "synthetic_12",
+      "path": "synthetic_12.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5873037576675415,
+      "prediction": 1,
+      "video_id": "synthetic_13",
+      "path": "synthetic_13.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5252271294593811,
+      "prediction": 1,
+      "video_id": "synthetic_14",
+      "path": "synthetic_14.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5247319340705872,
+      "prediction": 1,
+      "video_id": "synthetic_15",
+      "path": "synthetic_15.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5792059302330017,
+      "prediction": 1,
+      "video_id": "synthetic_16",
+      "path": "synthetic_16.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5565991997718811,
+      "prediction": 1,
+      "video_id": "synthetic_17",
+      "path": "synthetic_17.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5030099153518677,
+      "prediction": 1,
+      "video_id": "synthetic_18",
+      "path": "synthetic_18.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5957963466644287,
+      "prediction": 1,
+      "video_id": "synthetic_19",
+      "path": "synthetic_19.png"
+    },
+    {
+      "label": 0,
+      "score": 0.4812173843383789,
+      "prediction": 0,
+      "video_id": "synthetic_20",
+      "path": "synthetic_20.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5875105261802673,
+      "prediction": 1,
+      "video_id": "synthetic_21",
+      "path": "synthetic_21.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5695270299911499,
+      "prediction": 1,
+      "video_id": "synthetic_22",
+      "path": "synthetic_22.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5944489240646362,
+      "prediction": 1,
+      "video_id": "synthetic_23",
+      "path": "synthetic_23.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5751581192016602,
+      "prediction": 1,
+      "video_id": "synthetic_24",
+      "path": "synthetic_24.png"
+    },
+    {
+      "label": 0,
+      "score": 0.4772114157676697,
+      "prediction": 0,
+      "video_id": "synthetic_25",
+      "path": "synthetic_25.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5249053835868835,
+      "prediction": 1,
+      "video_id": "synthetic_26",
+      "path": "synthetic_26.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5764045119285583,
+      "prediction": 1,
+      "video_id": "synthetic_27",
+      "path": "synthetic_27.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5015432834625244,
+      "prediction": 1,
+      "video_id": "synthetic_28",
+      "path": "synthetic_28.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5679075717926025,
+      "prediction": 1,
+      "video_id": "synthetic_29",
+      "path": "synthetic_29.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5810206532478333,
+      "prediction": 1,
+      "video_id": "synthetic_30",
+      "path": "synthetic_30.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5262948870658875,
+      "prediction": 1,
+      "video_id": "synthetic_31",
+      "path": "synthetic_31.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5928051471710205,
+      "prediction": 1,
+      "video_id": "synthetic_32",
+      "path": "synthetic_32.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5740246772766113,
+      "prediction": 1,
+      "video_id": "synthetic_33",
+      "path": "synthetic_33.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5268990397453308,
+      "prediction": 1,
+      "video_id": "synthetic_34",
+      "path": "synthetic_34.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5237242579460144,
+      "prediction": 1,
+      "video_id": "synthetic_35",
+      "path": "synthetic_35.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5886999368667603,
+      "prediction": 1,
+      "video_id": "synthetic_36",
+      "path": "synthetic_36.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5257729887962341,
+      "prediction": 1,
+      "video_id": "synthetic_37",
+      "path": "synthetic_37.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5833409428596497,
+      "prediction": 1,
+      "video_id": "synthetic_38",
+      "path": "synthetic_38.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5229536294937134,
+      "prediction": 1,
+      "video_id": "synthetic_39",
+      "path": "synthetic_39.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5813098549842834,
+      "prediction": 1,
+      "video_id": "synthetic_40",
+      "path": "synthetic_40.png"
+    },
+    {
+      "label": 0,
+      "score": 0.4667789936065674,
+      "prediction": 0,
+      "video_id": "synthetic_41",
+      "path": "synthetic_41.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5854283571243286,
+      "prediction": 1,
+      "video_id": "synthetic_42",
+      "path": "synthetic_42.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5632314085960388,
+      "prediction": 1,
+      "video_id": "synthetic_43",
+      "path": "synthetic_43.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5767025351524353,
+      "prediction": 1,
+      "video_id": "synthetic_44",
+      "path": "synthetic_44.png"
+    },
+    {
+      "label": 1,
+      "score": 0.575194776058197,
+      "prediction": 1,
+      "video_id": "synthetic_45",
+      "path": "synthetic_45.png"
+    },
+    {
+      "label": 0,
+      "score": 0.5199758410453796,
+      "prediction": 1,
+      "video_id": "synthetic_46",
+      "path": "synthetic_46.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5946998000144958,
+      "prediction": 1,
+      "video_id": "synthetic_47",
+      "path": "synthetic_47.png"
+    },
+    {
+      "label": 0,
+      "score": 0.4992658197879791,
+      "prediction": 0,
+      "video_id": "synthetic_48",
+      "path": "synthetic_48.png"
+    },
+    {
+      "label": 1,
+      "score": 0.5602383017539978,
+      "prediction": 1,
+      "video_id": "synthetic_49",
+      "path": "synthetic_49.png"
+    }
+  ]
+}

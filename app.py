@@ -233,6 +233,7 @@ with st.sidebar:
         "Navigation",
         [
             "🏠 Research Overview",
+            "🎬 Video Analysis & Inference",
             "📊 Experiment Results",
             "🔄 Cross-Dataset Matrix",
             "🏗️ CNN vs ViT Comparison",
@@ -349,6 +350,230 @@ if page == "🏠 Research Overview":
         and using a more granular 6-pair cross-dataset matrix with stricter no-target-tuning rules.
     </div>
     """, unsafe_allow_html=True)
+
+
+# ═══════════════════════════════════════════════════════════════
+# PAGE: Video Analysis & Inference
+# ═══════════════════════════════════════════════════════════════
+elif page == "🎬 Video Analysis & Inference":
+    st.markdown("""
+    <div class="main-header">
+        <h1>Video Deepfake Detection & Explanation</h1>
+        <p>End-to-end video inference with temporal aggregation and visual attribution maps</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="disclaimer-box">
+        ⚠️ <strong>MANDATORY FORENSIC DISCLAIMER:</strong> This is a probabilistic research system and must NOT be
+        treated as conclusive forensic evidence. Model confidence is a statistical probability based on training
+        distributions and may degrade significantly under unseen manipulations, compression, or lighting shifts.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="section-header">1. Select or Upload Video</div>', unsafe_allow_html=True)
+
+    # Search for available sample videos in data/sample_videos
+    sample_videos_dir = Path("data/sample_videos")
+    available_samples = list(sample_videos_dir.glob("*.mp4")) if sample_videos_dir.exists() else []
+
+    source_mode = st.radio(
+        "Video Source",
+        ["Use Preloaded Sample Video", "Upload Your Own Video (.mp4 / .avi / .mov)"],
+        horizontal=True,
+    )
+
+    selected_video_path = None
+    temp_uploaded_path = None
+
+    if source_mode == "Use Preloaded Sample Video":
+        if available_samples:
+            sample_choice = st.selectbox(
+                "Choose a sample test video:",
+                available_samples,
+                format_func=lambda p: f"{p.name} ({'Real Sample' if 'real' in p.name else ('Diffusion Fake' if 'diffusion' in p.name else 'Face-Swap Fake')})",
+            )
+            selected_video_path = str(sample_choice)
+        else:
+            st.info("No sample videos found in data/sample_videos. Run python scripts/create_sample_videos.py")
+    else:
+        uploaded_file = st.file_uploader("Upload video file", type=["mp4", "avi", "mov"])
+        if uploaded_file is not None:
+            temp_dir = Path("data/temp_uploads")
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            temp_uploaded_path = temp_dir / f"uploaded_{int(time.time())}_{uploaded_file.name}"
+            with open(temp_uploaded_path, "wb") as f:
+                f.write(uploaded_file.read())
+            selected_video_path = str(temp_uploaded_path)
+            st.success(f"Uploaded successfully ({uploaded_file.size / (1024*1024):.2f} MB)")
+
+    if selected_video_path and os.path.exists(selected_video_path):
+        v_col1, v_col2 = st.columns([1, 1])
+        with v_col1:
+            st.markdown("#### Video Preview")
+            st.video(selected_video_path)
+
+        with v_col2:
+            st.markdown("#### Model & Sampling Configuration")
+            model_key = st.selectbox(
+                "Detector Architecture",
+                ["efficientnet_b0", "vit_base", "hybrid"],
+                format_func=lambda x: {
+                    "efficientnet_b0": "EfficientNet-B0 (CNN Baseline - 4.3M)",
+                    "vit_base": "ViT-Base (Vision Transformer - 86.6M)",
+                    "hybrid": "Hybrid CNN-ViT (14.8M)"
+                }.get(x, x),
+            )
+
+            # Available checkpoints
+            ckpt_dir = Path("artifacts/checkpoints")
+            available_ckpts = list(ckpt_dir.glob("**/*.pt")) if ckpt_dir.exists() else []
+
+            ckpt_options = ["None (Default Pretrained Weights)"] + [str(p) for p in available_ckpts]
+            selected_ckpt_str = st.selectbox(
+                "Checkpoint Path",
+                ckpt_options,
+                format_func=lambda x: "Default Pretrained Weights" if "None" in x else Path(x).parent.name + " / " + Path(x).name
+            )
+            checkpoint_path = None if "None" in selected_ckpt_str else selected_ckpt_str
+
+            num_frames = st.slider("Frames to Sample from Video", min_value=5, max_value=30, value=15, step=5)
+            generate_heatmaps = st.checkbox("Generate Visual Explanation Maps (Grad-CAM / Attention Rollout)", value=True)
+
+        if st.button("🚀 Analyze Video for Deepfake Manipulation", type="primary", use_container_width=True):
+            with st.spinner("Extracting frames, sampling faces, and running neural inference..."):
+                try:
+                    from scripts.infer import load_model, extract_video_frames, predict_image
+                    import torch
+                    import cv2
+                    from src.explainability.explainer import GradCAM, AttentionRollout, create_heatmap_overlay
+
+                    device = "cpu"
+                    model, config = load_model(model_key, checkpoint_path=checkpoint_path, device=device)
+
+                    frames = extract_video_frames(selected_video_path, num_frames=num_frames, face_size=224)
+
+                    if not frames:
+                        st.error("Could not extract any valid face frames from the video. Please verify the video codec and content.")
+                    else:
+                        frame_scores = []
+                        analyzed_data = []
+
+                        # Initialize explainer if requested
+                        explainer = None
+                        if generate_heatmaps:
+                            if config.type == "cnn":
+                                explainer = GradCAM(model)
+                            elif config.type == "vit":
+                                explainer = AttentionRollout(model)
+
+                        for idx, frame_np in enumerate(frames):
+                            # Preprocess frame
+                            norm_img = frame_np.astype(np.float32) / 255.0
+                            mean = np.array([0.485, 0.456, 0.406])
+                            std = np.array([0.229, 0.224, 0.225])
+                            norm_img = (norm_img - mean) / std
+                            tensor = torch.from_numpy(norm_img.transpose(2, 0, 1)).float().unsqueeze(0)
+
+                            # Predict
+                            pred_res = predict_image(model, tensor, device=device)
+                            fake_p = pred_res["fake_probability"]
+                            frame_scores.append(fake_p)
+
+                            # Generate explanation overlay
+                            overlay = None
+                            if explainer:
+                                try:
+                                    heatmap = explainer.generate(tensor, target_class=1)
+                                    overlay = create_heatmap_overlay(frame_np, heatmap, alpha=0.5)
+                                except Exception:
+                                    overlay = None
+
+                            analyzed_data.append({
+                                "frame_idx": idx,
+                                "frame": frame_np,
+                                "overlay": overlay,
+                                "fake_prob": fake_p,
+                                "real_prob": 1.0 - fake_p,
+                            })
+
+                        # Aggregate video prediction
+                        mean_fake_p = float(np.mean(frame_scores))
+                        is_fake = mean_fake_p >= 0.5
+                        verdict = "FAKE" if is_fake else "REAL"
+                        confidence = mean_fake_p if is_fake else (1.0 - mean_fake_p)
+
+                        st.markdown('<div class="section-header">Video Analysis Results</div>', unsafe_allow_html=True)
+
+                        # Metric cards
+                        c1, c2, c3, c4 = st.columns(4)
+                        with c1:
+                            metric_card("Aggregated Verdict", verdict)
+                        with c2:
+                            metric_card("Confidence", f"{confidence*100:.1f}", suffix="%")
+                        with c3:
+                            metric_card("Fake Probability", f"{mean_fake_p*100:.1f}", suffix="%")
+                        with c4:
+                            metric_card("Frames Analyzed", str(len(frames)))
+
+                        # Uncertainty alert
+                        if 0.45 <= mean_fake_p <= 0.55:
+                            st.warning(
+                                "⚠️ **HIGH UNCERTAINTY WARNING**: The aggregated probability is within the boundary "
+                                "uncertainty zone (45%–55%). This video exhibits features near the decision boundary. "
+                                "Manual expert inspection is strongly advised."
+                            )
+
+                        # Frame-level probability timeline chart
+                        st.markdown("#### Frame-Level Prediction Trajectory Across Video")
+                        fig = go.Figure()
+                        fig.add_trace(go.Scatter(
+                            x=list(range(1, len(frame_scores) + 1)),
+                            y=frame_scores,
+                            mode='lines+markers',
+                            name='Fake Probability',
+                            line=dict(color='#e53e3e' if is_fake else '#38a169', width=3),
+                            marker=dict(size=8),
+                        ))
+                        fig.add_hline(
+                            y=0.5, line_dash="dash", line_color="#cbd5e0",
+                            annotation_text="Decision Threshold (0.50)",
+                            annotation_position="bottom right"
+                        )
+                        fig.update_layout(
+                            **create_plotly_theme(),
+                            xaxis_title="Sampled Frame Index",
+                            yaxis_title="Deepfake Probability",
+                            yaxis_range=[0, 1.05],
+                            height=350,
+                            margin=dict(l=40, r=40, t=30, b=40),
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+
+                        # Frame Gallery with Explanation Maps
+                        st.markdown("#### Sampled Face Crops & Model Attribution Maps")
+                        st.info("ℹ️ **Model Attribution Note:** Heatmaps represent mathematical feature attribution (where the neural network focused), not forensic proof of tampering.")
+
+                        # Show up to 6 frames in columns
+                        cols_per_row = 3
+                        for r_start in range(0, min(len(analyzed_data), 6), cols_per_row):
+                            cols = st.columns(cols_per_row)
+                            for c_idx, frame_item in enumerate(analyzed_data[r_start:r_start+cols_per_row]):
+                                with cols[c_idx]:
+                                    img_to_show = frame_item["overlay"] if frame_item["overlay"] is not None else frame_item["frame"]
+                                    st.image(
+                                        img_to_show,
+                                        caption=f"Frame #{frame_item['frame_idx']+1} | Fake Prob: {frame_item['fake_prob']*100:.1f}%",
+                                        use_container_width=True,
+                                    )
+
+                except Exception as exc:
+                    st.error(f"Inference execution error: {exc}")
+                    import traceback
+                    st.code(traceback.format_exc())
+
+    else:
+        st.info("Select or upload a video file above to begin deepfake video analysis.")
 
 
 # ═══════════════════════════════════════════════════════════════

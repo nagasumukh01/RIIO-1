@@ -1,0 +1,92 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "auroc": 1.0,
+  "eer": 0.0,
+  "eer_threshold": 0.5365548729896545,
+  "fpr": 0.0,
+  "fnr": 0.0,
+  "average_precision": 0.9999999999999998,
+  "confusion_matrix": [
+    [
+      16,
+      0
+    ],
+    [
+      0,
+      14
+    ]
+  ],
+  "tp": 14,
+  "fp": 0,
+  "tn": 16,
+  "fn": 0,
+  "threshold": 0.5,
+  "total_samples": 30,
+  "positive_samples": 14,
+  "negative_samples": 16,
+  "roc_curve": {
+    "fpr": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "tpr": [
+      0.0,
+      0.07142857142857142,
+      1.0,
+      1.0
+    ]
+  },
+  "eval_time_s": 11.876447439193726,
+  "dataset_name": "synthetic_test",
+  "avg_latency_ms": 395.8815813064575,
+  "video_level": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "auroc": 1.0,
+    "eer": 0.0,
+    "eer_threshold": 0.5365548729896545,
+    "fpr": 0.0,
+    "fnr": 0.0,
+    "average_precision": 0.9999999999999998,
+    "confusion_matrix": [
+      [
+        16,
+        0
+      ],
+      [
+        0,
+        14
+      ]
+    ],
+    "tp": 14,
+    "fp": 0,
+    "tn": 16,
+    "fn": 0,
+    "threshold": 0.5,
+    "total_samples": 30,
+    "positive_samples": 14,
+    "negative_samples": 16,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.07142857142857142,
+        1.0,
+        1.0
+      ]
+    },
+    "num_videos": 30
+  }
+}

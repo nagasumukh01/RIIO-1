@@ -28,9 +28,11 @@ env/
 Thumbs.db
 
 # PyTorch checkpoints & model weights (large binary files)
-artifacts/checkpoints/**/*.pt
-artifacts/checkpoints/**/*.pth
-artifacts/checkpoints/**/*.ckpt
+*.pt
+*.pth
+*.ckpt
+artifacts/checkpoints/*
+!artifacts/checkpoints/.gitkeep
 
 # Experiment runtime outputs (regenerated on each run)
 artifacts/experiment_logs/*.db

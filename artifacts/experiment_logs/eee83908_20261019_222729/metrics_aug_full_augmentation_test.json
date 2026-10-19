@@ -1,0 +1,92 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "auroc": 1.0,
+  "eer": 0.0,
+  "eer_threshold": 0.5108898282051086,
+  "fpr": 0.0,
+  "fnr": 0.0,
+  "average_precision": 1.0,
+  "confusion_matrix": [
+    [
+      23,
+      0
+    ],
+    [
+      0,
+      27
+    ]
+  ],
+  "tp": 27,
+  "fp": 0,
+  "tn": 23,
+  "fn": 0,
+  "threshold": 0.5,
+  "total_samples": 50,
+  "positive_samples": 27,
+  "negative_samples": 23,
+  "roc_curve": {
+    "fpr": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "tpr": [
+      0.0,
+      0.037037037037037035,
+      1.0,
+      1.0
+    ]
+  },
+  "eval_time_s": 17.829541444778442,
+  "dataset_name": "aug_full_augmentation_test",
+  "avg_latency_ms": 356.59082889556885,
+  "video_level": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "auroc": 1.0,
+    "eer": 0.0,
+    "eer_threshold": 0.5108898282051086,
+    "fpr": 0.0,
+    "fnr": 0.0,
+    "average_precision": 1.0,
+    "confusion_matrix": [
+      [
+        23,
+        0
+      ],
+      [
+        0,
+        27
+      ]
+    ],
+    "tp": 27,
+    "fp": 0,
+    "tn": 23,
+    "fn": 0,
+    "threshold": 0.5,
+    "total_samples": 50,
+    "positive_samples": 27,
+    "negative_samples": 23,
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.037037037037037035,
+        1.0,
+        1.0
+      ]
+    },
+    "num_videos": 50
+  }
+}
