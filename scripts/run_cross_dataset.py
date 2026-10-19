@@ -204,7 +204,8 @@ def print_matrix(results: dict):
     logger.info("=" * 60)
 
     # Header
-    header = f"{'Train\\Test':20}" + "".join(f"{d[:10]:12}" for d in datasets)
+    col_label = "Train\\Test"
+    header = f"{col_label:20}" + "".join(f"{d[:10]:12}" for d in datasets)
     logger.info(header)
     logger.info("-" * len(header))
 
