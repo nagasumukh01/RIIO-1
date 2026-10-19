@@ -107,8 +107,8 @@ jobs:
         python-version: '3.11'
     - name: Install API deps
       run: |
-        pip install fastapi uvicorn pydantic python-multipart torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        pip install timm numpy pillow scikit-learn pyyaml
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        pip install fastapi uvicorn pydantic python-multipart timm numpy pillow scikit-learn pyyaml
     - name: Check API can be imported
       run: |
         python -c "

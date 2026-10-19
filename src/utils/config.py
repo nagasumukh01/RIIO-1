@@ -168,7 +168,10 @@ def load_all_configs(config_dir: Optional[str | Path] = None) -> dict:
 
 def get_device(device_str: str = "auto") -> str:
     """Determine the compute device."""
-    import torch
-    if device_str == "auto":
-        return "cuda" if torch.cuda.is_available() else "cpu"
+    try:
+        import torch
+        if device_str == "auto":
+            return "cuda" if torch.cuda.is_available() else "cpu"
+    except ImportError:
+        return "cpu"
     return device_str
