@@ -53,3 +53,6 @@ coverage.xml
 
 # HuggingFace cache
 .cache/
+
+# Temporary user uploads
+data/temp_uploads/

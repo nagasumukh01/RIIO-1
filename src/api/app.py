@@ -103,8 +103,6 @@ class HealthResponse(BaseModel):
 
 def _load_model(model_key: str = "efficientnet_b0", device: str = "cpu"):
     """Load model, caching after first load."""
-    global _model_cache
-
     if model_key in _model_cache:
         return _model_cache[model_key]
 
