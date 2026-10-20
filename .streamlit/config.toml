@@ -2,7 +2,9 @@
 headless = true
 enableCORS = false
 enableXsrfProtection = false
+enableWebsocketCompression = false
 maxUploadSize = 50
+runOnSave = false
 
 [theme]
 primaryColor = "#667eea"
@@ -13,3 +15,4 @@ font = "sans serif"
 
 [browser]
 gatherUsageStats = false
+serverAddress = "0.0.0.0"
