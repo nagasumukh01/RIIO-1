@@ -45,5 +45,6 @@ python-multipart>=0.0.6
 tqdm>=4.65.0
 requests>=2.31.0
 
-# ─── Explainability ──────────────────────────────────────────────
-pytorch-grad-cam>=1.4.8
+# NOTE: pytorch-grad-cam is excluded from deployment —
+# no compatible wheel exists for Python 3.11 on Render.
+# The project's own src/explainability/ module provides Grad-CAM.
