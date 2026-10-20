@@ -36,6 +36,7 @@ artifacts/checkpoints/*
 
 # Experiment runtime outputs (regenerated on each run)
 artifacts/experiment_logs/*.db
+!artifacts/experiment_logs/experiments.db
 artifacts/experiment_logs/*.log
 artifacts/experiment_logs/run_ml_smoke.py
 

@@ -1,0 +1,2178 @@
+{
+  "cnn_smoke_test": {
+    "model_name": "EfficientNet-B0 (CNN Smoke Test)",
+    "test_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "auroc": 1.0,
+      "eer": 0.0,
+      "eer_threshold": 0.6120485067367554,
+      "fpr": 0.0,
+      "fnr": 0.0,
+      "average_precision": 1.0,
+      "confusion_matrix": [
+        [
+          18,
+          0
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "tp": 12,
+      "fp": 0,
+      "tn": 18,
+      "fn": 0,
+      "threshold": 0.5,
+      "total_samples": 30,
+      "positive_samples": 12,
+      "negative_samples": 18,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.08333333333333333,
+          1.0,
+          1.0
+        ]
+      },
+      "eval_time_s": 15.48186182975769,
+      "dataset_name": "synthetic_test",
+      "avg_latency_ms": 516.062060991923,
+      "video_level": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.6120485067367554,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            18,
+            0
+          ],
+          [
+            0,
+            12
+          ]
+        ],
+        "tp": 12,
+        "fp": 0,
+        "tn": 18,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 30,
+        "positive_samples": 12,
+        "negative_samples": 18,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.08333333333333333,
+            1.0,
+            1.0
+          ]
+        },
+        "num_videos": 30
+      }
+    }
+  },
+  "vit_smoke_test": {
+    "model_name": "ViT-Base (Vision Transformer Smoke Test)",
+    "test_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "auroc": 1.0,
+      "eer": 0.0,
+      "eer_threshold": 0.5365548729896545,
+      "fpr": 0.0,
+      "fnr": 0.0,
+      "average_precision": 0.9999999999999998,
+      "confusion_matrix": [
+        [
+          16,
+          0
+        ],
+        [
+          0,
+          14
+        ]
+      ],
+      "tp": 14,
+      "fp": 0,
+      "tn": 16,
+      "fn": 0,
+      "threshold": 0.5,
+      "total_samples": 30,
+      "positive_samples": 14,
+      "negative_samples": 16,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.07142857142857142,
+          1.0,
+          1.0
+        ]
+      },
+      "eval_time_s": 11.876447439193726,
+      "dataset_name": "synthetic_test",
+      "avg_latency_ms": 395.8815813064575,
+      "video_level": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5365548729896545,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 0.9999999999999998,
+        "confusion_matrix": [
+          [
+            16,
+            0
+          ],
+          [
+            0,
+            14
+          ]
+        ],
+        "tp": 14,
+        "fp": 0,
+        "tn": 16,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 30,
+        "positive_samples": 14,
+        "negative_samples": 16,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.07142857142857142,
+            1.0,
+            1.0
+          ]
+        },
+        "num_videos": 30
+      }
+    }
+  },
+  "cnn_baseline": {
+    "model": "EfficientNet-B0 (Baseline)",
+    "test_metrics": {
+      "accuracy": 0.72,
+      "precision": 0.6585365853658537,
+      "recall": 1.0,
+      "f1_score": 0.7941176470588235,
+      "auroc": 1.0,
+      "eer": 0.0,
+      "eer_threshold": 0.6216079592704773,
+      "fpr": 0.6086956521739131,
+      "fnr": 0.0,
+      "average_precision": 1.0,
+      "confusion_matrix": [
+        [
+          9,
+          14
+        ],
+        [
+          0,
+          27
+        ]
+      ],
+      "tp": 27,
+      "fp": 14,
+      "tn": 9,
+      "fn": 0,
+      "threshold": 0.5,
+      "total_samples": 50,
+      "positive_samples": 27,
+      "negative_samples": 23,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.037037037037037035,
+          1.0,
+          1.0
+        ]
+      },
+      "eval_time_s": 18.166252613067627,
+      "dataset_name": "bb_efficientnet_b0_test",
+      "avg_latency_ms": 363.32505226135254,
+      "video_level": {
+        "accuracy": 0.72,
+        "precision": 0.6585365853658537,
+        "recall": 1.0,
+        "f1_score": 0.7941176470588235,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.6216079592704773,
+        "fpr": 0.6086956521739131,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            9,
+            14
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 14,
+        "tn": 9,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "num_videos": 50
+      }
+    }
+  },
+  "vit_baseline": {
+    "model": "ViT-Base (Baseline)",
+    "test_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "auroc": 1.0,
+      "eer": 0.0,
+      "eer_threshold": 0.9995409250259399,
+      "fpr": 0.0,
+      "fnr": 0.0,
+      "average_precision": 1.0,
+      "confusion_matrix": [
+        [
+          23,
+          0
+        ],
+        [
+          0,
+          27
+        ]
+      ],
+      "tp": 27,
+      "fp": 0,
+      "tn": 23,
+      "fn": 0,
+      "threshold": 0.5,
+      "total_samples": 50,
+      "positive_samples": 27,
+      "negative_samples": 23,
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.037037037037037035,
+          0.14814814814814814,
+          0.2222222222222222,
+          0.8518518518518519,
+          0.9259259259259259,
+          1.0,
+          1.0
+        ]
+      },
+      "eval_time_s": 49.48566722869873,
+      "dataset_name": "bb_vit_base_test",
+      "avg_latency_ms": 989.7133445739746,
+      "video_level": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.9995409250259399,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 0,
+        "tn": 23,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            0.14814814814814814,
+            0.2222222222222222,
+            0.8518518518518519,
+            0.9259259259259259,
+            1.0,
+            1.0
+          ]
+        },
+        "num_videos": 50
+      }
+    }
+  },
+  "augmentation_ablation": [
+    {
+      "strategy": "none",
+      "experiment_id": "0c7cee5e_20261019_220940",
+      "test_metrics": {
+        "accuracy": 0.84,
+        "precision": 0.7714285714285715,
+        "recall": 1.0,
+        "f1_score": 0.8709677419354839,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5853727459907532,
+        "fpr": 0.34782608695652173,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            15,
+            8
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 8,
+        "tn": 15,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 18.34844183921814,
+        "dataset_name": "aug_none_test",
+        "avg_latency_ms": 366.9688367843628,
+        "video_level": {
+          "accuracy": 0.84,
+          "precision": 0.7714285714285715,
+          "recall": 1.0,
+          "f1_score": 0.8709677419354839,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.5853727459907532,
+          "fpr": 0.34782608695652173,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              15,
+              8
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 8,
+          "tn": 15,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 115.63524198532104,
+        "history": {
+          "train_loss": [
+            0.4799814224243164
+          ],
+          "val_loss": [
+            0.5712342262268066
+          ],
+          "train_acc": [
+            0.90625
+          ],
+          "val_acc": [
+            0.86
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8923076923076924
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            115.50727701187134
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\0c7cee5e_20261019_220940"
+      }
+    },
+    {
+      "strategy": "jpeg_only",
+      "experiment_id": "f5ecb4e8_20261019_221315",
+      "test_metrics": {
+        "accuracy": 0.94,
+        "precision": 0.9,
+        "recall": 1.0,
+        "f1_score": 0.9473684210526315,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5904765725135803,
+        "fpr": 0.13043478260869565,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            20,
+            3
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 3,
+        "tn": 20,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 17.62257742881775,
+        "dataset_name": "aug_jpeg_only_test",
+        "avg_latency_ms": 352.451548576355,
+        "video_level": {
+          "accuracy": 0.94,
+          "precision": 0.9,
+          "recall": 1.0,
+          "f1_score": 0.9473684210526315,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.5904765725135803,
+          "fpr": 0.13043478260869565,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              20,
+              3
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 3,
+          "tn": 20,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 111.94858074188232,
+        "history": {
+          "train_loss": [
+            0.49712712317705154
+          ],
+          "val_loss": [
+            0.5735272318124771
+          ],
+          "train_acc": [
+            0.9114583333333334
+          ],
+          "val_acc": [
+            0.98
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.9830508474576272
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            111.82208347320557
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\f5ecb4e8_20261019_221315"
+      }
+    },
+    {
+      "strategy": "blur_only",
+      "experiment_id": "db38ccf2_20261019_221644",
+      "test_metrics": {
+        "accuracy": 0.82,
+        "precision": 0.95,
+        "recall": 0.7037037037037037,
+        "f1_score": 0.8085106382978723,
+        "auroc": 0.9677938808373591,
+        "eer": 0.08051529790660225,
+        "eer_threshold": 0.49762511253356934,
+        "fpr": 0.043478260869565216,
+        "fnr": 0.2962962962962963,
+        "average_precision": 0.9674503230351703,
+        "confusion_matrix": [
+          [
+            22,
+            1
+          ],
+          [
+            8,
+            19
+          ]
+        ],
+        "tp": 19,
+        "fp": 1,
+        "tn": 22,
+        "fn": 8,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            0.043478260869565216,
+            0.043478260869565216,
+            0.08695652173913043,
+            0.08695652173913043,
+            0.13043478260869565,
+            0.13043478260869565,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            0.48148148148148145,
+            0.48148148148148145,
+            0.8518518518518519,
+            0.8518518518518519,
+            0.9259259259259259,
+            0.9259259259259259,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 17.420966386795044,
+        "dataset_name": "aug_blur_only_test",
+        "avg_latency_ms": 348.4193277359009,
+        "video_level": {
+          "accuracy": 0.82,
+          "precision": 0.95,
+          "recall": 0.7037037037037037,
+          "f1_score": 0.8085106382978723,
+          "auroc": 0.9677938808373591,
+          "eer": 0.08051529790660225,
+          "eer_threshold": 0.49762511253356934,
+          "fpr": 0.043478260869565216,
+          "fnr": 0.2962962962962963,
+          "average_precision": 0.9674503230351703,
+          "confusion_matrix": [
+            [
+              22,
+              1
+            ],
+            [
+              8,
+              19
+            ]
+          ],
+          "tp": 19,
+          "fp": 1,
+          "tn": 22,
+          "fn": 8,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              0.043478260869565216,
+              0.043478260869565216,
+              0.08695652173913043,
+              0.08695652173913043,
+              0.13043478260869565,
+              0.13043478260869565,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              0.48148148148148145,
+              0.48148148148148145,
+              0.8518518518518519,
+              0.8518518518518519,
+              0.9259259259259259,
+              0.9259259259259259,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 0.9737274220032841,
+        "total_time_s": 108.3510389328003,
+        "history": {
+          "train_loss": [
+            0.5141288563609123
+          ],
+          "val_loss": [
+            0.6701482981443405
+          ],
+          "train_acc": [
+            0.9010416666666666
+          ],
+          "val_acc": [
+            0.8
+          ],
+          "val_auroc": [
+            0.9737274220032841
+          ],
+          "val_f1": [
+            0.7916666666666666
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            108.23273491859436
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\db38ccf2_20261019_221644"
+      }
+    },
+    {
+      "strategy": "resize_reencode",
+      "experiment_id": "51e8b4ea_20261019_222022",
+      "test_metrics": {
+        "accuracy": 0.98,
+        "precision": 1.0,
+        "recall": 0.9629629629629629,
+        "f1_score": 0.9811320754716981,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.4996958076953888,
+        "fpr": 0.0,
+        "fnr": 0.037037037037037035,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            1,
+            26
+          ]
+        ],
+        "tp": 26,
+        "fp": 0,
+        "tn": 23,
+        "fn": 1,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 17.947429418563843,
+        "dataset_name": "aug_resize_reencode_test",
+        "avg_latency_ms": 358.94858837127686,
+        "video_level": {
+          "accuracy": 0.98,
+          "precision": 1.0,
+          "recall": 0.9629629629629629,
+          "f1_score": 0.9811320754716981,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.4996958076953888,
+          "fpr": 0.0,
+          "fnr": 0.037037037037037035,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              1,
+              26
+            ]
+          ],
+          "tp": 26,
+          "fp": 0,
+          "tn": 23,
+          "fn": 1,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 115.7069091796875,
+        "history": {
+          "train_loss": [
+            0.5114066451787949
+          ],
+          "val_loss": [
+            0.6406820565462112
+          ],
+          "train_acc": [
+            0.8802083333333334
+          ],
+          "val_acc": [
+            0.98
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.9824561403508771
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            115.57877802848816
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\51e8b4ea_20261019_222022"
+      }
+    },
+    {
+      "strategy": "compression_blur",
+      "experiment_id": "ec7cba7a_20261019_222358",
+      "test_metrics": {
+        "accuracy": 0.92,
+        "precision": 1.0,
+        "recall": 0.8518518518518519,
+        "f1_score": 0.92,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.4934113323688507,
+        "fpr": 0.0,
+        "fnr": 0.14814814814814814,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            4,
+            23
+          ]
+        ],
+        "tp": 23,
+        "fp": 0,
+        "tn": 23,
+        "fn": 4,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 18.03946805000305,
+        "dataset_name": "aug_compression_blur_test",
+        "avg_latency_ms": 360.78936100006104,
+        "video_level": {
+          "accuracy": 0.92,
+          "precision": 1.0,
+          "recall": 0.8518518518518519,
+          "f1_score": 0.92,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.4934113323688507,
+          "fpr": 0.0,
+          "fnr": 0.14814814814814814,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              4,
+              23
+            ]
+          ],
+          "tp": 23,
+          "fp": 0,
+          "tn": 23,
+          "fn": 4,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 109.33271861076355,
+        "history": {
+          "train_loss": [
+            0.5124383419752121
+          ],
+          "val_loss": [
+            0.648411214351654
+          ],
+          "train_acc": [
+            0.9114583333333334
+          ],
+          "val_acc": [
+            0.86
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8627450980392157
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            109.21202301979065
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\ec7cba7a_20261019_222358"
+      }
+    },
+    {
+      "strategy": "full_augmentation",
+      "experiment_id": "eee83908_20261019_222729",
+      "test_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5108898282051086,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 0,
+        "tn": 23,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 17.829541444778442,
+        "dataset_name": "aug_full_augmentation_test",
+        "avg_latency_ms": 356.59082889556885,
+        "video_level": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.5108898282051086,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 0,
+          "tn": 23,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 111.36570048332214,
+        "history": {
+          "train_loss": [
+            0.52615986764431
+          ],
+          "val_loss": [
+            0.6127123385667801
+          ],
+          "train_acc": [
+            0.90625
+          ],
+          "val_acc": [
+            1.0
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            1.0
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            111.22099685668945
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\eee83908_20261019_222729"
+      }
+    }
+  ],
+  "loss_ablation": [
+    {
+      "loss_function": "cross_entropy",
+      "experiment_id": "36f9a1d1_20261019_223059",
+      "test_metrics": {
+        "accuracy": 0.72,
+        "precision": 0.6585365853658537,
+        "recall": 1.0,
+        "f1_score": 0.7941176470588235,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5742285251617432,
+        "fpr": 0.6086956521739131,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            9,
+            14
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 14,
+        "tn": 9,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 18.35948872566223,
+        "dataset_name": "loss_cross_entropy_test",
+        "avg_latency_ms": 367.18977451324463,
+        "video_level": {
+          "accuracy": 0.72,
+          "precision": 0.6585365853658537,
+          "recall": 1.0,
+          "f1_score": 0.7941176470588235,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.5742285251617432,
+          "fpr": 0.6086956521739131,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              9,
+              14
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 14,
+          "tn": 9,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 112.03648376464844,
+        "history": {
+          "train_loss": [
+            0.4728846922516823
+          ],
+          "val_loss": [
+            0.5908474773168564
+          ],
+          "train_acc": [
+            0.9375
+          ],
+          "val_acc": [
+            0.76
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8285714285714286
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            111.88491225242615
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\36f9a1d1_20261019_223059"
+      }
+    },
+    {
+      "loss_function": "focal_loss",
+      "experiment_id": "adafa2b2_20261019_223428",
+      "test_metrics": {
+        "accuracy": 0.68,
+        "precision": 0.627906976744186,
+        "recall": 1.0,
+        "f1_score": 0.7714285714285715,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.5565991997718811,
+        "fpr": 0.6956521739130435,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            7,
+            16
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 16,
+        "tn": 7,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 17.358487367630005,
+        "dataset_name": "loss_focal_loss_test",
+        "avg_latency_ms": 347.1697473526001,
+        "video_level": {
+          "accuracy": 0.68,
+          "precision": 0.627906976744186,
+          "recall": 1.0,
+          "f1_score": 0.7714285714285715,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.5565991997718811,
+          "fpr": 0.6956521739130435,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              7,
+              16
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 16,
+          "tn": 7,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 108.09529709815979,
+        "history": {
+          "train_loss": [
+            0.020308934850618243
+          ],
+          "val_loss": [
+            0.03384974133223295
+          ],
+          "train_acc": [
+            0.9375
+          ],
+          "val_acc": [
+            0.72
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8055555555555556
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            107.97527623176575
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\adafa2b2_20261019_223428"
+      }
+    },
+    {
+      "loss_function": "weighted_bce",
+      "experiment_id": "6bf24508_20261019_223816",
+      "test_metrics": {
+        "accuracy": 0.72,
+        "precision": 0.6585365853658537,
+        "recall": 1.0,
+        "f1_score": 0.7941176470588235,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.6216079592704773,
+        "fpr": 0.6086956521739131,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            9,
+            14
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 14,
+        "tn": 9,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 18.467098712921143,
+        "dataset_name": "loss_weighted_bce_test",
+        "avg_latency_ms": 369.34197425842285,
+        "video_level": {
+          "accuracy": 0.72,
+          "precision": 0.6585365853658537,
+          "recall": 1.0,
+          "f1_score": 0.7941176470588235,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.6216079592704773,
+          "fpr": 0.6086956521739131,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              9,
+              14
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 14,
+          "tn": 9,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 131.89396810531616,
+        "history": {
+          "train_loss": [
+            0.6876947805285454
+          ],
+          "val_loss": [
+            0.7936690002679825
+          ],
+          "train_acc": [
+            0.9270833333333334
+          ],
+          "val_acc": [
+            0.76
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8285714285714286
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            131.7640655040741
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\6bf24508_20261019_223816"
+      }
+    }
+  ],
+  "backbone_ablation": [
+    {
+      "backbone": "efficientnet_b0",
+      "experiment_id": "b2a29c37_20261019_224208",
+      "model_info": {
+        "name": "EfficientNet-efficientnet_b0",
+        "type": "cnn",
+        "backbone": "efficientnet_b0",
+        "total_parameters": 4335998,
+        "trainable_parameters": 4335998,
+        "feature_dim": 1280,
+        "num_classes": 2
+      },
+      "model_size": {
+        "total_parameters": 4335998,
+        "trainable_parameters": 4335998,
+        "checkpoint_size_mb": 16.82,
+        "parameters_formatted": "4.3M"
+      },
+      "test_metrics": {
+        "accuracy": 0.72,
+        "precision": 0.6585365853658537,
+        "recall": 1.0,
+        "f1_score": 0.7941176470588235,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.6216079592704773,
+        "fpr": 0.6086956521739131,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            9,
+            14
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 14,
+        "tn": 9,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 18.166252613067627,
+        "dataset_name": "bb_efficientnet_b0_test",
+        "avg_latency_ms": 363.32505226135254,
+        "video_level": {
+          "accuracy": 0.72,
+          "precision": 0.6585365853658537,
+          "recall": 1.0,
+          "f1_score": 0.7941176470588235,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.6216079592704773,
+          "fpr": 0.6086956521739131,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              9,
+              14
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 14,
+          "tn": 9,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 112.91184091567993,
+        "history": {
+          "train_loss": [
+            0.6876947805285454
+          ],
+          "val_loss": [
+            0.7936690002679825
+          ],
+          "train_acc": [
+            0.9270833333333334
+          ],
+          "val_acc": [
+            0.76
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            0.8285714285714286
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            112.78060102462769
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\b2a29c37_20261019_224208"
+      }
+    },
+    {
+      "backbone": "efficientnet_b4",
+      "experiment_id": "5492e689_20261019_224555",
+      "model_info": {
+        "name": "EfficientNet-efficientnet_b4",
+        "type": "cnn",
+        "backbone": "efficientnet_b4",
+        "total_parameters": 18008138,
+        "trainable_parameters": 18008138,
+        "feature_dim": 1792,
+        "num_classes": 2
+      },
+      "model_size": {
+        "total_parameters": 18008138,
+        "trainable_parameters": 18008138,
+        "checkpoint_size_mb": 69.42,
+        "parameters_formatted": "18.0M"
+      },
+      "test_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.543594479560852,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 0,
+        "tn": 23,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 20.429675340652466,
+        "dataset_name": "bb_efficientnet_b4_test",
+        "avg_latency_ms": 408.5935068130493,
+        "video_level": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.543594479560852,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 0,
+          "tn": 23,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 163.75599098205566,
+        "history": {
+          "train_loss": [
+            0.8879344314336777
+          ],
+          "val_loss": [
+            0.9371007829904556
+          ],
+          "train_acc": [
+            0.890625
+          ],
+          "val_acc": [
+            1.0
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            1.0
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            163.40947031974792
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\5492e689_20261019_224555"
+      }
+    },
+    {
+      "backbone": "vit_small",
+      "experiment_id": "7626ecbf_20261019_225031",
+      "model_info": {
+        "name": "ViT-vit_small_patch16_224",
+        "type": "vit",
+        "backbone": "vit_small_patch16_224",
+        "total_parameters": 21765506,
+        "trainable_parameters": 21765506,
+        "feature_dim": 384,
+        "num_classes": 2,
+        "uses_timm": true
+      },
+      "model_size": {
+        "total_parameters": 21765506,
+        "trainable_parameters": 21765506,
+        "checkpoint_size_mb": 83.09,
+        "parameters_formatted": "21.8M"
+      },
+      "test_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.9968011379241943,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 0,
+        "tn": 23,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            0.4074074074074074,
+            0.48148148148148145,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 24.41951632499695,
+        "dataset_name": "bb_vit_small_test",
+        "avg_latency_ms": 488.39032649993896,
+        "video_level": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.9968011379241943,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 0,
+          "tn": 23,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              0.4074074074074074,
+              0.48148148148148145,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 180.6952817440033,
+        "history": {
+          "train_loss": [
+            0.1747883470573773
+          ],
+          "val_loss": [
+            0.004858509521000087
+          ],
+          "train_acc": [
+            0.96875
+          ],
+          "val_acc": [
+            1.0
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            1.0
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            180.38399505615234
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\7626ecbf_20261019_225031"
+      }
+    },
+    {
+      "backbone": "vit_base",
+      "experiment_id": "83a8e27c_20261019_225618",
+      "model_info": {
+        "name": "ViT-vit_base_patch16_224",
+        "type": "vit",
+        "backbone": "vit_base_patch16_224",
+        "total_parameters": 85997570,
+        "trainable_parameters": 85997570,
+        "feature_dim": 768,
+        "num_classes": 2,
+        "uses_timm": true
+      },
+      "model_size": {
+        "total_parameters": 85997570,
+        "trainable_parameters": 85997570,
+        "checkpoint_size_mb": 328.11,
+        "parameters_formatted": "86.0M"
+      },
+      "test_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "auroc": 1.0,
+        "eer": 0.0,
+        "eer_threshold": 0.9995409250259399,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "average_precision": 1.0,
+        "confusion_matrix": [
+          [
+            23,
+            0
+          ],
+          [
+            0,
+            27
+          ]
+        ],
+        "tp": 27,
+        "fp": 0,
+        "tn": 23,
+        "fn": 0,
+        "threshold": 0.5,
+        "total_samples": 50,
+        "positive_samples": 27,
+        "negative_samples": 23,
+        "roc_curve": {
+          "fpr": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.037037037037037035,
+            0.14814814814814814,
+            0.2222222222222222,
+            0.8518518518518519,
+            0.9259259259259259,
+            1.0,
+            1.0
+          ]
+        },
+        "eval_time_s": 49.48566722869873,
+        "dataset_name": "bb_vit_base_test",
+        "avg_latency_ms": 989.7133445739746,
+        "video_level": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0,
+          "auroc": 1.0,
+          "eer": 0.0,
+          "eer_threshold": 0.9995409250259399,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "average_precision": 1.0,
+          "confusion_matrix": [
+            [
+              23,
+              0
+            ],
+            [
+              0,
+              27
+            ]
+          ],
+          "tp": 27,
+          "fp": 0,
+          "tn": 23,
+          "fn": 0,
+          "threshold": 0.5,
+          "total_samples": 50,
+          "positive_samples": 27,
+          "negative_samples": 23,
+          "roc_curve": {
+            "fpr": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "tpr": [
+              0.0,
+              0.037037037037037035,
+              0.14814814814814814,
+              0.2222222222222222,
+              0.8518518518518519,
+              0.9259259259259259,
+              1.0,
+              1.0
+            ]
+          },
+          "num_videos": 50
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "best_metric": 1.0,
+        "total_time_s": 389.6690685749054,
+        "history": {
+          "train_loss": [
+            0.2682331448304467
+          ],
+          "val_loss": [
+            0.0007753279496682808
+          ],
+          "train_acc": [
+            0.9166666666666666
+          ],
+          "val_acc": [
+            1.0
+          ],
+          "val_auroc": [
+            1.0
+          ],
+          "val_f1": [
+            1.0
+          ],
+          "learning_rates": [
+            0.0001
+          ],
+          "epoch_times": [
+            388.35644698143005
+          ]
+        },
+        "checkpoint_dir": "artifacts\\checkpoints\\83a8e27c_20261019_225618"
+      }
+    }
+  ]
+}

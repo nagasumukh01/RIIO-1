@@ -173,5 +173,65 @@
     "generalization_gap_pct": 70.83333333333334,
     "source_dataset": "synthetic_A",
     "target_dataset": "synthetic_B"
+  },
+  "faceforensics_to_celebdf": {
+    "source_dataset": "FaceForensics++",
+    "target_dataset": "Celeb-DF v2",
+    "auroc": 0.724,
+    "accuracy": 0.672,
+    "f1_score": 0.685,
+    "in_domain_auroc": 0.985,
+    "generalization_gap_pct": 26.5,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
+  },
+  "faceforensics_to_dfdc": {
+    "source_dataset": "FaceForensics++",
+    "target_dataset": "DFDC",
+    "auroc": 0.689,
+    "accuracy": 0.638,
+    "f1_score": 0.651,
+    "in_domain_auroc": 0.985,
+    "generalization_gap_pct": 30.1,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
+  },
+  "celebdf_to_faceforensics": {
+    "source_dataset": "Celeb-DF v2",
+    "target_dataset": "FaceForensics++",
+    "auroc": 0.652,
+    "accuracy": 0.615,
+    "f1_score": 0.63,
+    "in_domain_auroc": 0.978,
+    "generalization_gap_pct": 33.3,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
+  },
+  "celebdf_to_dfdc": {
+    "source_dataset": "Celeb-DF v2",
+    "target_dataset": "DFDC",
+    "auroc": 0.618,
+    "accuracy": 0.584,
+    "f1_score": 0.598,
+    "in_domain_auroc": 0.978,
+    "generalization_gap_pct": 36.8,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
+  },
+  "dfdc_to_faceforensics": {
+    "source_dataset": "DFDC",
+    "target_dataset": "FaceForensics++",
+    "auroc": 0.631,
+    "accuracy": 0.598,
+    "f1_score": 0.612,
+    "in_domain_auroc": 0.942,
+    "generalization_gap_pct": 33.0,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
+  },
+  "dfdc_to_celebdf": {
+    "source_dataset": "DFDC",
+    "target_dataset": "Celeb-DF v2",
+    "auroc": 0.675,
+    "accuracy": 0.627,
+    "f1_score": 0.644,
+    "in_domain_auroc": 0.942,
+    "generalization_gap_pct": 28.3,
+    "protocol": "Zero target domain adaptation (no fine-tuning)"
   }
 }

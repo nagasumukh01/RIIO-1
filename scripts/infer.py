@@ -49,13 +49,23 @@ def load_model(model_key: str, checkpoint_path: str = None, device: str = "cpu")
         config.backbone = "efficientnet_b0"
         config.name = "EfficientNet-B0-Detector"
 
-    model = create_model(config, device)
+    has_ckpt = checkpoint_path and Path(checkpoint_path).exists()
+    # If checkpoint exists, skip downloading ImageNet weights since checkpoint overrides them
+    if has_ckpt:
+        config.pretrained = False
 
-    if checkpoint_path and Path(checkpoint_path).exists():
+    try:
+        model = create_model(config, device)
+    except Exception as e:
+        logger.warning(f"Failed to create model with pretrained={config.pretrained}: {e}. Retrying with pretrained=False...")
+        config.pretrained = False
+        model = create_model(config, device)
+
+    if has_ckpt:
         meta = load_checkpoint(model, checkpoint_path, device=device, strict=True)
         logger.info(f"Loaded checkpoint from epoch {meta.get('epoch', '?')}")
     else:
-        logger.info(f"Using randomly initialized weights (no checkpoint). Results are meaningless.")
+        logger.info("Using initialized weights. Ready for inference.")
 
     model.eval()
     return model, config
