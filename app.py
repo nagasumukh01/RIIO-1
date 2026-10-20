@@ -437,37 +437,57 @@ elif page == "🎬 Video Analysis & Inference":
             )
             checkpoint_path = None if "None" in selected_ckpt_str else selected_ckpt_str
 
-            num_frames = st.slider("Frames to Sample from Video", min_value=5, max_value=30, value=15, step=5)
-            generate_heatmaps = st.checkbox("Generate Visual Explanation Maps (Grad-CAM / Attention Rollout)", value=True)
+            num_frames = st.slider("Frames to Sample from Video", min_value=3, max_value=30, value=5, step=1)
+            generate_heatmaps = st.checkbox("Generate Visual Explanation Maps (Grad-CAM / Attention Rollout)", value=False,
+                                            help="⚠️ Enabling this significantly increases processing time on cloud deployments")
 
         if st.button("🚀 Analyze Video for Deepfake Manipulation", type="primary", use_container_width=True):
-            with st.spinner("Extracting frames, sampling faces, and running neural inference..."):
+            frame_scores = []
+            analyzed_data = []
+            status_container = st.status("🔬 Running deepfake analysis...", expanded=True)
+            with status_container:
                 try:
+                    st.write("📦 Loading model...")
                     from scripts.infer import load_model, extract_video_frames, predict_image
                     import torch
-                    import cv2
-                    from src.explainability.explainer import GradCAM, AttentionRollout, create_heatmap_overlay
 
                     device = "cpu"
                     model, config = load_model(model_key, checkpoint_path=checkpoint_path, device=device)
+                    st.write(f"✅ Model loaded: {config.name}")
 
+                    st.write(f"🎞️ Extracting {num_frames} frames from video...")
                     frames = extract_video_frames(selected_video_path, num_frames=num_frames, face_size=224)
 
                     if not frames:
                         st.error("Could not extract any valid face frames from the video. Please verify the video codec and content.")
                     else:
+                        st.write(f"✅ Extracted {len(frames)} frames")
                         frame_scores = []
                         analyzed_data = []
 
-                        # Initialize explainer if requested
+                        # Initialize explainer if requested (expensive!)
                         explainer = None
                         if generate_heatmaps:
-                            if config.type == "cnn":
-                                explainer = GradCAM(model)
-                            elif config.type == "vit":
-                                explainer = AttentionRollout(model)
+                            st.write("🔍 Initializing explainability module...")
+                            try:
+                                from src.explainability.explainer import GradCAM, AttentionRollout, create_heatmap_overlay
+                                if config.type == "cnn":
+                                    explainer = GradCAM(model)
+                                elif config.type == "vit":
+                                    explainer = AttentionRollout(model)
+                            except Exception:
+                                st.write("⚠️ Explainability module unavailable, skipping heatmaps")
+
+                        # Process frames with progress bar
+                        st.write("🧠 Running neural inference on each frame...")
+                        progress_bar = st.progress(0, text="Processing frame 1...")
 
                         for idx, frame_np in enumerate(frames):
+                            progress_bar.progress(
+                                (idx) / len(frames),
+                                text=f"Processing frame {idx + 1} of {len(frames)}..."
+                            )
+
                             # Preprocess frame
                             norm_img = frame_np.astype(np.float32) / 255.0
                             mean = np.array([0.485, 0.456, 0.406])
@@ -480,10 +500,11 @@ elif page == "🎬 Video Analysis & Inference":
                             fake_p = pred_res["fake_probability"]
                             frame_scores.append(fake_p)
 
-                            # Generate explanation overlay
+                            # Generate explanation overlay (only if enabled)
                             overlay = None
                             if explainer:
                                 try:
+                                    from src.explainability.explainer import create_heatmap_overlay
                                     heatmap = explainer.generate(tensor, target_class=1)
                                     overlay = create_heatmap_overlay(frame_np, heatmap, alpha=0.5)
                                 except Exception:
@@ -497,80 +518,90 @@ elif page == "🎬 Video Analysis & Inference":
                                 "real_prob": 1.0 - fake_p,
                             })
 
-                        # Aggregate video prediction
-                        mean_fake_p = float(np.mean(frame_scores))
-                        is_fake = mean_fake_p >= 0.5
-                        verdict = "FAKE" if is_fake else "REAL"
-                        confidence = mean_fake_p if is_fake else (1.0 - mean_fake_p)
-
-                        st.markdown('<div class="section-header">Video Analysis Results</div>', unsafe_allow_html=True)
-
-                        # Metric cards
-                        c1, c2, c3, c4 = st.columns(4)
-                        with c1:
-                            metric_card("Aggregated Verdict", verdict)
-                        with c2:
-                            metric_card("Confidence", f"{confidence*100:.1f}", suffix="%")
-                        with c3:
-                            metric_card("Fake Probability", f"{mean_fake_p*100:.1f}", suffix="%")
-                        with c4:
-                            metric_card("Frames Analyzed", str(len(frames)))
-
-                        # Uncertainty alert
-                        if 0.45 <= mean_fake_p <= 0.55:
-                            st.warning(
-                                "⚠️ **HIGH UNCERTAINTY WARNING**: The aggregated probability is within the boundary "
-                                "uncertainty zone (45%–55%). This video exhibits features near the decision boundary. "
-                                "Manual expert inspection is strongly advised."
-                            )
-
-                        # Frame-level probability timeline chart
-                        st.markdown("#### Frame-Level Prediction Trajectory Across Video")
-                        fig = go.Figure()
-                        fig.add_trace(go.Scatter(
-                            x=list(range(1, len(frame_scores) + 1)),
-                            y=frame_scores,
-                            mode='lines+markers',
-                            name='Fake Probability',
-                            line=dict(color='#e53e3e' if is_fake else '#38a169', width=3),
-                            marker=dict(size=8),
-                        ))
-                        fig.add_hline(
-                            y=0.5, line_dash="dash", line_color="#cbd5e0",
-                            annotation_text="Decision Threshold (0.50)",
-                            annotation_position="bottom right"
-                        )
-                        fig.update_layout(
-                            **create_plotly_theme(),
-                            xaxis_title="Sampled Frame Index",
-                            yaxis_title="Deepfake Probability",
-                            yaxis_range=[0, 1.05],
-                            height=350,
-                            margin=dict(l=40, r=40, t=30, b=40),
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-
-                        # Frame Gallery with Explanation Maps
-                        st.markdown("#### Sampled Face Crops & Model Attribution Maps")
-                        st.info("ℹ️ **Model Attribution Note:** Heatmaps represent mathematical feature attribution (where the neural network focused), not forensic proof of tampering.")
-
-                        # Show up to 6 frames in columns
-                        cols_per_row = 3
-                        for r_start in range(0, min(len(analyzed_data), 6), cols_per_row):
-                            cols = st.columns(cols_per_row)
-                            for c_idx, frame_item in enumerate(analyzed_data[r_start:r_start+cols_per_row]):
-                                with cols[c_idx]:
-                                    img_to_show = frame_item["overlay"] if frame_item["overlay"] is not None else frame_item["frame"]
-                                    st.image(
-                                        img_to_show,
-                                        caption=f"Frame #{frame_item['frame_idx']+1} | Fake Prob: {frame_item['fake_prob']*100:.1f}%",
-                                        use_container_width=True,
-                                    )
+                        progress_bar.progress(1.0, text="✅ All frames processed!")
+                        st.write(f"🎉 Analysis complete — {len(frames)} frames processed")
 
                 except Exception as exc:
                     st.error(f"Inference execution error: {exc}")
                     import traceback
                     st.code(traceback.format_exc())
+                    frame_scores = []
+                    analyzed_data = []
+
+            # Display results OUTSIDE the status container (in main page)
+            if len(frame_scores) > 0:
+                status_container.update(label="✅ Analysis Complete", state="complete", expanded=False)
+
+                # Aggregate video prediction
+                mean_fake_p = float(np.mean(frame_scores))
+                is_fake = mean_fake_p >= 0.5
+                verdict = "FAKE" if is_fake else "REAL"
+                confidence = mean_fake_p if is_fake else (1.0 - mean_fake_p)
+
+                st.markdown('<div class="section-header">Video Analysis Results</div>', unsafe_allow_html=True)
+
+                # Metric cards
+                c1, c2, c3, c4 = st.columns(4)
+                with c1:
+                    metric_card("Aggregated Verdict", verdict)
+                with c2:
+                    metric_card("Confidence", f"{confidence*100:.1f}", suffix="%")
+                with c3:
+                    metric_card("Fake Probability", f"{mean_fake_p*100:.1f}", suffix="%")
+                with c4:
+                    metric_card("Frames Analyzed", str(len(frame_scores)))
+
+                # Uncertainty alert
+                if 0.45 <= mean_fake_p <= 0.55:
+                    st.warning(
+                        "⚠️ **HIGH UNCERTAINTY WARNING**: The aggregated probability is within the boundary "
+                        "uncertainty zone (45%–55%). This video exhibits features near the decision boundary. "
+                        "Manual expert inspection is strongly advised."
+                    )
+
+                # Frame-level probability timeline chart
+                st.markdown("#### Frame-Level Prediction Trajectory Across Video")
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=list(range(1, len(frame_scores) + 1)),
+                    y=frame_scores,
+                    mode='lines+markers',
+                    name='Fake Probability',
+                    line=dict(color='#e53e3e' if is_fake else '#38a169', width=3),
+                    marker=dict(size=8),
+                ))
+                fig.add_hline(
+                    y=0.5, line_dash="dash", line_color="#cbd5e0",
+                    annotation_text="Decision Threshold (0.50)",
+                    annotation_position="bottom right"
+                )
+                fig.update_layout(
+                    **create_plotly_theme(),
+                    xaxis_title="Sampled Frame Index",
+                    yaxis_title="Deepfake Probability",
+                    yaxis_range=[0, 1.05],
+                    height=350,
+                    margin=dict(l=40, r=40, t=30, b=40),
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+                # Frame Gallery with Explanation Maps
+                st.markdown("#### Sampled Face Crops & Model Attribution Maps")
+                st.info("ℹ️ **Model Attribution Note:** Heatmaps represent mathematical feature attribution (where the neural network focused), not forensic proof of tampering.")
+
+                # Show up to 6 frames in columns
+                cols_per_row = 3
+                for r_start in range(0, min(len(analyzed_data), 6), cols_per_row):
+                    cols = st.columns(cols_per_row)
+                    for c_idx, frame_item in enumerate(analyzed_data[r_start:r_start+cols_per_row]):
+                        with cols[c_idx]:
+                            img_to_show = frame_item["overlay"] if frame_item["overlay"] is not None else frame_item["frame"]
+                            st.image(
+                                img_to_show,
+                                caption=f"Frame #{frame_item['frame_idx']+1} | Fake Prob: {frame_item['fake_prob']*100:.1f}%",
+                                use_container_width=True,
+                            )
+
 
     else:
         st.info("Select or upload a video file above to begin deepfake video analysis.")
