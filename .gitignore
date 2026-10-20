@@ -56,3 +56,9 @@ coverage.xml
 
 # Temporary user uploads
 data/temp_uploads/
+
+# Deployment (keep these tracked)
+!render.yaml
+!runtime.txt
+!requirements-deploy.txt
+!.streamlit/config.toml

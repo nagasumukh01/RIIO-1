@@ -1,0 +1,49 @@
+# RobustDeep — Deployment Requirements (lightweight, CPU-only)
+# Optimized for Render free-tier deployment.
+#
+# NOTE: PyTorch CPU-only wheels are installed via the extra index URL below.
+# Render's pip will pick up the --extra-index-url automatically.
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# ─── Core ML (CPU-only for free tier) ────────────────────────────
+torch>=2.2.0
+torchvision>=0.17.0
+timm>=0.9.0
+
+# ─── Computer Vision ─────────────────────────────────────────────
+opencv-python-headless>=4.8.0
+Pillow>=10.0.0
+
+# ─── Face Detection ──────────────────────────────────────────────
+facenet-pytorch>=2.5.3
+
+# ─── Data Processing ─────────────────────────────────────────────
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+albumentations>=1.3.0
+
+# ─── Configuration ───────────────────────────────────────────────
+pyyaml>=6.0
+pydantic>=2.0.0
+
+# ─── Visualization ───────────────────────────────────────────────
+matplotlib>=3.7.0
+plotly>=5.15.0
+seaborn>=0.12.0
+
+# ─── Dashboard ───────────────────────────────────────────────────
+streamlit>=1.28.0
+
+# ─── Backend ─────────────────────────────────────────────────────
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# ─── Utilities ───────────────────────────────────────────────────
+tqdm>=4.65.0
+requests>=2.31.0
+
+# ─── Explainability ──────────────────────────────────────────────
+pytorch-grad-cam>=1.4.8
