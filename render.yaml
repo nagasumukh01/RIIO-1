@@ -38,10 +38,7 @@ services:
         value: "3.11.9"
       - key: PYTHONUNBUFFERED
         value: "1"
-      # The Streamlit app can call the API backend if needed
       - key: API_BASE_URL
-        fromService:
-          name: robustdeep-api
-          type: web
-          property: host
+        value: "https://robustdeep-api.onrender.com"
+    healthCheckPath: /_stcore/health
     autoDeploy: true

@@ -124,7 +124,13 @@ def _load_model(model_key: str = "efficientnet_b0", device: str = "cpu"):
             config.backbone = "efficientnet_b0"
             config.name = "EfficientNet-B0-Detector"
 
-        model = create_model(config, device)
+        try:
+            model = create_model(config, device)
+        except Exception as e:
+            logger.warning(f"create_model with pretrained={config.pretrained} failed: {e}. Retrying with pretrained=False...")
+            config.pretrained = False
+            model = create_model(config, device)
+
         model.eval()
 
         _model_cache[model_key] = {
@@ -415,6 +421,19 @@ async def get_experiment(experiment_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _sanitize_for_json(obj):
+    """Recursively sanitize float inf and nan values for compliant JSON serialization."""
+    if isinstance(obj, float):
+        if np.isinf(obj) or np.isnan(obj):
+            return None
+        return obj
+    elif isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    return obj
+
+
 @app.get("/results/cross_dataset")
 async def cross_dataset_results():
     """Return cross-dataset evaluation matrix results."""
@@ -427,14 +446,14 @@ async def cross_dataset_results():
         }
     with open(matrix_path) as f:
         data = json.load(f)
-    return {"status": "ok", "data": data}
+    return {"status": "ok", "data": _sanitize_for_json(data)}
 
 
 @app.get("/results/robustness")
 async def robustness_results():
     """Return robustness stress test results."""
     results_dir = Path("artifacts/experiment_logs")
-    rob_files = list(results_dir.glob("robustness_*.json"))
+    rob_files = list(results_dir.glob("robustness*.json"))
 
     if not rob_files:
         return {
@@ -448,7 +467,7 @@ async def robustness_results():
         with open(p) as f:
             all_results[p.stem] = json.load(f)
 
-    return {"status": "ok", "data": all_results}
+    return {"status": "ok", "data": _sanitize_for_json(all_results)}
 
 
 @app.get("/results/summary")
@@ -477,7 +496,7 @@ async def results_summary():
         elif isinstance(result, list):
             summary[key] = f"{len(result)} experiments"
 
-    return {"status": "ok", "summary": summary, "num_experiments": len(data)}
+    return {"status": "ok", "summary": _sanitize_for_json(summary), "num_experiments": len(data)}
 
 
 @app.post("/explain")
