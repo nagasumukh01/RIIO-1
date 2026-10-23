@@ -117,6 +117,7 @@ def _load_model(model_key: str = "efficientnet_b0", device: str = "cpu"):
         from src.models.factory import create_model
 
         config = ModelConfig()
+        config.pretrained = False  # Avoid external weight download timeouts on Render
         if "vit" in model_key.lower():
             config.type = "vit"
             config.backbone = "vit_base_patch16_224"
@@ -130,12 +131,17 @@ def _load_model(model_key: str = "efficientnet_b0", device: str = "cpu"):
             config.backbone = "efficientnet_b0"
             config.name = "EfficientNet-B0-Detector"
 
-        try:
-            model = create_model(config, device)
-        except Exception as e:
-            logger.warning(f"create_model with pretrained={config.pretrained} failed: {e}. Retrying with pretrained=False...")
-            config.pretrained = False
-            model = create_model(config, device)
+        model = create_model(config, device)
+
+        # Load local trained checkpoint if available
+        ckpt_path = Path("artifacts/checkpoints/test_exp_001/best_model.pt")
+        if ckpt_path.exists():
+            try:
+                from src.models.factory import load_checkpoint
+                load_checkpoint(model, str(ckpt_path), device=device, strict=False)
+                logger.info(f"Loaded local checkpoint: {ckpt_path}")
+            except Exception as e:
+                logger.warning(f"Could not load checkpoint: {e}")
 
         model.eval()
 
