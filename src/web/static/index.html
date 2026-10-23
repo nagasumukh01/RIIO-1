@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RobustDeep — Deepfake Detection & Generalization Benchmark</title>
+  <meta name="description" content="Explainable Vision Transformer & CNN Deepfake Detection platform under cross-dataset distribution shift.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div class="brand-text">
+          <h1>RobustDeep AI</h1>
+          <p>Deepfake Detection & Distribution Shift Benchmark</p>
+        </div>
+      </a>
+
+      <div class="nav-badges">
+        <div class="status-badge">
+          <span class="pulse-dot"></span>
+          <span>Inference Engine Ready</span>
+        </div>
+        <a href="/docs" target="_blank" class="api-link">API Swagger Docs ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Main Content ───────────────────────────────────── -->
+  <main class="main-wrapper">
+
+    <!-- Hero Intro -->
+    <section class="hero-section">
+      <span class="hero-tag">Research & Production Deployment</span>
+      <h2 class="hero-title">Ultra-Fast Deepfake Video Analysis</h2>
+      <p class="hero-subtitle">
+        Evaluate facial manipulation in videos and images using Vision Transformers and EfficientNet backbones with batched multi-frame neural inference.
+      </p>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav" aria-label="Dashboard views">
+      <button class="tab-btn active" data-tab="tab-upload" id="tab-btn-upload">
+        <span>🔬</span> Upload & Run
+      </button>
+      <button class="tab-btn" data-tab="tab-benchmarks" id="tab-btn-benchmarks">
+        <span>📊</span> Test Results & Benchmarks
+      </button>
+    </nav>
+
+    <!-- ─── Tab 1: Upload & Run Analysis ─────────────────── -->
+    <section id="tab-upload" class="tab-pane active">
+
+      <!-- Upload & Settings Card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title"><span>🎬</span> Media Input & Configuration</h3>
+            <p class="card-desc">Upload a video (MP4, AVI, MOV) or image, or choose a pre-loaded research benchmark sample.</p>
+          </div>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="dropzone" id="dropzone" role="button" tabindex="0">
+          <div class="dropzone-icon">📁</div>
+          <div class="dropzone-text">
+            <h3>Drag & Drop Video or Image File Here</h3>
+            <p>Supports MP4, AVI, MOV, JPG, PNG (Max 50MB) — or click to browse files</p>
+          </div>
+          <input type="file" id="file-input" class="file-input" accept="video/mp4,video/avi,video/quicktime,image/jpeg,image/png,image/webp">
+        </div>
+
+        <!-- File Preview Bar -->
+        <div class="file-preview" id="file-preview">
+          <div class="file-info">
+            <span style="font-size:1.5rem;">🎞️</span>
+            <div>
+              <div class="file-name" id="file-name">filename.mp4</div>
+              <div class="file-size" id="file-size">1.2 MB</div>
+            </div>
+          </div>
+          <button class="clear-file-btn" id="clear-file" title="Remove selected file">✕</button>
+        </div>
+
+        <!-- Sample Selector -->
+        <div class="samples-container">
+          <div class="samples-label">Or Select Pre-Loaded Benchmark Sample:</div>
+          <div class="sample-pills" id="sample-pills">
+            <!-- Dynamically populated or fallback -->
+            <div class="sample-pill active" data-sample="sample_real_01.mp4">
+              <span>🎬</span> <span>Real Interview Video</span>
+            </div>
+            <div class="sample-pill" data-sample="sample_fake_face_swap.mp4">
+              <span>🎭</span> <span>Face-Swap Deepfake</span>
+            </div>
+            <div class="sample-pill" data-sample="sample_fake_diffusion.mp4">
+              <span>🤖</span> <span>Diffusion Deepfake</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="controls-grid">
+          <div class="form-group">
+            <label for="model-select" class="form-label">
+              <span>Detector Architecture</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Neural Backbone</span>
+            </label>
+            <select id="model-select" class="form-select">
+              <option value="efficientnet_b0" selected>EfficientNet-B0 (Fastest, High Accuracy - 4.3M)</option>
+              <option value="vit_base">ViT-Base-Patch16 (Vision Transformer - 86.6M)</option>
+              <option value="hybrid">Hybrid CNN-ViT Dual-Stream (14.8M)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="frames-slider" class="form-label">
+              <span>Frames to Sample</span>
+              <span class="slider-val"><span id="frames-val">5</span> frames</span>
+            </label>
+            <div class="slider-container">
+              <input type="range" id="frames-slider" class="slider-input" min="3" max="10" value="5" step="1">
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="analyze-btn" class="btn-primary">
+          <span class="spinner" id="btn-spinner"></span>
+          <span id="btn-text">🚀 Analyze Video for Deepfake Manipulation</span>
+        </button>
+      </div>
+
+      <!-- Live Results Section (Hidden until analysis runs) -->
+      <div id="results-section" class="results-section">
+        <!-- Verdict Banner -->
+        <div class="verdict-card real" id="verdict-card">
+          <div class="verdict-badge" id="verdict-badge">✅ Authentic / Real Media</div>
+          <h3 class="verdict-title" id="verdict-title">VERIFIED AUTHENTIC</h3>
+          <p class="verdict-confidence" id="verdict-confidence">98.4% Confidence Score</p>
+
+          <div class="metrics-strip">
+            <div class="metric-item">
+              <div class="metric-label">Inference Latency</div>
+              <div class="metric-val" id="metric-latency">182 ms</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Frames Evaluated</div>
+              <div class="metric-val" id="metric-frames">5 frames</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Selected Model</div>
+              <div class="metric-val" id="metric-model">EfficientNet-B0</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Mean Fake Prob</div>
+              <div class="metric-val" id="metric-fake-prob">1.6%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sampled Face Frames Gallery -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>🖼️</span> Sampled Face Frames & Probability Breakdown</h3>
+              <p class="card-desc">Individual facial crops extracted from across the video timeline with per-frame predictions.</p>
+            </div>
+          </div>
+
+          <div class="frames-gallery" id="frames-gallery">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── Tab 2: Test Results & Benchmarks ──────────────── -->
+    <section id="tab-benchmarks" class="tab-pane">
+      <div class="benchmarks-grid">
+
+        <!-- Model Comparison Table -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>🏆</span> Architecture Performance Comparison</h3>
+              <p class="card-desc">Comprehensive benchmark metrics across the test suites.</p>
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Architecture</th>
+                  <th>Type</th>
+                  <th>Parameters</th>
+                  <th>AUC-ROC</th>
+                  <th>EER</th>
+                  <th>Latency</th>
+                  <th>Robustness</th>
+                </tr>
+              </thead>
+              <tbody id="benchmark-table-body">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cross-Dataset Generalization Matrix -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>🌐</span> Cross-Dataset Generalization Matrix</h3>
+              <p class="card-desc">Evaluation of model robustness under domain shift between FaceForensics++, Celeb-DF, and DFDC.</p>
+            </div>
+          </div>
+
+          <div class="matrix-grid" id="matrix-container">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Perturbation Robustness -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>⚡</span> Robustness Under Image Perturbations</h3>
+              <p class="card-desc">Stress testing models against real-world social media compressions and optical noise.</p>
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Corruption Type</th>
+                  <th>Transformation</th>
+                  <th>Post-Perturbation AUC</th>
+                  <th>F1 Score</th>
+                </tr>
+              </thead>
+              <tbody id="robustness-table-body">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── Footer ─────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      RobustDeep Research Platform &bull; Built with FastAPI, PyTorch & modern Vanilla Web &bull;
+      <a href="/docs" target="_blank">REST API Documentation</a> &bull;
+      <a href="/health" target="_blank">System Health</a>
+    </p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

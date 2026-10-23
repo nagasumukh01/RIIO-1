@@ -25,20 +25,18 @@ services:
     healthCheckPath: /health
     autoDeploy: true
 
-  # ─── Streamlit Frontend ───────────────────────────────────────
+  # ─── Fast Modern Web Dashboard ────────────────────────────────
   - type: web
     name: robustdeep-dashboard
     runtime: python
     region: oregon
     plan: free
     buildCommand: pip install -r requirements-deploy.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --browser.gatherUsageStats false
+    startCommand: uvicorn src.api.app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
       - key: PYTHONUNBUFFERED
         value: "1"
-      - key: API_BASE_URL
-        value: "https://robustdeep-api.onrender.com"
-    healthCheckPath: /_stcore/health
+    healthCheckPath: /health
     autoDeploy: true

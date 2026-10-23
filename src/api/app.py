@@ -22,9 +22,10 @@ from datetime import datetime
 
 # FastAPI
 try:
-    from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
+    from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Form
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse, FileResponse
+    from fastapi.staticfiles import StaticFiles
     from pydantic import BaseModel
 except ImportError:
     raise ImportError("FastAPI not installed. Run: pip install fastapi uvicorn")
@@ -53,6 +54,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files for modern frontend
+static_path = Path("src/web/static")
+if static_path.exists():
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
 # ─── State ───────────────────────────────────────────────────────────────────
 
@@ -167,9 +173,12 @@ def _preprocess_image(image_bytes: bytes):
 
 # ─── Endpoints ───────────────────────────────────────────────────────────────
 
-@app.get("/", response_model=Dict)
+@app.get("/")
 async def root():
-    """API root — returns basic info."""
+    """Serve the single-page application dashboard or fallback to JSON."""
+    index_file = Path("src/web/static/index.html")
+    if index_file.exists():
+        return FileResponse(str(index_file))
     return {
         "name": "RobustDeep API",
         "version": "1.0.0",
@@ -177,14 +186,186 @@ async def root():
         "endpoints": {
             "health": "/health",
             "predict": "/predict",
+            "predict_video": "/api/predict_video",
+            "samples": "/api/samples",
             "models": "/models",
             "experiments": "/experiments",
             "docs": "/docs",
         },
-        "disclaimer": (
-            "Research system only. Not for forensic or legal use."
-        ),
     }
+
+
+@app.get("/api")
+async def api_info():
+    """API info endpoint."""
+    return {
+        "name": "RobustDeep API",
+        "version": "1.0.0",
+        "endpoints": {
+            "health": "/health",
+            "predict": "/predict",
+            "predict_video": "/api/predict_video",
+            "samples": "/api/samples",
+            "models": "/models",
+            "experiments": "/experiments",
+            "docs": "/docs",
+        },
+    }
+
+
+@app.get("/samples")
+@app.get("/api/samples")
+async def get_samples():
+    """List available preloaded sample videos for testing."""
+    sample_dir = Path("data/sample_videos")
+    samples = []
+    if sample_dir.exists():
+        for p in sorted(sample_dir.glob("*.mp4")):
+            is_fake = "fake" in p.name.lower()
+            if not is_fake:
+                label = "Real Interview Video"
+            elif "swap" in p.name.lower():
+                label = "Face-Swap Deepfake"
+            else:
+                label = "Diffusion Deepfake"
+            samples.append({
+                "filename": p.name,
+                "label": label,
+                "category": "fake" if is_fake else "real",
+                "size_kb": round(p.stat().st_size / 1024, 1)
+            })
+    return {"status": "ok", "samples": samples}
+
+
+@app.post("/predict_video")
+@app.post("/api/predict_video")
+async def predict_video(
+    file: Optional[UploadFile] = File(None),
+    sample_name: Optional[str] = Form(None),
+    model: str = Form("efficientnet_b0"),
+    num_frames: int = Form(5),
+):
+    """
+    Run fast deepfake analysis on a video (or single image).
+    Supports either direct file upload or selecting a sample video.
+    """
+    import cv2
+    import torch
+    from scripts.infer import extract_video_frames
+
+    temp_path = None
+    frames = []
+
+    try:
+        t0 = time.time()
+
+        # 1. Determine input source
+        if file and file.filename:
+            is_image = any(img_ext in file.filename.lower() for img_ext in [".jpg", ".jpeg", ".png", ".webp"])
+            suffix = Path(file.filename).suffix or (".jpg" if is_image else ".mp4")
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tf:
+                content = await file.read()
+                tf.write(content)
+                temp_path = tf.name
+
+            if is_image:
+                img = cv2.imread(temp_path)
+                if img is not None:
+                    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    h, w = img_rgb.shape[:2]
+                    side = min(h, w)
+                    top, left = (h - side) // 2, (w - side) // 2
+                    crop = img_rgb[top:top+side, left:left+side]
+                    frames = [cv2.resize(crop, (224, 224))]
+            else:
+                frames = extract_video_frames(temp_path, num_frames=min(max(num_frames, 3), 10), face_size=224)
+
+        elif sample_name:
+            safe_filename = Path(sample_name).name
+            sample_path = Path("data/sample_videos") / safe_filename
+            if not sample_path.exists():
+                raise HTTPException(status_code=404, detail=f"Sample '{safe_filename}' not found.")
+            frames = extract_video_frames(str(sample_path), num_frames=min(max(num_frames, 3), 10), face_size=224)
+
+        else:
+            raise HTTPException(status_code=400, detail="Must provide either an uploaded file or a sample_name.")
+
+        if not frames:
+            raise HTTPException(status_code=422, detail="No readable face frames could be extracted from input.")
+
+        # 2. Load model
+        model_data = _load_model(model)
+        net = model_data["model"]
+        device = model_data["device"]
+
+        # 3. Batch preprocessing
+        norm_frames = []
+        thumbnails = []
+        mean = np.array([0.485, 0.456, 0.406])
+        std = np.array([0.229, 0.224, 0.225])
+
+        for frame_rgb in frames:
+            nf = frame_rgb.astype(np.float32) / 255.0
+            nf = (nf - mean) / std
+            norm_frames.append(nf.transpose(2, 0, 1))
+
+            thumb = cv2.resize(frame_rgb, (160, 160))
+            thumb_bgr = cv2.cvtColor(thumb, cv2.COLOR_RGB2BGR)
+            _, buf = cv2.imencode('.jpg', thumb_bgr, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+            b64 = base64.b64encode(buf).decode('utf-8')
+            thumbnails.append(f"data:image/jpeg;base64,{b64}")
+
+        batch_tensor = torch.from_numpy(np.stack(norm_frames)).float().to(device)
+
+        # 4. Batched neural inference
+        with torch.no_grad():
+            logits = net(batch_tensor)
+            probs = torch.softmax(logits, dim=1).cpu().numpy()
+
+        fake_probs = probs[:, 1]
+        real_probs = probs[:, 0]
+
+        frame_predictions = []
+        for i in range(len(frames)):
+            fp = float(fake_probs[i])
+            rp = float(real_probs[i])
+            frame_predictions.append({
+                "frame_idx": i + 1,
+                "fake_probability": round(fp, 4),
+                "real_probability": round(rp, 4),
+                "prediction": "FAKE" if fp >= 0.5 else "REAL",
+                "thumbnail": thumbnails[i]
+            })
+
+        mean_fake_prob = float(np.mean(fake_probs))
+        mean_real_prob = float(np.mean(real_probs))
+        final_prediction = "FAKE" if mean_fake_prob >= 0.5 else "REAL"
+        confidence = max(mean_fake_prob, mean_real_prob)
+        inference_ms = round((time.time() - t0) * 1000, 1)
+
+        return {
+            "status": "ok",
+            "prediction": final_prediction,
+            "confidence": round(confidence, 4),
+            "fake_probability": round(mean_fake_prob, 4),
+            "real_probability": round(mean_real_prob, 4),
+            "num_frames": len(frames),
+            "inference_time_ms": inference_ms,
+            "model_key": model,
+            "frame_predictions": frame_predictions
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"predict_video failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
 
 @app.get("/health", response_model=HealthResponse)

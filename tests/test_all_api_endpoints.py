@@ -28,9 +28,51 @@ def test_root():
     print("Testing GET / ...")
     res = client.get("/")
     assert res.status_code == 200, f"Expected 200, got {res.status_code}"
+    # Can be HTML SPA dashboard or JSON
+    assert "RobustDeep" in res.text or "endpoints" in res.text
+    print("  Root OK (SPA dashboard or API root returned)")
+
+def test_samples():
+    print("Testing GET /api/samples ...")
+    res = client.get("/api/samples")
+    assert res.status_code == 200
     data = res.json()
-    assert "endpoints" in data
-    print("  Root OK:", data["name"])
+    assert data["status"] == "ok"
+    assert "samples" in data
+    print("  Samples OK, count:", len(data["samples"]))
+
+def test_predict_video_sample():
+    print("Testing POST /api/predict_video with sample_real_01.mp4 ...")
+    res = client.post(
+        "/api/predict_video",
+        data={
+            "sample_name": "sample_real_01.mp4",
+            "model": "efficientnet_b0",
+            "num_frames": "3"
+        }
+    )
+    assert res.status_code == 200, f"Predict video failed: {res.text}"
+    data = res.json()
+    assert data["status"] == "ok"
+    assert data["prediction"] in ("REAL", "FAKE")
+    assert "frame_predictions" in data
+    assert len(data["frame_predictions"]) == 3
+    print(f"  Predict video OK: verdict={data['prediction']}, conf={data['confidence']}, ms={data['inference_time_ms']}")
+
+def test_predict_video_uploaded_image():
+    print("Testing POST /api/predict_video with uploaded test image ...")
+    img_buf = create_test_image()
+    res = client.post(
+        "/api/predict_video",
+        files={"file": ("test.jpg", img_buf, "image/jpeg")},
+        data={"model": "efficientnet_b0", "num_frames": "3"}
+    )
+    assert res.status_code == 200, f"Predict image failed: {res.text}"
+    data = res.json()
+    assert data["status"] == "ok"
+    assert data["prediction"] in ("REAL", "FAKE")
+    assert len(data["frame_predictions"]) == 1
+    print(f"  Predict uploaded image OK: verdict={data['prediction']}, conf={data['confidence']}")
 
 def test_health():
     print("Testing GET /health ...")
