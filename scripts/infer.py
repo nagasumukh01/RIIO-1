@@ -90,34 +90,52 @@ def preprocess_image(image_path: str, face_size: int = 224):
     return tensor
 
 
-def extract_video_frames(video_path: str, num_frames: int = 20, face_size: int = 224):
-    """Extract frames from a video file (center-crop; MTCNN optional)."""
+def extract_video_frames(video_path: str, num_frames: int = 5, face_size: int = 224):
+    """Extract frames from a video file with robust codec-agnostic sequential reading."""
     import cv2
     import numpy as np
 
-    cap = cv2.VideoCapture(video_path)
+    cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise RuntimeError(f"Cannot open video: {video_path}")
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    indices = np.linspace(0, total_frames - 1, num_frames, dtype=int)
-
+    step = max(1, total_frames // num_frames) if total_frames > 0 else 1
     frames = []
-    for idx in indices:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, int(idx))
+    count = 0
+
+    while cap.isOpened() and len(frames) < num_frames:
         ret, frame = cap.read()
         if not ret:
-            continue
-
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        h, w = frame_rgb.shape[:2]
-        side = min(h, w)
-        top, left = (h - side) // 2, (w - side) // 2
-        crop = frame_rgb[top:top+side, left:left+side]
-        crop = cv2.resize(crop, (face_size, face_size))
-        frames.append(crop)
+            break
+        if count % step == 0:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            h, w = frame_rgb.shape[:2]
+            side = min(h, w)
+            top, left = (h - side) // 2, (w - side) // 2
+            crop = frame_rgb[top:top+side, left:left+side]
+            crop = cv2.resize(crop, (face_size, face_size))
+            frames.append(crop)
+        count += 1
 
     cap.release()
+
+    # If step reading yielded fewer than expected, read whatever frames are available
+    if not frames:
+        cap = cv2.VideoCapture(str(video_path))
+        while cap.isOpened() and len(frames) < num_frames:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            h, w = frame_rgb.shape[:2]
+            side = min(h, w)
+            top, left = (h - side) // 2, (w - side) // 2
+            crop = frame_rgb[top:top+side, left:left+side]
+            crop = cv2.resize(crop, (face_size, face_size))
+            frames.append(crop)
+        cap.release()
+
     return frames
 
 

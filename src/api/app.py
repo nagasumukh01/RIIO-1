@@ -270,9 +270,13 @@ async def predict_video(
             is_image = any(img_ext in file.filename.lower() for img_ext in [".jpg", ".jpeg", ".png", ".webp"])
             suffix = Path(file.filename).suffix or (".jpg" if is_image else ".mp4")
             with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tf:
-                content = await file.read()
-                tf.write(content)
                 temp_path = tf.name
+                total_bytes = 0
+                while chunk := await file.read(1024 * 1024):  # Stream 1MB chunks to avoid memory spikes
+                    total_bytes += len(chunk)
+                    if total_bytes > 50 * 1024 * 1024:
+                        raise HTTPException(status_code=413, detail="File too large (Max 50MB). Please select a shorter video.")
+                    tf.write(chunk)
 
             if is_image:
                 img = cv2.imread(temp_path)
@@ -285,6 +289,28 @@ async def predict_video(
                     frames = [cv2.resize(crop, (224, 224))]
             else:
                 frames = extract_video_frames(temp_path, num_frames=min(max(num_frames, 3), 10), face_size=224)
+
+            # Fallback for images without standard extension
+            if not frames:
+                try:
+                    img = cv2.imread(temp_path)
+                    if img is not None:
+                        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                        h, w = img_rgb.shape[:2]
+                        side = min(h, w)
+                        top, left = (h - side) // 2, (w - side) // 2
+                        crop = img_rgb[top:top+side, left:left+side]
+                        frames = [cv2.resize(crop, (224, 224))]
+                except Exception:
+                    pass
+
+            # Immediately remove temp file to free disk space
+            if temp_path and os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                    temp_path = None
+                except Exception:
+                    pass
 
         elif sample_name:
             safe_filename = Path(sample_name).name

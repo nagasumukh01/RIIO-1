@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  window.addEventListener('dragover', (e) => e.preventDefault());
+  window.addEventListener('drop', (e) => e.preventDefault());
+
   ['dragleave', 'drop'].forEach(eventName => {
     dropzone.addEventListener(eventName, (e) => {
       e.preventDefault();
@@ -79,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       handleFileSelected(files[0]);
@@ -92,6 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function handleFileSelected(file) {
+    if (file.size > 50 * 1024 * 1024) {
+      alert(`File is too large (${formatBytes(file.size)}). Maximum upload size is 50MB for cloud processing.`);
+      return;
+    }
     selectedFile = file;
     selectedSampleName = null;
 
