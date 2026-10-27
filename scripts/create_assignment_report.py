@@ -72,6 +72,10 @@ def main() -> None:
     evaluation = json.loads((model_dir / "evaluations" / "faceforensics_test" / "evaluation.json").read_text(encoding="utf-8"))
     test = evaluation["metrics"]
     val = summary["val_metrics"]
+    vit_dir = ROOT / "artifacts" / "models" / "ff_c23_vit_small_milestone"
+    vit_summary = json.loads((vit_dir / "training_summary.json").read_text(encoding="utf-8"))
+    vit_val = vit_summary["val_metrics"]
+    vit_test = vit_summary["test_metrics"]
     figures = model_dir / "evaluations" / "faceforensics_test"
     explainability = ROOT / "artifacts" / "figures" / "explainability" / "ff_c23_subset10"
     explanation_figure = next(iter(sorted(explainability.glob("*.png"))), None)
@@ -129,6 +133,7 @@ def main() -> None:
         ("Prepare the three official datasets", "Folder structure and official acquisition instructions are implemented.", "Ready; data-dependent"),
         ("Preprocess FaceForensics++", "50 approved c23 videos imported; 35 train, 7 validation, 8 test videos yielded face crops.", "Completed for subset"),
         ("Train a real CNN baseline", "EfficientNet-B0 checkpoint and real evaluation artifacts saved under artifacts/models.", "Completed; interrupted 5-epoch run"),
+        ("Train an initial ViT/hybrid model", "ViT-Small trained for one epoch on the same real FF++ split with saved evaluation artifacts.", "Completed for subset"),
         ("Train Celeb-DF and DFDC", "No local videos or face crops were available for these datasets.", "Pending data"),
         ("Synthetic isolation", "train.py rejects synthetic; smoke_test.py remains the synthetic entry point.", "Verified"),
     ]
@@ -157,6 +162,8 @@ def main() -> None:
         "random seed 42, and real-data-only loading. The checkpoint is stored separately from synthetic smoke-test checkpoints at:"
     )
     document.add_paragraph(str(model_dir / "best.pt"))
+    document.add_paragraph("Initial ViT-Small checkpoint:")
+    document.add_paragraph(str(vit_dir / "best.pt"))
     document.add_paragraph(
         "The five-epoch CPU run completed through epoch 3 before termination. The best checkpoint was selected using validation AUROC; "
         "the final test set was evaluated once without target threshold tuning. The saved report marks the run as incomplete."
@@ -171,6 +178,8 @@ def main() -> None:
     values = [
         ["FaceForensics++ c23", "EfficientNet-B0", "Validation", "7", metric(val["accuracy"]), metric(val["auroc"]), f"{metric(val['f1'])} / {metric(val['eer'])}"],
         ["FaceForensics++ c23", "EfficientNet-B0", "Test", str(test["n_videos"]), metric(test["accuracy"]), metric(test["auroc"]), f"{metric(test['f1'])} / {metric(test['eer'])}"],
+        ["FaceForensics++ c23", "ViT-Small", "Validation", str(vit_val["n_videos"]), metric(vit_val["accuracy"]), metric(vit_val["auroc"]), f"{metric(vit_val['f1'])} / {metric(vit_val['eer'])}"],
+        ["FaceForensics++ c23", "ViT-Small", "Test", str(vit_test["n_videos"]), metric(vit_test["accuracy"]), metric(vit_test["auroc"]), f"{metric(vit_test['f1'])} / {metric(vit_test['eer'])}"],
         ["Celeb-DF v2", "EfficientNet-B0", "Test", "Pending", "Pending", "Pending", "Pending"],
         ["DFDC", "EfficientNet-B0", "Test", "Pending", "Pending", "Pending", "Pending"],
     ]
@@ -190,10 +199,15 @@ def main() -> None:
         "A later completed epoch had lower validation AUROC, so the earlier checkpoint was retained. The final export was interrupted, "
         "but the saved checkpoint was independently evaluated and its test artifacts were preserved."
     )
+    document.add_paragraph(
+        f"The initial ViT-Small run completed one epoch with validation AUROC {metric(vit_val['auroc'])} and test AUROC {metric(vit_test['auroc'])}. "
+        "The validation/test gap is recorded as a failure-analysis result, not hidden by reporting validation performance as the final benchmark."
+    )
 
     add_heading(document, "Results Figures")
     roc = figures / "roc_test.png"
     confusion = figures / "confusion_matrix_test.png"
+    vit_roc = vit_dir / "roc_test.png"
     if roc.exists():
         document.add_picture(str(roc), width=Inches(5.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -202,14 +216,19 @@ def main() -> None:
         document.add_picture(str(confusion), width=Inches(4.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         document.add_paragraph("Figure 2. REAL DATA FaceForensics++ test confusion matrix at threshold 0.5.").style = "Caption"
+    if vit_roc.exists():
+        document.add_picture(str(vit_roc), width=Inches(5.5))
+        document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        document.add_paragraph("Figure 3. REAL DATA FaceForensics++ ViT-Small test ROC curve.").style = "Caption"
     if explanation_figure is not None:
         document.add_picture(str(explanation_figure), width=Inches(5.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        document.add_paragraph("Figure 3. Model attribution visualization; attribution is not forensic proof.").style = "Caption"
+        document.add_paragraph("Figure 4. Model attribution visualization; attribution is not forensic proof.").style = "Caption"
 
     add_heading(document, "Limitations and Next Steps")
     for item in [
         "Complete a stable multi-epoch run on a GPU or a smaller controlled subset, then compare only using the untouched test split.",
+        "The ViT-Small validation/test gap is a failure-analysis result; do not report the validation AUROC as its final test score.",
         "Acquire and preprocess licensed Celeb-DF v2 and DFDC subsets before reporting cross-dataset or three-dataset results.",
         "Increase the number and identity diversity of videos; the current FF++ test set has only 8 videos.",
         "Run the six-pair matrix only after source and target face crops exist for all three official datasets.",
@@ -223,6 +242,7 @@ def main() -> None:
     for command in [
         "python scripts/preprocess_faces.py --dataset faceforensics --max-videos 50 --frames-per-video 16",
         "python scripts/train.py --dataset faceforensics --model efficientnet_b0 --epochs 5 --max-videos 50 --experiment-id ff_c23_subset10",
+        "python scripts/train.py --dataset faceforensics --model vit_small --epochs 1 --max-videos 50 --num-workers 0 --experiment-id ff_c23_vit_small_milestone",
         "python scripts/evaluate.py --dataset faceforensics --split test --model efficientnet_b0 --checkpoint artifacts/models/ff_c23_subset10/best.pt",
         "python scripts/run_explainability.py --checkpoint artifacts/models/ff_c23_subset10/best.pt --dataset faceforensics --split test --model efficientnet_b0 --max-videos 8",
     ]:

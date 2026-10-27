@@ -1,0 +1,43 @@
+{
+  "dataset": "faceforensics",
+  "split": "test",
+  "metrics": {
+    "auroc": 0.0,
+    "ap": 0.594047619047619,
+    "accuracy": 0.75,
+    "precision": 0.75,
+    "recall": 1.0,
+    "f1": 0.8571428571428571,
+    "eer": 1.0,
+    "tn": 0,
+    "fp": 2,
+    "fn": 0,
+    "tp": 6,
+    "fpr": 0.999999995,
+    "fnr": 0.0,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "experiment_id": "ff_c23_vit_small_milestone",
+    "model": "vit_small"
+  },
+  "fpr": [
+    0.0,
+    0.5,
+    1.0,
+    1.0
+  ],
+  "tpr": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "thresholds": [
+    Infinity,
+    0.8871334791183472,
+    0.7969045639038086,
+    0.5216865539550781
+  ]
+}
