@@ -1,0 +1,38 @@
+# Experiment matrices
+
+within_dataset:
+  datasets: [faceforensics, celebdf, dfdc]
+  models: [efficientnet_b0, vit_small]
+
+cross_dataset:
+  # 6-pair directional matrix — ZERO target tuning
+  pairs:
+    - source: faceforensics
+      target: celebdf
+    - source: faceforensics
+      target: dfdc
+    - source: celebdf
+      target: faceforensics
+    - source: celebdf
+      target: dfdc
+    - source: dfdc
+      target: faceforensics
+    - source: dfdc
+      target: celebdf
+  models: [efficientnet_b0, vit_small]
+
+ablations:
+  augmentation:
+    strategies: [none, jpeg, blur, resize_reencode, combined]
+  loss:
+    functions: [bce, focal, weighted_bce]
+  capacity:
+    models: [efficientnet_b0, efficientnet_b4, vit_small, vit_base]
+
+explainability:
+  methods: [gradcam, attention_rollout]
+  faithfulness: true
+  num_samples: 32
+
+robustness:
+  stress_tests: [jpeg_40, jpeg_20, gaussian_blur_1.5, gaussian_blur_3.0]

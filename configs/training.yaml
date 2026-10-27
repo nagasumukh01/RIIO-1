@@ -1,0 +1,37 @@
+# Training defaults
+
+optimizer:
+  name: adamw
+  lr: 1.0e-4
+  weight_decay: 0.05
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: cosine
+  warmup_epochs: 2
+  min_lr: 1.0e-6
+
+loss:
+  name: bce          # options: bce, focal, weighted_bce
+  focal_gamma: 2.0
+  pos_weight: null   # auto-computed if weighted_bce
+
+training:
+  epochs: 30
+  batch_size: 16
+  num_workers: 4
+  mixed_precision: true
+  gradient_clip: 1.0
+  early_stopping_patience: 7
+  save_every: 5
+  seed: 42
+
+aggregation:
+  method: mean       # mean | median | topk
+  topk: 5
+
+checkpoint:
+  dir: artifacts/checkpoints
+  keep_last_n: 3
+  monitor: val_auroc
+  mode: max

@@ -1,0 +1,35 @@
+# Model configurations
+
+backbones:
+  efficientnet_b0:
+    name: efficientnet_b0
+    source: timm
+    pretrained: true
+    num_classes: 1
+    input_size: 224
+    type: cnn
+  efficientnet_b4:
+    name: efficientnet_b4
+    source: timm
+    pretrained: true
+    num_classes: 1
+    input_size: 224
+    type: cnn
+  vit_small:
+    name: vit_small_patch16_224
+    source: timm
+    pretrained: true
+    num_classes: 1
+    input_size: 224
+    type: vit
+  vit_base:
+    name: vit_base_patch16_224
+    source: timm
+    pretrained: true
+    num_classes: 1
+    input_size: 224
+    type: vit
+
+defaults:
+  dropout: 0.2
+  drop_path: 0.1
