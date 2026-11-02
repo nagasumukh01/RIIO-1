@@ -461,6 +461,18 @@ function App() {
 
 function Result({ result, fileKind, clientPreviewUrl, onReset }) {
   const isFake = result.label === 'FAKE'
+  const hasSnapshots = Array.isArray(result.snapshots) && result.snapshots.length > 0
+  const initialIdx = result.multi_snapshot_analysis?.peak_anomaly_index ?? 0
+  const [activeSnapshotIdx, setActiveSnapshotIdx] = useState(initialIdx)
+
+  // Ensure selected index is valid
+  const currentIdx = hasSnapshots && activeSnapshotIdx < result.snapshots.length ? activeSnapshotIdx : 0
+  const activeSnapshot = hasSnapshots ? result.snapshots[currentIdx] : null
+
+  // Active display items
+  const displayPreview = activeSnapshot?.preview || result.input_preview
+  const displayExplanation = activeSnapshot?.explanation_image || result.explanation_image
+  const displayFaithfulness = activeSnapshot?.faithfulness_confidence_drop ?? result.faithfulness_confidence_drop
 
   return (
     <div className="result-content">
@@ -481,7 +493,7 @@ function Result({ result, fileKind, clientPreviewUrl, onReset }) {
 
         <div className="verdict-scores">
           <div className="score-block">
-            <span>FAKE PROBABILITY</span>
+            <span>AGGREGATE FAKE PROBABILITY</span>
             <b className={isFake ? 'text-fake' : 'text-real'}>{formatPercent(result.score)}</b>
           </div>
           <div className="score-bar-container">
@@ -530,34 +542,134 @@ function Result({ result, fileKind, clientPreviewUrl, onReset }) {
         </div>
       )}
 
-      {/* Media Inspection Panels */}
+      {/* Multi-Snapshot Evidence & Temporal Timeline */}
+      {hasSnapshots && (
+        <div className="snapshots-panel panel">
+          <div className="panel-heading">
+            <div className="heading-with-icon">
+              <Layers size={16} className="text-accent" />
+              <span>
+                MULTI-SNAPSHOT FORENSIC EVIDENCE ({result.snapshots.length} SAMPLES ANALYZED)
+              </span>
+            </div>
+            {result.multi_snapshot_analysis?.agreement_text && (
+              <span className="tag tag-accent">
+                {result.multi_snapshot_analysis.agreement_text}
+              </span>
+            )}
+          </div>
+
+          <p className="snapshots-desc">
+            Deepfake artifacts fluctuate across temporal frame sequences and boundary regions.
+            Click any snapshot below to inspect its local facial geometry, individual fake score, and Grad-CAM attention heatmap:
+          </p>
+
+          <div className="snapshots-strip">
+            {result.snapshots.map((snap, idx) => {
+              const isSelected = idx === currentIdx
+              const isSnapFake = snap.label === 'FAKE'
+              return (
+                <div
+                  key={snap.id ?? idx}
+                  className={`snapshot-card ${isSelected ? 'snapshot-active' : ''} ${
+                    snap.is_peak_anomaly ? 'snapshot-peak' : ''
+                  }`}
+                  onClick={() => setActiveSnapshotIdx(idx)}
+                >
+                  <div className="snapshot-card-top">
+                    <span className="snapshot-tag">{snap.name}</span>
+                    {snap.is_peak_anomaly && (
+                      <span className="peak-anomaly-badge" title="Highest deepfake anomaly score">
+                        ★ Peak Anomaly
+                      </span>
+                    )}
+                  </div>
+                  <div className="snapshot-thumb-wrap">
+                    <img src={snap.preview} alt={snap.name} className="snapshot-thumb" />
+                    <span className={`snapshot-score-badge ${isSnapFake ? 'vote-fake' : 'vote-real'}`}>
+                      {formatPercent(snap.score)} {snap.label}
+                    </span>
+                  </div>
+                  <div className="snapshot-card-footer">
+                    <span className="snapshot-region">{snap.region || 'Crop'}</span>
+                    <span className="snapshot-select-hint">
+                      {isSelected ? '● Active View' : 'Click to inspect'}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Multi-Snapshot Summary Statistics Bar */}
+          {result.multi_snapshot_analysis && (
+            <div className="snapshots-stats-bar">
+              <div className="stat-pill">
+                <span>Samples Analyzed</span>
+                <strong>{result.multi_snapshot_analysis.total_snapshots} snapshots</strong>
+              </div>
+              <div className="stat-pill">
+                <span>Mean Anomaly</span>
+                <strong>{formatPercent(result.multi_snapshot_analysis.mean_score)}</strong>
+              </div>
+              <div className="stat-pill">
+                <span>Peak Anomaly Score</span>
+                <strong className={result.multi_snapshot_analysis.max_score >= 0.5 ? 'text-fake' : 'text-real'}>
+                  {formatPercent(result.multi_snapshot_analysis.max_score)}
+                </strong>
+              </div>
+              <div className="stat-pill">
+                <span>Sequence Variance</span>
+                <strong>{result.multi_snapshot_analysis.variance.toFixed(4)}</strong>
+              </div>
+              <button
+                type="button"
+                className="btn-select-peak"
+                onClick={() => setActiveSnapshotIdx(result.multi_snapshot_analysis.peak_anomaly_index)}
+              >
+                Focus Peak Anomaly
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Media Inspection Panels (Dynamically Reflects Active Snapshot) */}
       <div className="result-grid">
         {/* Input Media Panel */}
         <div className="preview-panel panel">
           <div className="panel-heading">
-            <span>INPUT CROPPED FACE</span>
+            <span>
+              {activeSnapshot ? `SNAPSHOT: ${activeSnapshot.name.toUpperCase()}` : 'INPUT CROPPED FACE'}
+            </span>
             <span className="tag">
-              {result.face_detected ? 'FACE DETECTED' : 'FULL FRAME'}
+              {activeSnapshot?.face_detected ? 'FACE DETECTED' : result.face_detected ? 'FACE DETECTED' : 'FULL FRAME'}
             </span>
           </div>
           <div className="panel-body">
-            <img src={result.input_preview} alt="Cropped face sample" className="preview-image" />
+            <img src={displayPreview} alt="Inspected face snapshot" className="preview-image" />
           </div>
           <div className="panel-footer">
-            <span>Normalized 224x224 RGB crop</span>
+            <span>
+              {activeSnapshot
+                ? `Local Score: ${formatPercent(activeSnapshot.score)} (${activeSnapshot.label}) · Region: ${activeSnapshot.region}`
+                : 'Normalized 224x224 RGB crop'}
+            </span>
           </div>
         </div>
 
         {/* Explainability Heatmap Panel */}
         <div className="explain-panel panel">
           <div className="panel-heading">
-            <span>EXPLAINABILITY ATTRIBUTION</span>
+            <span>
+              {activeSnapshot ? `ATTRIBUTION: ${activeSnapshot.name.toUpperCase()}` : 'EXPLAINABILITY ATTRIBUTION'}
+            </span>
             <span className="tag tag-accent">{result.explanation_method || 'Grad-CAM'}</span>
           </div>
           <div className="panel-body">
-            {result.explanation_image ? (
+            {displayExplanation ? (
               <img
-                src={result.explanation_image}
+                src={displayExplanation}
                 alt="Model attribution heatmap"
                 className="preview-image"
               />
@@ -567,7 +679,9 @@ function Result({ result, fileKind, clientPreviewUrl, onReset }) {
           </div>
           <div className="panel-footer">
             <span className="image-disclaimer">
-              Warmer regions highlight spatial features influencing the decision.
+              {activeSnapshot
+                ? `Faithfulness Drop: ${(displayFaithfulness * 100).toFixed(2)} pts upon masking salient facial features.`
+                : 'Warmer regions highlight spatial features influencing the decision.'}
             </span>
           </div>
         </div>

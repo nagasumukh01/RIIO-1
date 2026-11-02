@@ -93,6 +93,10 @@ def test_predict_cross_ensemble(client, sample_image_bytes):
     assert data["ensemble_breakdown"] is not None
     assert len(data["ensemble_breakdown"]) == 4
     assert data["consensus"] is not None
+    assert "snapshots" in data
+    assert len(data["snapshots"]) >= 4
+    assert "multi_snapshot_analysis" in data
+    assert data["multi_snapshot_analysis"]["total_snapshots"] >= 4
 
 
 @pytest.mark.skipif(not CHECKPOINTS_PRESENT, reason="Model .pt checkpoints not present in CI runner")
@@ -142,6 +146,9 @@ def test_predict_video_upload(client, sample_video_bytes):
     assert data["label"] in {"REAL", "FAKE"}
     assert 0.0 <= data["score"] <= 1.0
     assert "explanation_image" in data
+    assert "snapshots" in data
+    assert len(data["snapshots"]) >= 4
+    assert "multi_snapshot_analysis" in data
 
 
 def test_predict_invalid_model(client, sample_image_bytes):

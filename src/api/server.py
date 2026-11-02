@@ -28,8 +28,8 @@ from src.models.factory import build_model
 
 app = FastAPI(
     title="RobustDeep Inference API",
-    version="1.0.0",
-    description="Cross-Dataset Deepfake Detection & Explainability API",
+    version="1.1.0",
+    description="Cross-Dataset Deepfake Detection & Multi-Snapshot Explainability API",
 )
 
 app.add_middleware(
@@ -134,45 +134,182 @@ def _crop_face(image: np.ndarray) -> tuple[np.ndarray, bool]:
     return image[y1:y2, x1:x2], True
 
 
-def _frames_from_upload(filename: str, payload: bytes) -> tuple[list[torch.Tensor], bool, np.ndarray]:
+def _extract_image_snapshots(image: np.ndarray) -> tuple[list[dict[str, Any]], bool]:
+    h_orig, w_orig = image.shape[:2]
+    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    faces = detector.detectMultiScale(gray, 1.1, 4, minSize=(48, 48))
+    
+    snapshots: list[dict[str, Any]] = []
+    face_detected = len(faces) > 0
+    
+    if face_detected:
+        faces_sorted = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+        x, y, w, h = faces_sorted[0]
+        
+        # Snapshot 1: Primary Tight Face Crop (margin 15%)
+        m1 = int(max(w, h) * 0.15)
+        crop1 = image[max(0, y - m1):min(h_orig, y + h + m1), max(0, x - m1):min(w_orig, x + w + m1)]
+        snapshots.append({
+            "name": "Snapshot 1 · Primary Face Geometry",
+            "region": "Tight Facial Region",
+            "crop": crop1,
+            "face_detected": True,
+        })
+        
+        # Snapshot 2: Contextual Boundary (wider margin 45% for hairline/jaw)
+        m2 = int(max(w, h) * 0.45)
+        crop2 = image[max(0, y - m2):min(h_orig, y + h + m2), max(0, x - m2):min(w_orig, x + w + m2)]
+        snapshots.append({
+            "name": "Snapshot 2 · Contextual Blending Boundary",
+            "region": "Jawline & Hair Boundary",
+            "crop": crop2,
+            "face_detected": True,
+        })
+        
+        # Snapshot 3: Upper Facial / Ocular Region (eyes, gaze, brow)
+        h_c1 = crop1.shape[0]
+        ocular_crop = crop1[:max(10, int(h_c1 * 0.60)), :]
+        snapshots.append({
+            "name": "Snapshot 3 · Ocular / Gaze Alignment",
+            "region": "Eyes & Forehead",
+            "crop": ocular_crop,
+            "face_detected": True,
+        })
+        
+        # Snapshot 4: Perioral / Lip & Mouth Region (lip-sync, chin artifacts)
+        perioral_crop = crop1[max(0, int(h_c1 * 0.40)):, :]
+        snapshots.append({
+            "name": "Snapshot 4 · Perioral / Speech Articulation",
+            "region": "Mouth & Chin",
+            "crop": perioral_crop,
+            "face_detected": True,
+        })
+        
+        # Snapshot 5: Secondary Face or Horizontal Flip TTA Check
+        if len(faces_sorted) > 1:
+            xs, ys, ws, hs = faces_sorted[1]
+            ms = int(max(ws, hs) * 0.2)
+            crop_sec = image[max(0, ys - ms):min(h_orig, ys + hs + ms), max(0, xs - ms):min(w_orig, xs + ws + ms)]
+            snapshots.append({
+                "name": "Snapshot 5 · Secondary Subject Face",
+                "region": "Co-occurring Subject",
+                "crop": crop_sec,
+                "face_detected": True,
+            })
+        else:
+            snapshots.append({
+                "name": "Snapshot 5 · Horizontal Mirror Check (TTA)",
+                "region": "Bilateral Symmetry Check",
+                "crop": cv2.flip(crop1, 1),
+                "face_detected": True,
+            })
+    else:
+        # Fallback for non-frontal or artistic media: multi-region spatial decomposition
+        min_dim = min(h_orig, w_orig)
+        cx, cy = w_orig // 2, h_orig // 2
+        half = min_dim // 2
+        center_crop = image[max(0, cy - half):min(h_orig, cy + half), max(0, cx - half):min(w_orig, cx + half)]
+        
+        snapshots.append({
+            "name": "Snapshot 1 · Center Region",
+            "region": "Central Focus",
+            "crop": center_crop,
+            "face_detected": False,
+        })
+        snapshots.append({
+            "name": "Snapshot 2 · Global Media View",
+            "region": "Full Frame Context",
+            "crop": image,
+            "face_detected": False,
+        })
+        snapshots.append({
+            "name": "Snapshot 3 · Upper Frame Region",
+            "region": "Upper Section",
+            "crop": image[:int(h_orig * 0.65), :],
+            "face_detected": False,
+        })
+        snapshots.append({
+            "name": "Snapshot 4 · Lower Frame Region",
+            "region": "Lower Section",
+            "crop": image[int(h_orig * 0.35):, :],
+            "face_detected": False,
+        })
+        snapshots.append({
+            "name": "Snapshot 5 · Bilateral Inversion",
+            "region": "Symmetry Check",
+            "crop": cv2.flip(center_crop, 1),
+            "face_detected": False,
+        })
+        
+    return snapshots, face_detected
+
+
+def _extract_video_snapshots(temp_path: Path) -> tuple[list[dict[str, Any]], bool]:
+    capture = cv2.VideoCapture(str(temp_path))
+    if not capture.isOpened():
+        raise HTTPException(status_code=400, detail="Cannot decode video file. Format may be unsupported.")
+
+    total = int(capture.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
+    fps = capture.get(cv2.CAP_PROP_FPS) or 25.0
+
+    # Sample 6 distinct temporal snapshots across the video timeline
+    num_samples = 6
+    if total <= num_samples:
+        indices = np.arange(total)
+    else:
+        indices = np.linspace(0, total - 1, num_samples, dtype=int)
+
+    snapshots: list[dict[str, Any]] = []
+    face_detected_any = False
+
+    for i, idx in enumerate(indices):
+        capture.set(cv2.CAP_PROP_POS_FRAMES, int(idx))
+        ok, frame = capture.read()
+        if not ok:
+            continue
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        crop, detected = _crop_face(rgb)
+        face_detected_any = face_detected_any or detected
+        t_sec = round(float(idx) / float(fps), 2) if fps > 0 else 0.0
+
+        snapshots.append({
+            "name": f"Snapshot {i + 1} · {t_sec}s",
+            "region": f"Timestamp {t_sec}s (Frame #{int(idx)})",
+            "crop": crop,
+            "timestamp_sec": t_sec,
+            "frame_index": int(idx),
+            "face_detected": detected,
+        })
+
+    capture.release()
+
+    if not snapshots:
+        raise HTTPException(status_code=400, detail="No readable video frames found in the uploaded file.")
+
+    return snapshots, face_detected_any
+
+
+def _extract_snapshots_from_upload(
+    filename: str, payload: bytes
+) -> tuple[list[dict[str, Any]], bool, np.ndarray]:
     suffix = Path(filename).suffix.lower()
     if suffix in {".jpg", ".jpeg", ".png", ".webp", ".bmp"}:
         try:
             image = np.array(Image.open(io.BytesIO(payload)).convert("RGB"))
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to decode uploaded image: {e}")
-        crop, detected = _crop_face(image)
-        norm_frame = _normalise(crop)
-        return [norm_frame] * 4, detected, crop
+        snapshots, detected = _extract_image_snapshots(image)
+        primary_preview = snapshots[0]["crop"] if snapshots else image
+        return snapshots, detected, primary_preview
 
     # Video handling with Windows-safe temporary file management
     temp_dir = tempfile.mkdtemp()
     temp_file = Path(temp_dir) / f"upload_{int(time.time()*1000)}{suffix or '.mp4'}"
-    frames: list[torch.Tensor] = []
-    detected_any = False
-    preview = None
 
     try:
         temp_file.write_bytes(payload)
-        capture = cv2.VideoCapture(str(temp_file))
-        if not capture.isOpened():
-            raise HTTPException(status_code=400, detail="Cannot decode video file. Format may be unsupported.")
-
-        total = int(capture.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
-        indices = np.linspace(0, max(0, total - 1), 4, dtype=int)
-        
-        for index in indices:
-            capture.set(cv2.CAP_PROP_POS_FRAMES, int(index))
-            ok, frame = capture.read()
-            if not ok:
-                continue
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            crop, detected = _crop_face(rgb)
-            detected_any = detected_any or detected
-            if preview is None:
-                preview = crop
-            frames.append(_normalise(crop))
-        capture.release()
+        snapshots, detected = _extract_video_snapshots(temp_file)
     finally:
         if temp_file.exists():
             try:
@@ -184,13 +321,8 @@ def _frames_from_upload(filename: str, payload: bytes) -> tuple[list[torch.Tenso
         except Exception:
             pass
 
-    if not frames:
-        raise HTTPException(status_code=400, detail="No readable video frames found in the uploaded file.")
-    while len(frames) < 4:
-        frames.append(frames[-1])
-    if preview is None:
-        preview = np.zeros((224, 224, 3), dtype=np.uint8)
-    return frames, detected_any, preview
+    primary_preview = snapshots[0]["crop"] if snapshots else np.zeros((224, 224, 3), dtype=np.uint8)
+    return snapshots, detected, primary_preview
 
 
 def _data_uri(image: np.ndarray) -> str:
@@ -201,7 +333,6 @@ def _data_uri(image: np.ndarray) -> str:
 
 
 def _explain(model: torch.nn.Module, frame: torch.Tensor) -> tuple[str, str, float]:
-    # Find layers for Grad-CAM
     backbone = getattr(model, "backbone", model)
     layers = [module for module in backbone.modules() if isinstance(module, torch.nn.Conv2d)]
     
@@ -238,7 +369,7 @@ def _explain(model: torch.nn.Module, frame: torch.Tensor) -> tuple[str, str, flo
         perturbed = float(pert_t.view(-1)[0].item())
 
     method_name = "Grad-CAM"
-    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii"), method_name, original - perturbed
+    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii"), method_name, max(0.0, original - perturbed)
 
 
 @app.get("/api/health")
@@ -308,20 +439,32 @@ async def predict(
             detail=f"Unsupported model selection '{chosen_model}'. Available: {list(MODEL_REGISTRY.keys())}",
         )
 
-    frames, face_detected, preview = _frames_from_upload(file.filename, payload)
-    video = torch.stack(frames).unsqueeze(0)
+    # 1. Extract multi-snapshot sequence (multi-crop for images, multi-timestamp for videos)
+    raw_snapshots, face_detected, primary_crop = _extract_snapshots_from_upload(file.filename, payload)
+
+    # Prepare normalized tensors for all snapshots
+    for snap in raw_snapshots:
+        snap["tensor"] = _normalise(snap["crop"])
+        snap["preview"] = _data_uri(snap["crop"].astype(np.float32) / 255.0)
+
+    # Sequence tensor for sequence-level video aggregation (B=1, T=N, C=3, H=224, W=224)
+    sequence_tensor = torch.stack([s["tensor"] for s in raw_snapshots]).unsqueeze(0)
     entry = MODEL_REGISTRY[chosen_model]
     ensemble_breakdown = None
     consensus_text = None
 
+    # Explanation model reference (CNN is optimal for Grad-CAM)
+    expl_model = _get_model("celebdf_b0") if chosen_model == "cross_ensemble" else _get_model(chosen_model)
+
     if chosen_model == "cross_ensemble":
-        # Multi-model Cross-Architecture Fusion
+        # 2a. Multi-model Cross-Architecture Fusion across sequence
+        sub_models = {k: _get_model(k) for k in BASE_MODEL_KEYS}
         breakdown = []
         for key in BASE_MODEL_KEYS:
-            sub_model = _get_model(key)
+            sub_m = sub_models[key]
             sub_entry = MODEL_REGISTRY[key]
             with torch.no_grad():
-                sub_logits = sub_model(video)
+                sub_logits = sub_m(sequence_tensor)
                 sub_score = float(torch.sigmoid(sub_logits).view(-1)[0].item())
             breakdown.append({
                 "id": key,
@@ -333,29 +476,110 @@ async def predict(
                 "weight": 0.25,
             })
 
-        # Calculate optimal weighted consensus
-        score = float(np.mean([item["score"] for item in breakdown]))
+        overall_score = float(np.mean([item["score"] for item in breakdown]))
         ensemble_breakdown = breakdown
-        
-        # Determine consensus count
         fake_votes = sum(1 for item in breakdown if item["label"] == "FAKE")
         real_votes = 4 - fake_votes
-        if score >= 0.5:
+        if overall_score >= 0.5:
             consensus_text = f"{fake_votes}/4 models vote FAKE ({real_votes}/4 REAL)"
         else:
             consensus_text = f"{real_votes}/4 models vote REAL ({fake_votes}/4 FAKE)"
 
-        # Generate explainability from primary CNN (EfficientNet-B0)
-        expl_model = _get_model("celebdf_b0")
-        explanation, method, faithfulness = _explain(expl_model, frames[0])
+        # 2b. Evaluate each individual snapshot across the 4 ensemble models
+        processed_snapshots = []
+        for i, snap in enumerate(raw_snapshots):
+            t_input = snap["tensor"].unsqueeze(0)
+            with torch.no_grad():
+                snap_sub_scores = [
+                    float(torch.sigmoid(sub_models[k](t_input)).view(-1)[0].item())
+                    for k in BASE_MODEL_KEYS
+                ]
+            snap_score = float(np.mean(snap_sub_scores))
+            snap_label = "FAKE" if snap_score >= 0.5 else "REAL"
+            
+            # Generate Grad-CAM for this snapshot
+            expl_img, method_name, faith_drop = _explain(expl_model, snap["tensor"])
+
+            processed_snapshots.append({
+                "id": i,
+                "name": snap["name"],
+                "region": snap.get("region", "Face Crop"),
+                "timestamp_sec": snap.get("timestamp_sec"),
+                "frame_index": snap.get("frame_index"),
+                "preview": snap["preview"],
+                "explanation_image": expl_img,
+                "score": round(snap_score, 4),
+                "confidence": round(max(snap_score, 1.0 - snap_score), 4),
+                "label": snap_label,
+                "faithfulness_confidence_drop": round(faith_drop, 4),
+                "face_detected": snap["face_detected"],
+                "is_peak_anomaly": False,
+            })
     else:
+        # Single model evaluation
         loaded_model = _get_model(chosen_model)
         with torch.no_grad():
-            logits = loaded_model(video)
-            score = float(torch.sigmoid(logits).view(-1)[0].item())
-        explanation, method, faithfulness = _explain(loaded_model, frames[0])
+            seq_logits = loaded_model(sequence_tensor)
+            overall_score = float(torch.sigmoid(seq_logits).view(-1)[0].item())
 
-    preview_image = preview.astype(np.float32) / 255.0
+        processed_snapshots = []
+        for i, snap in enumerate(raw_snapshots):
+            t_input = snap["tensor"].unsqueeze(0)
+            with torch.no_grad():
+                s_logits = loaded_model(t_input)
+                snap_score = float(torch.sigmoid(s_logits).view(-1)[0].item())
+            snap_label = "FAKE" if snap_score >= 0.5 else "REAL"
+
+            expl_img, method_name, faith_drop = _explain(expl_model, snap["tensor"])
+
+            processed_snapshots.append({
+                "id": i,
+                "name": snap["name"],
+                "region": snap.get("region", "Face Crop"),
+                "timestamp_sec": snap.get("timestamp_sec"),
+                "frame_index": snap.get("frame_index"),
+                "preview": snap["preview"],
+                "explanation_image": expl_img,
+                "score": round(snap_score, 4),
+                "confidence": round(max(snap_score, 1.0 - snap_score), 4),
+                "label": snap_label,
+                "faithfulness_confidence_drop": round(faith_drop, 4),
+                "face_detected": snap["face_detected"],
+                "is_peak_anomaly": False,
+            })
+
+    # 3. Identify Peak Anomaly Snapshot (highest fake score)
+    if processed_snapshots:
+        max_snap_idx = int(np.argmax([s["score"] for s in processed_snapshots]))
+        processed_snapshots[max_snap_idx]["is_peak_anomaly"] = True
+        peak_snapshot = processed_snapshots[max_snap_idx]
+    else:
+        max_snap_idx = 0
+        peak_snapshot = None
+
+    # Multi-snapshot summary analytics
+    total_snaps = len(processed_snapshots)
+    fake_snaps = sum(1 for s in processed_snapshots if s["label"] == "FAKE")
+    real_snaps = total_snaps - fake_snaps
+    agreement_snaps = max(fake_snaps, real_snaps)
+    agreement_pct = round((agreement_snaps / total_snaps) * 100, 1) if total_snaps > 0 else 100.0
+
+    all_scores = [s["score"] for s in processed_snapshots]
+    multi_snapshot_stats = {
+        "total_snapshots": total_snaps,
+        "fake_count": fake_snaps,
+        "real_count": real_snaps,
+        "agreement_pct": agreement_pct,
+        "agreement_text": f"{agreement_snaps} of {total_snaps} snapshots agree ({agreement_pct}% temporal consistency)",
+        "mean_score": round(float(np.mean(all_scores)), 4) if all_scores else round(overall_score, 4),
+        "max_score": round(float(np.max(all_scores)), 4) if all_scores else round(overall_score, 4),
+        "min_score": round(float(np.min(all_scores)), 4) if all_scores else round(overall_score, 4),
+        "variance": round(float(np.var(all_scores)), 5) if all_scores else 0.0,
+        "peak_anomaly_index": max_snap_idx,
+    }
+
+    # Primary representation: default to peak anomaly if fake, else primary crop
+    primary_snap = peak_snapshot if (overall_score >= 0.5 and peak_snapshot) else processed_snapshots[0]
     elapsed_ms = round((time.time() - start_time) * 1000, 1)
 
     return {
@@ -363,17 +587,19 @@ async def predict(
         "model_name": entry["display_name"],
         "architecture": entry["architecture"],
         "dataset": entry["dataset"],
-        "label": "FAKE" if score >= 0.5 else "REAL",
-        "score": score,
-        "confidence": max(score, 1.0 - score),
+        "label": "FAKE" if overall_score >= 0.5 else "REAL",
+        "score": round(overall_score, 4),
+        "confidence": round(max(overall_score, 1.0 - overall_score), 4),
         "face_detected": face_detected,
-        "explanation_method": method,
-        "explanation_image": explanation,
-        "input_preview": _data_uri(preview_image),
-        "faithfulness_confidence_drop": faithfulness,
+        "explanation_method": method_name if "method_name" in locals() else "Grad-CAM",
+        "explanation_image": primary_snap["explanation_image"] if primary_snap else "",
+        "input_preview": primary_snap["preview"] if primary_snap else _data_uri(primary_crop.astype(np.float32) / 255.0),
+        "faithfulness_confidence_drop": primary_snap["faithfulness_confidence_drop"] if primary_snap else 0.0,
         "latency_ms": elapsed_ms,
         "ensemble_breakdown": ensemble_breakdown,
         "consensus": consensus_text,
+        "snapshots": processed_snapshots,
+        "multi_snapshot_analysis": multi_snapshot_stats,
         "disclaimer": "Model attribution is research evidence, not forensic proof.",
     }
 
