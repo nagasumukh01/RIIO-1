@@ -505,6 +505,20 @@ function Result({ result, fileKind, clientPreviewUrl, onReset }) {
         </div>
       </div>
 
+      {/* Face Biometric Verification Advisory Banner */}
+      {!result.face_detected && (
+        <div className="biometric-warning-banner">
+          <AlertTriangle size={20} className="warning-icon" />
+          <div className="warning-text">
+            <strong>Biometric Verification Alert: No Human Face Identified</strong>
+            <p>
+              The detector could not confirm a high-confidence human face with verified facial geometry in this media.
+              Deepfake detectors require visible facial landmarks (eyes, nose, mouth) for reliable attribution. Non-facial or heavily occluded media may produce anomalous scores.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Cross-Model Ensemble Breakdown (if available) */}
       {result.ensemble_breakdown && (
         <div className="ensemble-panel panel">
@@ -582,6 +596,20 @@ function Result({ result, fileKind, clientPreviewUrl, onReset }) {
                       <span className="peak-anomaly-badge" title="Highest deepfake anomaly score">
                         ★ Peak Anomaly
                       </span>
+                    )}
+                  </div>
+                  <div className="snapshot-biometric-meta">
+                    {snap.face_detected ? (
+                      <span className="bio-tag bio-verified">
+                        <CheckCircle2 size={10} /> Verified Face
+                      </span>
+                    ) : (
+                      <span className="bio-tag bio-unverified">
+                        <AlertTriangle size={10} /> No Face
+                      </span>
+                    )}
+                    {snap.face_clarity && (
+                      <span className="bio-tag bio-clarity">{snap.face_clarity}</span>
                     )}
                   </div>
                   <div className="snapshot-thumb-wrap">

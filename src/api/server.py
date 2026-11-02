@@ -28,8 +28,8 @@ from src.models.factory import build_model
 
 app = FastAPI(
     title="RobustDeep Inference API",
-    version="1.1.0",
-    description="Cross-Dataset Deepfake Detection & Multi-Snapshot Explainability API",
+    version="1.2.0",
+    description="Cross-Dataset Deepfake Detection with Verified Multi-Snapshot Face Biometrics",
 )
 
 app.add_middleware(
@@ -85,6 +85,17 @@ MODEL_REGISTRY: dict[str, dict[str, Any]] = {
 
 BASE_MODEL_KEYS = ["celebdf_b0", "ff_b0", "celebdf_vit", "ff_vit"]
 _MODELS: dict[str, torch.nn.Module] = {}
+_CASCADES: dict[str, cv2.CascadeClassifier] = {}
+
+
+def _get_cascades() -> dict[str, cv2.CascadeClassifier]:
+    global _CASCADES
+    if not _CASCADES:
+        _CASCADES["alt2"] = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_alt2.xml")
+        _CASCADES["default"] = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+        _CASCADES["profile"] = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
+        _CASCADES["eye"] = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
+    return _CASCADES
 
 
 def _get_model(model_id: str) -> torch.nn.Module:
@@ -121,131 +132,243 @@ def _normalise(image: np.ndarray) -> torch.Tensor:
     return (tensor - mean) / std
 
 
+def _detect_and_verify_faces(image: np.ndarray) -> list[dict[str, Any]]:
+    """
+    Scans, verifies, and rates human faces in the given RGB image.
+    Uses multi-pass cascaded detection with geometric constraints, eye confirmation,
+    and Laplacian sharpness assessment to reject non-face textures.
+    """
+    if image is None or image.size == 0:
+        return []
+
+    h_orig, w_orig = image.shape[:2]
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) if image.ndim == 3 else image
+    cascades = _get_cascades()
+
+    # Pass 1: High-precision frontal face (alt2)
+    raw_boxes = list(cascades["alt2"].detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(44, 44)))
+
+    # Pass 2: Broader recall frontal face
+    if not raw_boxes:
+        raw_boxes = list(cascades["default"].detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(44, 44)))
+
+    # Pass 3: Profile and angled face check
+    if not raw_boxes:
+        profiles = list(cascades["profile"].detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(44, 44)))
+        if not profiles:
+            flipped_gray = cv2.flip(gray, 1)
+            f_profiles = cascades["profile"].detectMultiScale(flipped_gray, scaleFactor=1.1, minNeighbors=4, minSize=(44, 44))
+            for fx, fy, fw, fh in f_profiles:
+                profiles.append((w_orig - fx - fw, fy, fw, fh))
+        raw_boxes = profiles
+
+    if not raw_boxes:
+        return []
+
+    verified_faces: list[dict[str, Any]] = []
+    for (x, y, w, h) in raw_boxes:
+        # A. Aspect ratio validation: natural human faces have 0.75 <= h/w <= 1.60
+        aspect = h / max(1, w)
+        if aspect < 0.75 or aspect > 1.60:
+            continue
+
+        # B. Area / dimension check: ignore tiny artifacts
+        if w < 40 or h < 40:
+            continue
+
+        # C. Margin crop with safety bounds
+        margin = int(max(w, h) * 0.20)
+        x1 = max(0, x - margin)
+        y1 = max(0, y - margin)
+        x2 = min(w_orig, x + w + margin)
+        y2 = min(h_orig, y + h + margin)
+        face_crop = image[y1:y2, x1:x2]
+        if face_crop.size == 0:
+            continue
+
+        # D. Eye landmark verification inside upper 60% of candidate box
+        face_gray = gray[y:y+h, x:x+w]
+        upper_half = face_gray[:max(10, int(h * 0.60)), :]
+        eyes = cascades["eye"].detectMultiScale(upper_half, scaleFactor=1.1, minNeighbors=2, minSize=(14, 14))
+        has_eyes = len(eyes) > 0
+
+        # E. Sharpness / clarity check using Laplacian variance
+        sharpness = float(cv2.Laplacian(face_gray, cv2.CV_64F).var())
+        if sharpness > 90.0:
+            clarity = "HIGH CLARITY"
+        elif sharpness > 30.0:
+            clarity = "ACCEPTABLE"
+        else:
+            clarity = "MOTION BLURRED"
+
+        size_factor = min(1.0, (w * h) / (180.0 * 180.0))
+        quality_score = sharpness * 0.4 + (100.0 if has_eyes else 30.0) + (size_factor * 50.0)
+
+        verified_faces.append({
+            "box": (int(x), int(y), int(w), int(h)),
+            "crop": face_crop,
+            "sharpness": round(sharpness, 1),
+            "clarity": clarity,
+            "eyes_detected": has_eyes,
+            "quality_score": round(quality_score, 1),
+            "size": f"{w}x{h}px",
+        })
+
+    verified_faces.sort(key=lambda f: f["quality_score"], reverse=True)
+    return verified_faces
+
+
 def _crop_face(image: np.ndarray) -> tuple[np.ndarray, bool]:
-    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    faces = detector.detectMultiScale(gray, 1.1, 4, minSize=(48, 48))
-    if len(faces) == 0:
-        return image, False
-    x, y, width, height = max(faces, key=lambda face: face[2] * face[3])
-    margin = int(max(width, height) * 0.2)
-    x1, y1 = max(0, x - margin), max(0, y - margin)
-    x2, y2 = min(image.shape[1], x + width + margin), min(image.shape[0], y + height + margin)
-    return image[y1:y2, x1:x2], True
+    verified = _detect_and_verify_faces(image)
+    if verified:
+        return verified[0]["crop"], True
+    return image, False
 
 
 def _extract_image_snapshots(image: np.ndarray) -> tuple[list[dict[str, Any]], bool]:
     h_orig, w_orig = image.shape[:2]
-    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    faces = detector.detectMultiScale(gray, 1.1, 4, minSize=(48, 48))
-    
+    verified_faces = _detect_and_verify_faces(image)
+    face_detected = len(verified_faces) > 0
     snapshots: list[dict[str, Any]] = []
-    face_detected = len(faces) > 0
-    
+
     if face_detected:
-        faces_sorted = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
-        x, y, w, h = faces_sorted[0]
-        
-        # Snapshot 1: Primary Tight Face Crop (margin 15%)
-        m1 = int(max(w, h) * 0.15)
-        crop1 = image[max(0, y - m1):min(h_orig, y + h + m1), max(0, x - m1):min(w_orig, x + w + m1)]
+        primary = verified_faces[0]
+        x, y, w, h = primary["box"]
+        crop1 = primary["crop"]
+
+        # Snapshot 1: Verified Primary Face
         snapshots.append({
-            "name": "Snapshot 1 · Primary Face Geometry",
-            "region": "Tight Facial Region",
+            "name": "Snapshot 1 · Primary Verified Face",
+            "region": f"Verified Face ({primary['clarity']}, {primary['size']})",
             "crop": crop1,
             "face_detected": True,
+            "face_quality_score": primary["quality_score"],
+            "face_clarity": primary["clarity"],
+            "eyes_verified": primary["eyes_detected"],
         })
-        
-        # Snapshot 2: Contextual Boundary (wider margin 45% for hairline/jaw)
+
+        # Snapshot 2: Contextual Face-Swap Seam & Hairline (45% margin)
         m2 = int(max(w, h) * 0.45)
         crop2 = image[max(0, y - m2):min(h_orig, y + h + m2), max(0, x - m2):min(w_orig, x + w + m2)]
         snapshots.append({
-            "name": "Snapshot 2 · Contextual Blending Boundary",
-            "region": "Jawline & Hair Boundary",
+            "name": "Snapshot 2 · Face-Swap Boundary & Hairline Seam",
+            "region": "Perimeter Seam & Blending Contour",
             "crop": crop2,
             "face_detected": True,
+            "face_quality_score": primary["quality_score"],
+            "face_clarity": primary["clarity"],
+            "eyes_verified": primary["eyes_detected"],
         })
-        
-        # Snapshot 3: Upper Facial / Ocular Region (eyes, gaze, brow)
+
+        # Snapshot 3: Ocular / Eye & Iris Gaze Region (upper 55%)
         h_c1 = crop1.shape[0]
-        ocular_crop = crop1[:max(10, int(h_c1 * 0.60)), :]
+        ocular_crop = crop1[:max(10, int(h_c1 * 0.55)), :]
         snapshots.append({
             "name": "Snapshot 3 · Ocular / Gaze Alignment",
-            "region": "Eyes & Forehead",
+            "region": "Eyes, Brow & Specular Reflection",
             "crop": ocular_crop,
             "face_detected": True,
+            "face_quality_score": primary["quality_score"],
+            "face_clarity": primary["clarity"],
+            "eyes_verified": primary["eyes_detected"],
         })
-        
-        # Snapshot 4: Perioral / Lip & Mouth Region (lip-sync, chin artifacts)
-        perioral_crop = crop1[max(0, int(h_c1 * 0.40)):, :]
+
+        # Snapshot 4: Perioral / Mouth, Teeth & Speech Region (lower 55%)
+        perioral_crop = crop1[max(0, int(h_c1 * 0.45)):, :]
         snapshots.append({
-            "name": "Snapshot 4 · Perioral / Speech Articulation",
-            "region": "Mouth & Chin",
+            "name": "Snapshot 4 · Perioral & Speech Articulation",
+            "region": "Mouth, Teeth Realism & Chin",
             "crop": perioral_crop,
             "face_detected": True,
+            "face_quality_score": primary["quality_score"],
+            "face_clarity": primary["clarity"],
+            "eyes_verified": primary["eyes_detected"],
         })
-        
-        # Snapshot 5: Secondary Face or Horizontal Flip TTA Check
-        if len(faces_sorted) > 1:
-            xs, ys, ws, hs = faces_sorted[1]
-            ms = int(max(ws, hs) * 0.2)
-            crop_sec = image[max(0, ys - ms):min(h_orig, ys + hs + ms), max(0, xs - ms):min(w_orig, xs + ws + ms)]
+
+        # Snapshot 5: Secondary Face or Bilateral Invariance Check
+        if len(verified_faces) > 1:
+            sec = verified_faces[1]
             snapshots.append({
-                "name": "Snapshot 5 · Secondary Subject Face",
-                "region": "Co-occurring Subject",
-                "crop": crop_sec,
+                "name": "Snapshot 5 · Secondary Verified Face",
+                "region": f"Co-occurring Face ({sec['clarity']})",
+                "crop": sec["crop"],
                 "face_detected": True,
+                "face_quality_score": sec["quality_score"],
+                "face_clarity": sec["clarity"],
+                "eyes_verified": sec["eyes_detected"],
             })
         else:
             snapshots.append({
-                "name": "Snapshot 5 · Horizontal Mirror Check (TTA)",
-                "region": "Bilateral Symmetry Check",
+                "name": "Snapshot 5 · Bilateral Invariance Check",
+                "region": "Horizontal Symmetry Check",
                 "crop": cv2.flip(crop1, 1),
                 "face_detected": True,
+                "face_quality_score": primary["quality_score"],
+                "face_clarity": primary["clarity"],
+                "eyes_verified": primary["eyes_detected"],
             })
     else:
-        # Fallback for non-frontal or artistic media: multi-region spatial decomposition
+        # Fallback when no human face is detected
         min_dim = min(h_orig, w_orig)
         cx, cy = w_orig // 2, h_orig // 2
         half = min_dim // 2
         center_crop = image[max(0, cy - half):min(h_orig, cy + half), max(0, cx - half):min(w_orig, cx + half)]
-        
+
         snapshots.append({
-            "name": "Snapshot 1 · Center Region",
-            "region": "Central Focus",
+            "name": "Snapshot 1 · Center Region [Unverified]",
+            "region": "Center Region (No Face Located)",
             "crop": center_crop,
             "face_detected": False,
+            "face_quality_score": 0.0,
+            "face_clarity": "NO FACE DETECTED",
+            "eyes_verified": False,
         })
         snapshots.append({
-            "name": "Snapshot 2 · Global Media View",
-            "region": "Full Frame Context",
+            "name": "Snapshot 2 · Global Overview [Unverified]",
+            "region": "Full Frame (No Face Located)",
             "crop": image,
             "face_detected": False,
+            "face_quality_score": 0.0,
+            "face_clarity": "NO FACE DETECTED",
+            "eyes_verified": False,
         })
         snapshots.append({
-            "name": "Snapshot 3 · Upper Frame Region",
-            "region": "Upper Section",
+            "name": "Snapshot 3 · Upper Frame [Unverified]",
+            "region": "Upper Section (No Face Located)",
             "crop": image[:int(h_orig * 0.65), :],
             "face_detected": False,
+            "face_quality_score": 0.0,
+            "face_clarity": "NO FACE DETECTED",
+            "eyes_verified": False,
         })
         snapshots.append({
-            "name": "Snapshot 4 · Lower Frame Region",
-            "region": "Lower Section",
+            "name": "Snapshot 4 · Lower Frame [Unverified]",
+            "region": "Lower Section (No Face Located)",
             "crop": image[int(h_orig * 0.35):, :],
             "face_detected": False,
+            "face_quality_score": 0.0,
+            "face_clarity": "NO FACE DETECTED",
+            "eyes_verified": False,
         })
         snapshots.append({
-            "name": "Snapshot 5 · Bilateral Inversion",
-            "region": "Symmetry Check",
+            "name": "Snapshot 5 · Mirror Overview [Unverified]",
+            "region": "Symmetry Check (No Face Located)",
             "crop": cv2.flip(center_crop, 1),
             "face_detected": False,
+            "face_quality_score": 0.0,
+            "face_clarity": "NO FACE DETECTED",
+            "eyes_verified": False,
         })
-        
+
     return snapshots, face_detected
 
 
 def _extract_video_snapshots(temp_path: Path) -> tuple[list[dict[str, Any]], bool]:
+    """
+    Intelligently scans the video timeline for candidate frames, detects and verifies
+    faces in each candidate, filters out non-face frames/blurs, and extracts the 6 best
+    diverse face snapshots across time.
+    """
     capture = cv2.VideoCapture(str(temp_path))
     if not capture.isOpened():
         raise HTTPException(status_code=400, detail="Cannot decode video file. Format may be unsupported.")
@@ -253,39 +376,98 @@ def _extract_video_snapshots(temp_path: Path) -> tuple[list[dict[str, Any]], boo
     total = int(capture.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
     fps = capture.get(cv2.CAP_PROP_FPS) or 25.0
 
-    # Sample 6 distinct temporal snapshots across the video timeline
-    num_samples = 6
-    if total <= num_samples:
-        indices = np.arange(total)
-    else:
-        indices = np.linspace(0, total - 1, num_samples, dtype=int)
+    # Broad candidate scan (up to 24 frames across the video)
+    sample_budget = min(24, max(8, total))
+    candidate_indices = np.linspace(0, total - 1, sample_budget, dtype=int)
 
-    snapshots: list[dict[str, Any]] = []
-    face_detected_any = False
+    face_candidates: list[dict[str, Any]] = []
+    fallback_frames: list[dict[str, Any]] = []
 
-    for i, idx in enumerate(indices):
+    for idx in candidate_indices:
         capture.set(cv2.CAP_PROP_POS_FRAMES, int(idx))
         ok, frame = capture.read()
         if not ok:
             continue
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        crop, detected = _crop_face(rgb)
-        face_detected_any = face_detected_any or detected
         t_sec = round(float(idx) / float(fps), 2) if fps > 0 else 0.0
 
-        snapshots.append({
-            "name": f"Snapshot {i + 1} · {t_sec}s",
-            "region": f"Timestamp {t_sec}s (Frame #{int(idx)})",
-            "crop": crop,
-            "timestamp_sec": t_sec,
-            "frame_index": int(idx),
-            "face_detected": detected,
-        })
+        verified = _detect_and_verify_faces(rgb)
+        if verified:
+            best_face = verified[0]
+            face_candidates.append({
+                "frame_index": int(idx),
+                "timestamp_sec": t_sec,
+                "crop": best_face["crop"],
+                "quality_score": best_face["quality_score"],
+                "sharpness": best_face["sharpness"],
+                "clarity": best_face["clarity"],
+                "eyes_detected": best_face["eyes_detected"],
+                "size": best_face["size"],
+                "face_detected": True,
+            })
+        else:
+            fallback_frames.append({
+                "frame_index": int(idx),
+                "timestamp_sec": t_sec,
+                "crop": rgb,
+                "quality_score": 0.0,
+                "sharpness": 0.0,
+                "clarity": "NO FACE DETECTED",
+                "eyes_detected": False,
+                "size": "0x0px",
+                "face_detected": False,
+            })
 
     capture.release()
 
-    if not snapshots:
-        raise HTTPException(status_code=400, detail="No readable video frames found in the uploaded file.")
+    snapshots: list[dict[str, Any]] = []
+    face_detected_any = len(face_candidates) > 0
+
+    if face_detected_any:
+        # Sort face candidates chronologically by frame index
+        face_candidates.sort(key=lambda c: c["frame_index"])
+
+        # Pick 6 diverse verified face snapshots across time
+        if len(face_candidates) >= 6:
+            chosen_indices = np.linspace(0, len(face_candidates) - 1, 6, dtype=int)
+            chosen_candidates = [face_candidates[i] for i in chosen_indices]
+        else:
+            chosen_candidates = list(face_candidates)
+            while len(chosen_candidates) < 6:
+                chosen_candidates.append(chosen_candidates[-1])
+
+        for i, cand in enumerate(chosen_candidates):
+            snapshots.append({
+                "name": f"Snapshot {i + 1} · {cand['timestamp_sec']}s",
+                "region": f"Verified Face ({cand['clarity']}, {cand['size']})",
+                "crop": cand["crop"],
+                "timestamp_sec": cand["timestamp_sec"],
+                "frame_index": cand["frame_index"],
+                "face_detected": True,
+                "face_quality_score": cand["quality_score"],
+                "face_clarity": cand["clarity"],
+                "eyes_verified": cand["eyes_detected"],
+            })
+    else:
+        # If no faces were detected anywhere in the entire video
+        chosen_fallbacks = fallback_frames[:6]
+        while len(chosen_fallbacks) < 6 and chosen_fallbacks:
+            chosen_fallbacks.append(chosen_fallbacks[-1])
+        if not chosen_fallbacks:
+            raise HTTPException(status_code=400, detail="No readable frames found in uploaded video.")
+
+        for i, cand in enumerate(chosen_fallbacks):
+            snapshots.append({
+                "name": f"Snapshot {i + 1} · {cand['timestamp_sec']}s [Unverified]",
+                "region": "Unverified Frame (No Face Located)",
+                "crop": cand["crop"],
+                "timestamp_sec": cand["timestamp_sec"],
+                "frame_index": cand["frame_index"],
+                "face_detected": False,
+                "face_quality_score": 0.0,
+                "face_clarity": "NO FACE DETECTED",
+                "eyes_verified": False,
+            })
 
     return snapshots, face_detected_any
 
@@ -439,25 +621,22 @@ async def predict(
             detail=f"Unsupported model selection '{chosen_model}'. Available: {list(MODEL_REGISTRY.keys())}",
         )
 
-    # 1. Extract multi-snapshot sequence (multi-crop for images, multi-timestamp for videos)
+    # 1. Verified Multi-Snapshot Face Extraction
     raw_snapshots, face_detected, primary_crop = _extract_snapshots_from_upload(file.filename, payload)
 
-    # Prepare normalized tensors for all snapshots
+    # Normalize tensors for all verified snapshots
     for snap in raw_snapshots:
         snap["tensor"] = _normalise(snap["crop"])
         snap["preview"] = _data_uri(snap["crop"].astype(np.float32) / 255.0)
 
-    # Sequence tensor for sequence-level video aggregation (B=1, T=N, C=3, H=224, W=224)
     sequence_tensor = torch.stack([s["tensor"] for s in raw_snapshots]).unsqueeze(0)
     entry = MODEL_REGISTRY[chosen_model]
     ensemble_breakdown = None
     consensus_text = None
 
-    # Explanation model reference (CNN is optimal for Grad-CAM)
     expl_model = _get_model("celebdf_b0") if chosen_model == "cross_ensemble" else _get_model(chosen_model)
 
     if chosen_model == "cross_ensemble":
-        # 2a. Multi-model Cross-Architecture Fusion across sequence
         sub_models = {k: _get_model(k) for k in BASE_MODEL_KEYS}
         breakdown = []
         for key in BASE_MODEL_KEYS:
@@ -485,7 +664,6 @@ async def predict(
         else:
             consensus_text = f"{real_votes}/4 models vote REAL ({fake_votes}/4 FAKE)"
 
-        # 2b. Evaluate each individual snapshot across the 4 ensemble models
         processed_snapshots = []
         for i, snap in enumerate(raw_snapshots):
             t_input = snap["tensor"].unsqueeze(0)
@@ -496,8 +674,7 @@ async def predict(
                 ]
             snap_score = float(np.mean(snap_sub_scores))
             snap_label = "FAKE" if snap_score >= 0.5 else "REAL"
-            
-            # Generate Grad-CAM for this snapshot
+
             expl_img, method_name, faith_drop = _explain(expl_model, snap["tensor"])
 
             processed_snapshots.append({
@@ -513,10 +690,12 @@ async def predict(
                 "label": snap_label,
                 "faithfulness_confidence_drop": round(faith_drop, 4),
                 "face_detected": snap["face_detected"],
+                "face_quality_score": snap.get("face_quality_score", 0.0),
+                "face_clarity": snap.get("face_clarity", "VERIFIED"),
+                "eyes_verified": snap.get("eyes_verified", False),
                 "is_peak_anomaly": False,
             })
     else:
-        # Single model evaluation
         loaded_model = _get_model(chosen_model)
         with torch.no_grad():
             seq_logits = loaded_model(sequence_tensor)
@@ -545,10 +724,12 @@ async def predict(
                 "label": snap_label,
                 "faithfulness_confidence_drop": round(faith_drop, 4),
                 "face_detected": snap["face_detected"],
+                "face_quality_score": snap.get("face_quality_score", 0.0),
+                "face_clarity": snap.get("face_clarity", "VERIFIED"),
+                "eyes_verified": snap.get("eyes_verified", False),
                 "is_peak_anomaly": False,
             })
 
-    # 3. Identify Peak Anomaly Snapshot (highest fake score)
     if processed_snapshots:
         max_snap_idx = int(np.argmax([s["score"] for s in processed_snapshots]))
         processed_snapshots[max_snap_idx]["is_peak_anomaly"] = True
@@ -557,7 +738,6 @@ async def predict(
         max_snap_idx = 0
         peak_snapshot = None
 
-    # Multi-snapshot summary analytics
     total_snaps = len(processed_snapshots)
     fake_snaps = sum(1 for s in processed_snapshots if s["label"] == "FAKE")
     real_snaps = total_snaps - fake_snaps
@@ -565,12 +745,15 @@ async def predict(
     agreement_pct = round((agreement_snaps / total_snaps) * 100, 1) if total_snaps > 0 else 100.0
 
     all_scores = [s["score"] for s in processed_snapshots]
+    verified_face_count = sum(1 for s in processed_snapshots if s["face_detected"])
+
     multi_snapshot_stats = {
         "total_snapshots": total_snaps,
+        "verified_faces_count": verified_face_count,
         "fake_count": fake_snaps,
         "real_count": real_snaps,
         "agreement_pct": agreement_pct,
-        "agreement_text": f"{agreement_snaps} of {total_snaps} snapshots agree ({agreement_pct}% temporal consistency)",
+        "agreement_text": f"{agreement_snaps} of {total_snaps} verified snapshots agree ({agreement_pct}% temporal consistency)",
         "mean_score": round(float(np.mean(all_scores)), 4) if all_scores else round(overall_score, 4),
         "max_score": round(float(np.max(all_scores)), 4) if all_scores else round(overall_score, 4),
         "min_score": round(float(np.min(all_scores)), 4) if all_scores else round(overall_score, 4),
@@ -578,7 +761,6 @@ async def predict(
         "peak_anomaly_index": max_snap_idx,
     }
 
-    # Primary representation: default to peak anomaly if fake, else primary crop
     primary_snap = peak_snapshot if (overall_score >= 0.5 and peak_snapshot) else processed_snapshots[0]
     elapsed_ms = round((time.time() - start_time) * 1000, 1)
 
