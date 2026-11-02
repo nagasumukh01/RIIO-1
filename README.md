@@ -29,6 +29,11 @@ python scripts/prepare_data.py --dataset faceforensics
 python scripts/preprocess_faces.py --dataset faceforensics --max-videos 100
 python scripts/train.py --dataset faceforensics --model efficientnet_b0 --epochs 5
 
+# Stage 3 - Model evaluation
+python scripts/evaluate.py --dataset faceforensics --split test --checkpoint artifacts/models/ff_c23_subset10/best.pt --model efficientnet_b0
+
+# Stage 4 - Explainability
+python scripts/run_explainability.py --checkpoint artifacts/models/ff_c23_subset10/best.pt --dataset faceforensics --split test --model efficientnet_b0 --max-videos 32
 # Dashboard
 streamlit run app.py
 ```
