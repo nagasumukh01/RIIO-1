@@ -21,6 +21,11 @@
    - License: follow the competition/dataset terms and do not redistribute videos.
    - Small run: 50-200 balanced real/fake videos.
 
+4. **Diffusion-generated held-out set**
+   - Optional user-provided holdout for evaluation only.
+   - Never used for training and never included in the six-pair matrix.
+   - Expected folders: `data/raw/diffusion/{real,fake}/`.
+
 
 ## Folder Convention (after `prepare_data.py`)
 

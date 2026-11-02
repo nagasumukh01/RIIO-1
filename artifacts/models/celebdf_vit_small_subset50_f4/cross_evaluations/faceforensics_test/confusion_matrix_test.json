@@ -1,0 +1,18 @@
+{
+  "labels": [
+    0,
+    1
+  ],
+  "matrix": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      4
+    ]
+  ],
+  "dataset": "faceforensics",
+  "split": "test"
+}

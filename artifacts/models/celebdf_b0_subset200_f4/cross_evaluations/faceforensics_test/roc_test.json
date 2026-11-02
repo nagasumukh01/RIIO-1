@@ -1,0 +1,52 @@
+{
+  "dataset": "faceforensics",
+  "split": "test",
+  "metrics": {
+    "auroc": 0.75,
+    "ap": 0.9305555555555556,
+    "accuracy": 0.25,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "eer": 0.4166666666666667,
+    "tn": 2,
+    "fp": 0,
+    "fn": 6,
+    "tp": 0,
+    "fpr": 0.0,
+    "fnr": 0.9999999983333333,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+    "model": "efficientnet_b0"
+  },
+  "fpr": [
+    0.0,
+    0.0,
+    0.0,
+    0.5,
+    0.5,
+    1.0,
+    1.0
+  ],
+  "tpr": [
+    0.0,
+    0.16666666666666666,
+    0.6666666666666666,
+    0.6666666666666666,
+    0.8333333333333334,
+    0.8333333333333334,
+    1.0
+  ],
+  "thresholds": [
+    Infinity,
+    0.11367033421993256,
+    0.0013802592875435948,
+    5.26709045516327e-05,
+    2.0146055248915218e-05,
+    1.7815433238865808e-05,
+    2.2999295197223546e-06
+  ]
+}

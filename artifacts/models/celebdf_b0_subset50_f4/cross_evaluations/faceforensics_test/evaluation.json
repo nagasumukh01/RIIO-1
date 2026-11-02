@@ -1,0 +1,78 @@
+{
+  "metrics": {
+    "auroc": 0.75,
+    "ap": 0.9305555555555556,
+    "accuracy": 0.625,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666,
+    "eer": 0.4166666666666667,
+    "tn": 2,
+    "fp": 0,
+    "fn": 3,
+    "tp": 3,
+    "fpr": 0.0,
+    "fnr": 0.49999999916666665,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\best.pt",
+    "model": "efficientnet_b0"
+  },
+  "video_ids": [
+    "face2face_866_878",
+    "original_878",
+    "faceswap_183_253",
+    "deepfakes_720_672",
+    "original_469",
+    "face2face_585_599",
+    "faceswap_866_878",
+    "neuraltextures_866_878"
+  ],
+  "logits": [
+    2.446047782897949,
+    -4.119076251983643,
+    3.5766499042510986,
+    -5.80170202255249,
+    -9.438931465148926,
+    -13.95340633392334,
+    -3.3648149967193604,
+    2.414217233657837
+  ],
+  "labels": [
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "artifacts": {
+    "metrics": {
+      "auroc": 0.75,
+      "ap": 0.9305555555555556,
+      "accuracy": 0.625,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "eer": 0.4166666666666667,
+      "tn": 2,
+      "fp": 0,
+      "fn": 3,
+      "tp": 3,
+      "fpr": 0.0,
+      "fnr": 0.49999999916666665,
+      "dataset": "faceforensics",
+      "split": "test",
+      "n_videos": 8,
+      "is_synthetic": false,
+      "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\best.pt",
+      "model": "efficientnet_b0"
+    },
+    "predictions": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\cross_evaluations\\faceforensics_test\\predictions.csv",
+    "roc": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\cross_evaluations\\faceforensics_test\\roc_test.json"
+  }
+}

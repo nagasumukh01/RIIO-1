@@ -1,0 +1,18 @@
+{
+  "labels": [
+    0,
+    1
+  ],
+  "matrix": [
+    [
+      14,
+      0
+    ],
+    [
+      4,
+      12
+    ]
+  ],
+  "dataset": "celebdf",
+  "split": "val"
+}

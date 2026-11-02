@@ -1,0 +1,18 @@
+{
+  "labels": [
+    0,
+    1
+  ],
+  "matrix": [
+    [
+      12,
+      4
+    ],
+    [
+      3,
+      11
+    ]
+  ],
+  "dataset": "celebdf",
+  "split": "test"
+}

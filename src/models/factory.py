@@ -95,7 +95,8 @@ def build_model(
         entry = backbones[name]
         model_name = entry["name"]
         backbone_type = entry.get("type", "cnn")
-        pretrained = entry.get("pretrained", pretrained)
+        if pretrained:
+            pretrained = entry.get("pretrained", pretrained)
         num_classes = entry.get("num_classes", num_classes)
 
     logger.info("Building backbone=%s (timm name=%s, type=%s, pretrained=%s)", name, model_name, backbone_type, pretrained)

@@ -42,8 +42,9 @@ class RealFaceVideoDataset(Dataset):
         max_videos: Optional[int] = None,
         faces_root: Optional[str | Path] = None,
         require_faces: bool = True,
+        allow_diffusion_holdout: bool = False,
     ):
-        if dataset not in self.SUPPORTED:
+        if dataset not in self.SUPPORTED and not (dataset == "diffusion" and allow_diffusion_holdout):
             raise ValueError(f"Unknown dataset '{dataset}'. Supported: {self.SUPPORTED}")
         self.dataset = dataset
         self.split = split

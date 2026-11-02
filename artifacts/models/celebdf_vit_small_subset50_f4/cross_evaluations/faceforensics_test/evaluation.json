@@ -1,0 +1,78 @@
+{
+  "metrics": {
+    "auroc": 0.5,
+    "ap": 0.7345238095238095,
+    "accuracy": 0.625,
+    "precision": 0.8,
+    "recall": 0.6666666666666666,
+    "f1": 0.7272727272727273,
+    "eer": 0.75,
+    "tn": 1,
+    "fp": 1,
+    "fn": 2,
+    "tp": 4,
+    "fpr": 0.4999999975,
+    "fnr": 0.33333333277777777,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_vit_small_subset50_f4\\best.pt",
+    "model": "vit_small"
+  },
+  "video_ids": [
+    "face2face_866_878",
+    "original_878",
+    "faceswap_183_253",
+    "deepfakes_720_672",
+    "original_469",
+    "face2face_585_599",
+    "faceswap_866_878",
+    "neuraltextures_866_878"
+  ],
+  "logits": [
+    0.7517679333686829,
+    1.165086269378662,
+    0.4525819420814514,
+    -2.447439670562744,
+    -3.124140501022339,
+    -3.0815160274505615,
+    0.5667571425437927,
+    0.9545201659202576
+  ],
+  "labels": [
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "artifacts": {
+    "metrics": {
+      "auroc": 0.5,
+      "ap": 0.7345238095238095,
+      "accuracy": 0.625,
+      "precision": 0.8,
+      "recall": 0.6666666666666666,
+      "f1": 0.7272727272727273,
+      "eer": 0.75,
+      "tn": 1,
+      "fp": 1,
+      "fn": 2,
+      "tp": 4,
+      "fpr": 0.4999999975,
+      "fnr": 0.33333333277777777,
+      "dataset": "faceforensics",
+      "split": "test",
+      "n_videos": 8,
+      "is_synthetic": false,
+      "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_vit_small_subset50_f4\\best.pt",
+      "model": "vit_small"
+    },
+    "predictions": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_vit_small_subset50_f4\\cross_evaluations\\faceforensics_test\\predictions.csv",
+    "roc": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_vit_small_subset50_f4\\cross_evaluations\\faceforensics_test\\roc_test.json"
+  }
+}

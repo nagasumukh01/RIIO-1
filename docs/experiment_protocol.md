@@ -57,3 +57,22 @@ Real checkpoints and summaries are stored under `artifacts/models/<experiment_id
 ## Robustness
 - Train-time: controlled JPEG/blur augmentation.
 - Eval-time stress: JPEG q=40/20, Gaussian σ=1.5/3.0; measure AUROC drop.
+
+```bash
+python scripts/run_robustness.py --checkpoint artifacts/models/<experiment_id>/best.pt --dataset faceforensics --model efficientnet_b0 --frames 4
+python scripts/run_robustness.py --checkpoint artifacts/models/<experiment_id>/best.pt --dataset celebdf --model efficientnet_b0 --frames 4
+```
+
+Outputs are written as REAL DATA JSON/CSV stress reports under `artifacts/experiment_logs/`.
+
+## Separate Diffusion Holdout
+
+Diffusion samples are never used for training or mixed into the cross-dataset matrix. Place user-provided, licensed samples under `data/raw/diffusion/{real,fake}/`, preprocess them, and run:
+
+```bash
+python scripts/prepare_data.py --dataset diffusion
+python scripts/preprocess_faces.py --dataset diffusion --max-videos 100
+python scripts/run_diffusion_eval.py --checkpoint artifacts/models/<experiment_id>/best.pt --model efficientnet_b0
+```
+
+With no samples present, the evaluator writes an explicit `pending - no diffusion samples found` report instead of fabricating metrics.

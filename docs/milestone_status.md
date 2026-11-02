@@ -15,19 +15,23 @@
 - [x] Missing faces → clear `FileNotFoundError` with exact 4-step instructions (verified)
 - [x] **No synthetic fallback** in any research entry point
 
-## Stage 3 – Within-dataset + 6-pair evaluation ✅ EXECUTABLE WHEN FACES EXIST
+## Stage 3 – Within-dataset + cross-dataset evaluation ✅ PARTIALLY EXECUTED
 - [x] `scripts/evaluate.py`
 - [x] `scripts/run_cross_dataset.py` (dry-run and executable six-pair matrix)
-- [ ] Full runs require user-provided face crops
+- [x] FF++ and Celeb-DF CNN/ViT cross-evaluations written to `artifacts/experiment_logs/cross_ff_celeb_vit_cnn/`
+- [ ] DFDC-dependent pairs require official DFDC training data, which is currently unavailable
 
 ## Stage 4 – Ablations ✅ EXECUTABLE WHEN FACES EXIST
 - [x] `scripts/run_ablations.py` (augmentation / loss / capacity execution and CSV/JSON export)
+- [ ] Full ablation tables require dedicated compute runs; no fabricated comparison values are included
 
-## Stage 5 – Explainability + Robustness ✅ EXECUTABLE INTERFACES
+## Stage 5 – Explainability + Robustness ✅ EXECUTED FOR AVAILABLE REAL CHECKPOINTS
 - [x] Grad-CAM module
 - [x] Attention Rollout helper
 - [x] Stress tests (JPEG, blur)
 - [x] `scripts/run_explainability.py` (attribution figures and perturbation report)
+- [x] `scripts/run_robustness.py` (JPEG/blur stress JSON and CSV reports)
+- [x] Separate diffusion holdout evaluator with explicit pending status when no samples exist
 
 ## Stage 6 – Dashboard + Docs ✅ COMPLETE
 - [x] Streamlit research dashboard (`app.py`) with mandatory disclaimer
@@ -35,13 +39,20 @@
 - [x] `docs/REAL_DATA_QUICKSTART.md` (exact 4-command flow)
 - [x] requirements.txt, README, CI workflow, .gitignore
 
-## Next concrete task for a user with data
-1. Obtain 50–200 videos of FF++ / Celeb-DF / DFDC under research license.
-2. Follow `docs/REAL_DATA_QUICKSTART.md`.
-3. Run the exact commands in `docs/experiment_protocol.md`.
-4. Expand to cross-dataset matrix and ablations only after the required datasets have face crops.
+## Verified Current Results
+- [x] FF++ real-data EfficientNet-B0 and ViT-Small checkpoints and held-out artifacts
+- [x] Celeb-DF real-data EfficientNet-B0 and ViT-Small checkpoints and held-out artifacts
+- [x] Matched FF++/Celeb-DF cross-model matrix
+- [x] Assignment report updated with metrics, figures, cross-validation, robustness, and diffusion status
+- [x] Synthetic smoke test remains isolated under `artifacts/checkpoints/smoke_synthetic_stage1/`
+
+## Remaining External Blockers
+1. DFDC labeled training data is unavailable because the official competition is closed.
+2. Diffusion metrics require user-provided licensed diffusion samples.
+3. Full six-pair matrix, complete ablation tables, and paper-level comparison require those data and additional compute.
 
 ## What cannot be completed without external data / GPU
-- Actual within-dataset and cross-dataset numeric results on real videos
+- DFDC-dependent within-dataset and cross-dataset numeric results
+- Diffusion-heldout numeric results without user-provided samples
 - Fair comparison numbers vs Petmezas 2026
 - Full ViT-Base training runs
