@@ -1,0 +1,5 @@
+source,target,model,source_test_auroc,target_test_auroc,target_accuracy,target_f1,target_eer,generalization_gap,source_checkpoint,is_synthetic
+faceforensics,celebdf,efficientnet_b0,0.5833333333333333,0.26785714285714285,0.4666666666666667,0.6,0.7008928571428572,0.3154761904761904,C:\Users\Lenovo\Downloads\robustdeep\robustdeep\artifacts\models\ff_c23_b0_subset50_f4\best.pt,False
+faceforensics,celebdf,vit_small,0.0,0.5892857142857143,0.4666666666666667,0.6363636363636364,0.36607142857142855,-0.5892857142857143,C:\Users\Lenovo\Downloads\robustdeep\robustdeep\artifacts\models\ff_c23_vit_small_subset50_f4\best.pt,False
+celebdf,faceforensics,efficientnet_b0,0.9241071428571428,0.75,0.25,0.0,0.4166666666666667,0.1741071428571428,C:\Users\Lenovo\Downloads\robustdeep\robustdeep\artifacts\models\celebdf_b0_subset200_f4\best.pt,False
+celebdf,faceforensics,vit_small,0.9375,0.5,0.625,0.7272727272727273,0.75,0.4375,C:\Users\Lenovo\Downloads\robustdeep\robustdeep\artifacts\models\celebdf_vit_small_subset50_f4\best.pt,False

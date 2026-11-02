@@ -1,0 +1,121 @@
+{
+  "experiment_id": "smoke_synthetic_stage1",
+  "best_val_auroc": 0.0,
+  "epochs_ran": 2,
+  "elapsed_seconds": 0.2761106491088867,
+  "is_synthetic": true,
+  "history": [
+    {
+      "epoch": 0,
+      "train": {
+        "auroc": 0.0,
+        "ap": 0.17727272727272728,
+        "accuracy": 0.75,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "eer": 1.0,
+        "tn": 9,
+        "fp": 0,
+        "fn": 3,
+        "tp": 0,
+        "fpr": 0.0,
+        "fnr": 0.9999999966666667,
+        "loss": 0.6702039241790771
+      },
+      "val": {
+        "auroc": 0.0,
+        "ap": 0.26666666666666666,
+        "accuracy": 0.6666666666666666,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "eer": 1.0,
+        "tn": 4,
+        "fp": 0,
+        "fn": 2,
+        "tp": 0,
+        "fpr": 0.0,
+        "fnr": 0.999999995,
+        "loss": 0.6830247044563293
+      }
+    },
+    {
+      "epoch": 1,
+      "train": {
+        "auroc": 0.0,
+        "ap": 0.17727272727272728,
+        "accuracy": 0.75,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "eer": 1.0,
+        "tn": 9,
+        "fp": 0,
+        "fn": 3,
+        "tp": 0,
+        "fpr": 0.0,
+        "fnr": 0.9999999966666667,
+        "loss": 0.6698544025421143
+      },
+      "val": {
+        "auroc": 0.0,
+        "ap": 0.26666666666666666,
+        "accuracy": 0.6666666666666666,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "eer": 1.0,
+        "tn": 4,
+        "fp": 0,
+        "fn": 2,
+        "tp": 0,
+        "fpr": 0.0,
+        "fnr": 0.999999995,
+        "loss": 0.6828748285770416
+      }
+    }
+  ],
+  "label": "SYNTHETIC \u2013 NOT A RESEARCH RESULT",
+  "config": {
+    "optimizer": {
+      "name": "adamw",
+      "lr": 0.0001,
+      "weight_decay": 0.05,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    },
+    "scheduler": {
+      "name": "cosine",
+      "warmup_epochs": 2,
+      "min_lr": 1e-06
+    },
+    "loss": {
+      "name": "bce",
+      "focal_gamma": 2.0,
+      "pos_weight": null
+    },
+    "training": {
+      "epochs": 2,
+      "batch_size": 4,
+      "num_workers": 4,
+      "mixed_precision": false,
+      "gradient_clip": 1.0,
+      "early_stopping_patience": 5,
+      "save_every": 5,
+      "seed": 42
+    },
+    "aggregation": {
+      "method": "mean",
+      "topk": 5
+    },
+    "checkpoint": {
+      "dir": "artifacts/checkpoints",
+      "keep_last_n": 3,
+      "monitor": "val_auroc",
+      "mode": "max"
+    }
+  }
+}

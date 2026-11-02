@@ -1,0 +1,41 @@
+{
+  "pairs": [
+    {
+      "source": "faceforensics",
+      "target": "celebdf",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_faceforensics_to_celebdf_efficientnet_b0"
+    },
+    {
+      "source": "faceforensics",
+      "target": "dfdc",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_faceforensics_to_dfdc_efficientnet_b0"
+    },
+    {
+      "source": "celebdf",
+      "target": "faceforensics",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_celebdf_to_faceforensics_efficientnet_b0"
+    },
+    {
+      "source": "celebdf",
+      "target": "dfdc",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_celebdf_to_dfdc_efficientnet_b0"
+    },
+    {
+      "source": "dfdc",
+      "target": "faceforensics",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_dfdc_to_faceforensics_efficientnet_b0"
+    },
+    {
+      "source": "dfdc",
+      "target": "celebdf",
+      "model": "efficientnet_b0",
+      "experiment_id": "cross_dfdc_to_celebdf_efficientnet_b0"
+    }
+  ],
+  "protocol": "source train only; target test only; no target threshold tuning"
+}

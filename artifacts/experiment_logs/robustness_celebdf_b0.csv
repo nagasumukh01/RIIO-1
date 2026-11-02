@@ -1,0 +1,5 @@
+dataset,split,stress,clean_auroc,stressed_auroc,auroc_drop,accuracy,f1,eer,checkpoint,is_synthetic
+celebdf,test,jpeg_40,0.9241071428571428,0.9464285714285714,-0.022321428571428603,0.8,0.75,0.20089285714285715,artifacts\models\celebdf_b0_subset200_f4\best.pt,False
+celebdf,test,jpeg_20,0.9241071428571428,0.9330357142857143,-0.008928571428571508,0.7666666666666667,0.6666666666666666,0.20089285714285715,artifacts\models\celebdf_b0_subset200_f4\best.pt,False
+celebdf,test,gaussian_blur_1.5,0.9241071428571428,0.6428571428571429,0.2812499999999999,0.4666666666666667,0.0,0.4330357142857143,artifacts\models\celebdf_b0_subset200_f4\best.pt,False
+celebdf,test,gaussian_blur_3.0,0.9241071428571428,0.5267857142857142,0.3973214285714286,0.43333333333333335,0.0,0.46875,artifacts\models\celebdf_b0_subset200_f4\best.pt,False

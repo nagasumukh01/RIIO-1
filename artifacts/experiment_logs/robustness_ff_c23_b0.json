@@ -1,0 +1,58 @@
+{
+  "label": "REAL DATA",
+  "protocol": "evaluation-time compression and blur stress; no retraining",
+  "rows": [
+    {
+      "dataset": "faceforensics",
+      "split": "test",
+      "stress": "jpeg_40",
+      "clean_auroc": 0.5833333333333333,
+      "stressed_auroc": 0.5833333333333333,
+      "auroc_drop": 0.0,
+      "accuracy": 0.625,
+      "f1": 0.7692307692307693,
+      "eer": 0.5,
+      "checkpoint": "artifacts\\models\\ff_c23_b0_subset50_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "faceforensics",
+      "split": "test",
+      "stress": "jpeg_20",
+      "clean_auroc": 0.5833333333333333,
+      "stressed_auroc": 0.3333333333333333,
+      "auroc_drop": 0.24999999999999994,
+      "accuracy": 0.75,
+      "f1": 0.8571428571428571,
+      "eer": 0.8333333333333334,
+      "checkpoint": "artifacts\\models\\ff_c23_b0_subset50_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "faceforensics",
+      "split": "test",
+      "stress": "gaussian_blur_1.5",
+      "clean_auroc": 0.5833333333333333,
+      "stressed_auroc": 0.5833333333333334,
+      "auroc_drop": -1.1102230246251565e-16,
+      "accuracy": 0.75,
+      "f1": 0.8571428571428571,
+      "eer": 0.5833333333333334,
+      "checkpoint": "artifacts\\models\\ff_c23_b0_subset50_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "faceforensics",
+      "split": "test",
+      "stress": "gaussian_blur_3.0",
+      "clean_auroc": 0.5833333333333333,
+      "stressed_auroc": 0.5833333333333334,
+      "auroc_drop": -1.1102230246251565e-16,
+      "accuracy": 0.75,
+      "f1": 0.8571428571428571,
+      "eer": 0.5833333333333334,
+      "checkpoint": "artifacts\\models\\ff_c23_b0_subset50_f4\\best.pt",
+      "is_synthetic": false
+    }
+  ]
+}

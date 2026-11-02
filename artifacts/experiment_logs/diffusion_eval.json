@@ -1,0 +1,9 @@
+{
+  "label": "REAL DATA - SEPARATE DIFFUSION HOLDOUT",
+  "dataset": "diffusion",
+  "checkpoint": "artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+  "provenance": "user-provided held-out diffusion samples; never used for training or the cross-dataset matrix",
+  "is_synthetic": false,
+  "status": "pending - no diffusion samples found",
+  "sample_count": 0
+}

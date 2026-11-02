@@ -1,0 +1,133 @@
+{
+  "experiment_id": "ff_c23_vit_small_milestone",
+  "best_val_auroc": 0.9,
+  "epochs_ran": 1,
+  "elapsed_seconds": 183.87281203269958,
+  "is_synthetic": false,
+  "history": [
+    {
+      "epoch": 0,
+      "train": {
+        "auroc": 0.5402298850574713,
+        "ap": 0.8902970253741108,
+        "accuracy": 0.5714285714285714,
+        "precision": 0.7916666666666666,
+        "recall": 0.6551724137931034,
+        "f1": 0.7169811320754716,
+        "eer": 0.49137931034482757,
+        "tn": 1,
+        "fp": 5,
+        "fn": 10,
+        "tp": 19,
+        "fpr": 0.8333333319444445,
+        "fnr": 0.34482758608799047,
+        "loss": 0.8558073739210764
+      },
+      "val": {
+        "auroc": 0.9,
+        "ap": 0.9666666666666666,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.09999999999999998,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.5290537476539612
+      }
+    }
+  ],
+  "label": "REAL DATA",
+  "config": {
+    "optimizer": {
+      "name": "adamw",
+      "lr": 0.0001,
+      "weight_decay": 0.05,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    },
+    "scheduler": {
+      "name": "cosine",
+      "warmup_epochs": 2,
+      "min_lr": 1e-06
+    },
+    "loss": {
+      "name": "bce",
+      "focal_gamma": 2.0,
+      "pos_weight": null
+    },
+    "training": {
+      "epochs": 1,
+      "batch_size": 16,
+      "num_workers": 4,
+      "mixed_precision": true,
+      "gradient_clip": 1.0,
+      "early_stopping_patience": 7,
+      "save_every": 5,
+      "seed": 42
+    },
+    "aggregation": {
+      "method": "mean",
+      "topk": 5
+    },
+    "checkpoint": {
+      "dir": "artifacts/checkpoints",
+      "keep_last_n": 3,
+      "monitor": "val_auroc",
+      "mode": "max"
+    }
+  },
+  "dataset": "faceforensics",
+  "model": "vit_small",
+  "seed": 42,
+  "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_vit_small_milestone\\best.pt",
+  "val_metrics": {
+    "auroc": 0.9,
+    "ap": 0.9666666666666666,
+    "accuracy": 0.7142857142857143,
+    "precision": 0.7142857142857143,
+    "recall": 1.0,
+    "f1": 0.8333333333333334,
+    "eer": 0.09999999999999998,
+    "tn": 0,
+    "fp": 2,
+    "fn": 0,
+    "tp": 5,
+    "fpr": 0.999999995,
+    "fnr": 0.0,
+    "dataset": "faceforensics",
+    "split": "val",
+    "n_videos": 7,
+    "is_synthetic": false,
+    "experiment_id": "ff_c23_vit_small_milestone",
+    "model": "vit_small"
+  },
+  "test_metrics": {
+    "auroc": 0.0,
+    "ap": 0.594047619047619,
+    "accuracy": 0.75,
+    "precision": 0.75,
+    "recall": 1.0,
+    "f1": 0.8571428571428571,
+    "eer": 1.0,
+    "tn": 0,
+    "fp": 2,
+    "fn": 0,
+    "tp": 6,
+    "fpr": 0.999999995,
+    "fnr": 0.0,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "experiment_id": "ff_c23_vit_small_milestone",
+    "model": "vit_small"
+  },
+  "artifact_dir": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_vit_small_milestone"
+}

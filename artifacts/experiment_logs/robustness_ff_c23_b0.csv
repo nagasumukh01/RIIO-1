@@ -1,0 +1,5 @@
+dataset,split,stress,clean_auroc,stressed_auroc,auroc_drop,accuracy,f1,eer,checkpoint,is_synthetic
+faceforensics,test,jpeg_40,0.5833333333333333,0.5833333333333333,0.0,0.625,0.7692307692307693,0.5,artifacts\models\ff_c23_b0_subset50_f4\best.pt,False
+faceforensics,test,jpeg_20,0.5833333333333333,0.3333333333333333,0.24999999999999994,0.75,0.8571428571428571,0.8333333333333334,artifacts\models\ff_c23_b0_subset50_f4\best.pt,False
+faceforensics,test,gaussian_blur_1.5,0.5833333333333333,0.5833333333333334,-1.1102230246251565e-16,0.75,0.8571428571428571,0.5833333333333334,artifacts\models\ff_c23_b0_subset50_f4\best.pt,False
+faceforensics,test,gaussian_blur_3.0,0.5833333333333333,0.5833333333333334,-1.1102230246251565e-16,0.75,0.8571428571428571,0.5833333333333334,artifacts\models\ff_c23_b0_subset50_f4\best.pt,False

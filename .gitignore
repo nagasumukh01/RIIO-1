@@ -16,9 +16,6 @@ htmlcov/
 data/raw/
 data/faces/
 data/processed/
-artifacts/checkpoints/
-artifacts/experiment_logs/
-artifacts/figures/
 *.pt
 *.pth
 *.ckpt

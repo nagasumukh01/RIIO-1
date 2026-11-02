@@ -1,0 +1,308 @@
+{
+  "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\best.pt",
+  "dataset": "celebdf",
+  "split": "test",
+  "records": [
+    {
+      "video_id": "fake_id0_id23_0005",
+      "label": 1,
+      "score": 0.9999998807907104,
+      "category": "correct",
+      "uncertainty": 0.49999988079071045,
+      "faithfulness_confidence_drop": 0.0,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id23_0005_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id3_0007",
+      "label": 1,
+      "score": 0.9999394416809082,
+      "category": "correct",
+      "uncertainty": 0.4999394416809082,
+      "faithfulness_confidence_drop": 3.814697265625e-05,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id3_0007_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id1_0003",
+      "label": 1,
+      "score": 0.9999961853027344,
+      "category": "correct",
+      "uncertainty": 0.4999961853027344,
+      "faithfulness_confidence_drop": 1.430511474609375e-06,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id1_0003_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id26_0006",
+      "label": 1,
+      "score": 0.756108283996582,
+      "category": "correct",
+      "uncertainty": 0.25610828399658203,
+      "faithfulness_confidence_drop": -0.021699130535125732,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id26_0006_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id10_0000",
+      "label": 0,
+      "score": 0.0002649793168529868,
+      "category": "correct",
+      "uncertainty": 0.499735020683147,
+      "faithfulness_confidence_drop": 2.9791248380206525e-05,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id10_0000_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id13_0004",
+      "label": 0,
+      "score": 0.012822874821722507,
+      "category": "correct",
+      "uncertainty": 0.4871771251782775,
+      "faithfulness_confidence_drop": 0.0013901442289352417,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id13_0004_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00029",
+      "label": 0,
+      "score": 0.01976800709962845,
+      "category": "correct",
+      "uncertainty": 0.48023199290037155,
+      "faithfulness_confidence_drop": 0.0006498154252767563,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00029_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id21_0002",
+      "label": 1,
+      "score": 0.9994636178016663,
+      "category": "correct",
+      "uncertainty": 0.49946361780166626,
+      "faithfulness_confidence_drop": -0.00015622377395629883,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id21_0002_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id0_0007",
+      "label": 0,
+      "score": 0.9999144077301025,
+      "category": "false_positive",
+      "uncertainty": 0.49991440773010254,
+      "faithfulness_confidence_drop": 2.0265579223632812e-06,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id0_0007_false_positive.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id13_0005",
+      "label": 0,
+      "score": 0.06755965203046799,
+      "category": "correct",
+      "uncertainty": 0.432440347969532,
+      "faithfulness_confidence_drop": 0.0033926740288734436,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id13_0005_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id16_0001",
+      "label": 1,
+      "score": 0.9997864365577698,
+      "category": "correct",
+      "uncertainty": 0.4997864365577698,
+      "faithfulness_confidence_drop": -2.384185791015625e-06,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id16_0001_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id26_0001",
+      "label": 1,
+      "score": 0.9910739064216614,
+      "category": "correct",
+      "uncertainty": 0.4910739064216614,
+      "faithfulness_confidence_drop": 0.002010822296142578,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id26_0001_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00049",
+      "label": 0,
+      "score": 0.08982701599597931,
+      "category": "correct",
+      "uncertainty": 0.4101729840040207,
+      "faithfulness_confidence_drop": -0.004802912473678589,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00049_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00030",
+      "label": 0,
+      "score": 0.0005006874562241137,
+      "category": "correct",
+      "uncertainty": 0.4994993125437759,
+      "faithfulness_confidence_drop": 4.0842045564204454e-05,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00030_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id0_0001",
+      "label": 0,
+      "score": 0.9924166202545166,
+      "category": "false_positive",
+      "uncertainty": 0.4924166202545166,
+      "faithfulness_confidence_drop": -0.0007803440093994141,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id0_0001_false_positive.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00003",
+      "label": 0,
+      "score": 0.031232165172696114,
+      "category": "correct",
+      "uncertainty": 0.4687678348273039,
+      "faithfulness_confidence_drop": 0.0034919679164886475,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00003_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id6_0000",
+      "label": 1,
+      "score": 0.7284963726997375,
+      "category": "correct",
+      "uncertainty": 0.22849637269973755,
+      "faithfulness_confidence_drop": 0.03128761053085327,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id6_0000_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00016",
+      "label": 0,
+      "score": 0.00020623145974241197,
+      "category": "correct",
+      "uncertainty": 0.4997937685402576,
+      "faithfulness_confidence_drop": 4.258763510733843e-07,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00016_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id3_0006",
+      "label": 1,
+      "score": 0.27792492508888245,
+      "category": "false_negative",
+      "uncertainty": 0.22207507491111755,
+      "faithfulness_confidence_drop": 0.04822900891304016,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id3_0006_false_negative.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id2_0003",
+      "label": 1,
+      "score": 0.9992765784263611,
+      "category": "correct",
+      "uncertainty": 0.4992765784263611,
+      "faithfulness_confidence_drop": 0.0008337497711181641,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id2_0003_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00021",
+      "label": 0,
+      "score": 0.06570027023553848,
+      "category": "correct",
+      "uncertainty": 0.4342997297644615,
+      "faithfulness_confidence_drop": -0.009062036871910095,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00021_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id13_0011",
+      "label": 0,
+      "score": 0.002311041345819831,
+      "category": "correct",
+      "uncertainty": 0.49768895865418017,
+      "faithfulness_confidence_drop": 0.00034746224991977215,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id13_0011_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id1_0002",
+      "label": 1,
+      "score": 0.9883164763450623,
+      "category": "correct",
+      "uncertainty": 0.48831647634506226,
+      "faithfulness_confidence_drop": 0.0009340047836303711,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id1_0002_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id13_0000",
+      "label": 0,
+      "score": 0.002294274279847741,
+      "category": "correct",
+      "uncertainty": 0.49770572572015226,
+      "faithfulness_confidence_drop": 0.00025070528499782085,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id13_0000_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id2_0000",
+      "label": 1,
+      "score": 0.8603224754333496,
+      "category": "correct",
+      "uncertainty": 0.3603224754333496,
+      "faithfulness_confidence_drop": 0.002718031406402588,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id2_0000_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00006",
+      "label": 0,
+      "score": 0.884833574295044,
+      "category": "false_positive",
+      "uncertainty": 0.38483357429504395,
+      "faithfulness_confidence_drop": 0.001017749309539795,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00006_false_positive.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id17_0005",
+      "label": 1,
+      "score": 0.9999998807907104,
+      "category": "correct",
+      "uncertainty": 0.49999988079071045,
+      "faithfulness_confidence_drop": -1.1920928955078125e-07,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id17_0005_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "fake_id0_id4_0001",
+      "label": 1,
+      "score": 0.9999586343765259,
+      "category": "correct",
+      "uncertainty": 0.4999586343765259,
+      "faithfulness_confidence_drop": 3.421306610107422e-05,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\fake_id0_id4_0001_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_id11_0009",
+      "label": 0,
+      "score": 8.586863987147808e-05,
+      "category": "correct",
+      "uncertainty": 0.4999141313601285,
+      "faithfulness_confidence_drop": 1.8308637663722038e-06,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_id11_0009_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    },
+    {
+      "video_id": "real_00002",
+      "label": 0,
+      "score": 0.02718384936451912,
+      "category": "correct",
+      "uncertainty": 0.4728161506354809,
+      "faithfulness_confidence_drop": -0.0025305338203907013,
+      "figure": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\figures\\explainability\\celebdf_b0_subset50_f4\\real_00002_correct.png",
+      "label_text": "model attribution, not forensic proof"
+    }
+  ],
+  "note": "Visualizations are model attribution, not forensic proof."
+}

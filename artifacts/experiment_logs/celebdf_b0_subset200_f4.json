@@ -1,0 +1,273 @@
+{
+  "experiment_id": "celebdf_b0_subset200_f4",
+  "best_val_auroc": 1.0,
+  "epochs_ran": 5,
+  "elapsed_seconds": 307.93926191329956,
+  "is_synthetic": false,
+  "history": [
+    {
+      "epoch": 0,
+      "train": {
+        "auroc": 0.7963265306122449,
+        "ap": 0.8156292143349388,
+        "accuracy": 0.6928571428571428,
+        "precision": 0.6310679611650486,
+        "recall": 0.9285714285714286,
+        "f1": 0.7514450867052023,
+        "eer": 0.3142857142857143,
+        "tn": 32,
+        "fp": 38,
+        "fn": 5,
+        "tp": 65,
+        "fpr": 0.5428571427795919,
+        "fnr": 0.07142857141836735,
+        "loss": 1.3272239656911955
+      },
+      "val": {
+        "auroc": 0.8348214285714286,
+        "ap": 0.8475293160235615,
+        "accuracy": 0.7666666666666667,
+        "precision": 0.8,
+        "recall": 0.75,
+        "f1": 0.7741935483870968,
+        "eer": 0.26785714285714285,
+        "tn": 11,
+        "fp": 3,
+        "fn": 4,
+        "tp": 12,
+        "fpr": 0.21428571413265304,
+        "fnr": 0.24999999984375,
+        "loss": 0.520796537399292
+      }
+    },
+    {
+      "epoch": 1,
+      "train": {
+        "auroc": 0.990204081632653,
+        "ap": 0.9894773618519961,
+        "accuracy": 0.9571428571428572,
+        "precision": 0.9324324324324325,
+        "recall": 0.9857142857142858,
+        "f1": 0.9583333333333334,
+        "eer": 0.028571428571428546,
+        "tn": 65,
+        "fp": 5,
+        "fn": 1,
+        "tp": 69,
+        "fpr": 0.07142857141836735,
+        "fnr": 0.01428571428367347,
+        "loss": 0.191203977395263
+      },
+      "val": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 0.8666666666666667,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571428571428571,
+        "eer": 0.0,
+        "tn": 14,
+        "fp": 0,
+        "fn": 4,
+        "tp": 12,
+        "fpr": 0.0,
+        "fnr": 0.24999999984375,
+        "loss": 0.1376485787332058
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "auroc": 0.9995918367346939,
+        "ap": 0.9996031746031746,
+        "accuracy": 0.9928571428571429,
+        "precision": 1.0,
+        "recall": 0.9857142857142858,
+        "f1": 0.9928057553956835,
+        "eer": 0.0071428571428571175,
+        "tn": 70,
+        "fp": 0,
+        "fn": 1,
+        "tp": 69,
+        "fpr": 0.0,
+        "fnr": 0.01428571428367347,
+        "loss": 0.02828037381004833
+      },
+      "val": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "eer": 0.0,
+        "tn": 14,
+        "fp": 0,
+        "fn": 0,
+        "tp": 16,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "loss": 0.029797044582664967
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "eer": 0.0,
+        "tn": 70,
+        "fp": 0,
+        "fn": 0,
+        "tp": 70,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "loss": 0.004647512832535641
+      },
+      "val": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "eer": 0.0,
+        "tn": 14,
+        "fp": 0,
+        "fn": 0,
+        "tp": 16,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "loss": 0.0028074001438653795
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "eer": 0.0,
+        "tn": 70,
+        "fp": 0,
+        "fn": 0,
+        "tp": 70,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "loss": 0.005947975162102794
+      },
+      "val": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "eer": 0.0,
+        "tn": 14,
+        "fp": 0,
+        "fn": 0,
+        "tp": 16,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "loss": 0.0008339143096236512
+      }
+    }
+  ],
+  "label": "REAL DATA",
+  "config": {
+    "optimizer": {
+      "name": "adamw",
+      "lr": 0.0001,
+      "weight_decay": 0.05,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    },
+    "scheduler": {
+      "name": "cosine",
+      "warmup_epochs": 2,
+      "min_lr": 1e-06
+    },
+    "loss": {
+      "name": "bce",
+      "focal_gamma": 2.0,
+      "pos_weight": null
+    },
+    "training": {
+      "epochs": 5,
+      "batch_size": 16,
+      "num_workers": 4,
+      "mixed_precision": true,
+      "gradient_clip": 1.0,
+      "early_stopping_patience": 7,
+      "save_every": 5,
+      "seed": 42
+    },
+    "aggregation": {
+      "method": "mean",
+      "topk": 5
+    },
+    "checkpoint": {
+      "dir": "artifacts/checkpoints",
+      "keep_last_n": 3,
+      "monitor": "val_auroc",
+      "mode": "max"
+    }
+  },
+  "dataset": "celebdf",
+  "model": "efficientnet_b0",
+  "seed": 42,
+  "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+  "val_metrics": {
+    "auroc": 1.0,
+    "ap": 1.0,
+    "accuracy": 0.8666666666666667,
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1": 0.8571428571428571,
+    "eer": 0.0,
+    "tn": 14,
+    "fp": 0,
+    "fn": 4,
+    "tp": 12,
+    "fpr": 0.0,
+    "fnr": 0.24999999984375,
+    "dataset": "celebdf",
+    "split": "val",
+    "n_videos": 30,
+    "is_synthetic": false,
+    "experiment_id": "celebdf_b0_subset200_f4",
+    "model": "efficientnet_b0"
+  },
+  "test_metrics": {
+    "auroc": 0.9241071428571428,
+    "ap": 0.9186808056555955,
+    "accuracy": 0.8,
+    "precision": 0.7857142857142857,
+    "recall": 0.7857142857142857,
+    "f1": 0.7857142857142857,
+    "eer": 0.16517857142857145,
+    "tn": 13,
+    "fp": 3,
+    "fn": 3,
+    "tp": 11,
+    "fpr": 0.1874999998828125,
+    "fnr": 0.21428571413265304,
+    "dataset": "celebdf",
+    "split": "test",
+    "n_videos": 30,
+    "is_synthetic": false,
+    "experiment_id": "celebdf_b0_subset200_f4",
+    "model": "efficientnet_b0"
+  },
+  "artifact_dir": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4"
+}

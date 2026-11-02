@@ -1,0 +1,58 @@
+{
+  "label": "REAL DATA",
+  "protocol": "evaluation-time compression and blur stress; no retraining",
+  "rows": [
+    {
+      "dataset": "celebdf",
+      "split": "test",
+      "stress": "jpeg_40",
+      "clean_auroc": 0.9241071428571428,
+      "stressed_auroc": 0.9464285714285714,
+      "auroc_drop": -0.022321428571428603,
+      "accuracy": 0.8,
+      "f1": 0.75,
+      "eer": 0.20089285714285715,
+      "checkpoint": "artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "celebdf",
+      "split": "test",
+      "stress": "jpeg_20",
+      "clean_auroc": 0.9241071428571428,
+      "stressed_auroc": 0.9330357142857143,
+      "auroc_drop": -0.008928571428571508,
+      "accuracy": 0.7666666666666667,
+      "f1": 0.6666666666666666,
+      "eer": 0.20089285714285715,
+      "checkpoint": "artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "celebdf",
+      "split": "test",
+      "stress": "gaussian_blur_1.5",
+      "clean_auroc": 0.9241071428571428,
+      "stressed_auroc": 0.6428571428571429,
+      "auroc_drop": 0.2812499999999999,
+      "accuracy": 0.4666666666666667,
+      "f1": 0.0,
+      "eer": 0.4330357142857143,
+      "checkpoint": "artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "dataset": "celebdf",
+      "split": "test",
+      "stress": "gaussian_blur_3.0",
+      "clean_auroc": 0.9241071428571428,
+      "stressed_auroc": 0.5267857142857142,
+      "auroc_drop": 0.3973214285714286,
+      "accuracy": 0.43333333333333335,
+      "f1": 0.0,
+      "eer": 0.46875,
+      "checkpoint": "artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "is_synthetic": false
+    }
+  ]
+}
