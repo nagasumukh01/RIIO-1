@@ -13,9 +13,6 @@ from src.data.real_dataset import RealFaceVideoDataset
 
 def test_only_three_research_datasets_are_supported():
     assert RealFaceVideoDataset.SUPPORTED == ("faceforensics", "celebdf", "dfdc")
-    for dataset in RealFaceVideoDataset.SUPPORTED:
-        with pytest.raises(FileNotFoundError):
-            RealFaceVideoDataset(dataset=dataset, split="train", max_videos=1)
     with pytest.raises(ValueError):
         RealFaceVideoDataset(dataset="synthetic", split="train")
     with pytest.raises(ValueError):

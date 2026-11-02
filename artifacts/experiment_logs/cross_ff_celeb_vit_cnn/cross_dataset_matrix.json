@@ -1,0 +1,67 @@
+{
+  "label": "REAL DATA",
+  "datasets": [
+    "faceforensics",
+    "celebdf"
+  ],
+  "models": [
+    "efficientnet_b0",
+    "vit_small"
+  ],
+  "protocol": "source train only; target test only; no target tuning",
+  "generalization_gap_definition": "source test AUROC - target test AUROC",
+  "rows": [
+    {
+      "source": "faceforensics",
+      "target": "celebdf",
+      "model": "efficientnet_b0",
+      "source_test_auroc": 0.5833333333333333,
+      "target_test_auroc": 0.26785714285714285,
+      "target_accuracy": 0.4666666666666667,
+      "target_f1": 0.6,
+      "target_eer": 0.7008928571428572,
+      "generalization_gap": 0.3154761904761904,
+      "source_checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_b0_subset50_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "source": "faceforensics",
+      "target": "celebdf",
+      "model": "vit_small",
+      "source_test_auroc": 0.0,
+      "target_test_auroc": 0.5892857142857143,
+      "target_accuracy": 0.4666666666666667,
+      "target_f1": 0.6363636363636364,
+      "target_eer": 0.36607142857142855,
+      "generalization_gap": -0.5892857142857143,
+      "source_checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_vit_small_subset50_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "source": "celebdf",
+      "target": "faceforensics",
+      "model": "efficientnet_b0",
+      "source_test_auroc": 0.9241071428571428,
+      "target_test_auroc": 0.75,
+      "target_accuracy": 0.25,
+      "target_f1": 0.0,
+      "target_eer": 0.4166666666666667,
+      "generalization_gap": 0.1741071428571428,
+      "source_checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "is_synthetic": false
+    },
+    {
+      "source": "celebdf",
+      "target": "faceforensics",
+      "model": "vit_small",
+      "source_test_auroc": 0.9375,
+      "target_test_auroc": 0.5,
+      "target_accuracy": 0.625,
+      "target_f1": 0.7272727272727273,
+      "target_eer": 0.75,
+      "generalization_gap": 0.4375,
+      "source_checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_vit_small_subset50_f4\\best.pt",
+      "is_synthetic": false
+    }
+  ]
+}

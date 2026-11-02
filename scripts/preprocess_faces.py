@@ -122,7 +122,7 @@ def extract_from_video(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, required=True, choices=["faceforensics", "celebdf", "dfdc"])
+    parser.add_argument("--dataset", type=str, required=True, choices=["faceforensics", "celebdf", "dfdc", "diffusion"])
     parser.add_argument("--max-videos", type=int, default=100)
     parser.add_argument("--frames-per-video", type=int, default=32)
     parser.add_argument("--split-ratios", type=float, nargs=3, default=[0.7, 0.15, 0.15])

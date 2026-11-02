@@ -1,0 +1,78 @@
+{
+  "metrics": {
+    "auroc": 0.75,
+    "ap": 0.9305555555555556,
+    "accuracy": 0.25,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "eer": 0.4166666666666667,
+    "tn": 2,
+    "fp": 0,
+    "fn": 6,
+    "tp": 0,
+    "fpr": 0.0,
+    "fnr": 0.9999999983333333,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+    "model": "efficientnet_b0"
+  },
+  "video_ids": [
+    "face2face_866_878",
+    "original_878",
+    "faceswap_183_253",
+    "deepfakes_720_672",
+    "original_469",
+    "face2face_585_599",
+    "faceswap_866_878",
+    "neuraltextures_866_878"
+  ],
+  "logits": [
+    -3.170280933380127,
+    -10.93542766571045,
+    -2.053786516189575,
+    -6.584102630615234,
+    -9.851394653320312,
+    -12.982629776000977,
+    -10.812481880187988,
+    -3.159980297088623
+  ],
+  "labels": [
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "artifacts": {
+    "metrics": {
+      "auroc": 0.75,
+      "ap": 0.9305555555555556,
+      "accuracy": 0.25,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "eer": 0.4166666666666667,
+      "tn": 2,
+      "fp": 0,
+      "fn": 6,
+      "tp": 0,
+      "fpr": 0.0,
+      "fnr": 0.9999999983333333,
+      "dataset": "faceforensics",
+      "split": "test",
+      "n_videos": 8,
+      "is_synthetic": false,
+      "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\best.pt",
+      "model": "efficientnet_b0"
+    },
+    "predictions": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\cross_evaluations\\faceforensics_test\\predictions.csv",
+    "roc": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset200_f4\\cross_evaluations\\faceforensics_test\\roc_test.json"
+  }
+}

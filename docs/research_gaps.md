@@ -34,14 +34,16 @@ We reproduce the **spirit** of standardized preprocessing, cross-dataset evaluat
 |--------|---------------|------------|
 | Coverage | Compression / blur mentioned only as future work | Compression-artifact and blur augmentation during training as controlled experiment + separate evaluation-time stress tests |
 
-## Hypotheses Under Investigation (Gaps A–G)
+## Implementation Status (Gaps A–G)
 
-- **Gap A** — Broader cross-dataset evaluation (6-pair matrix, no target tuning)
-- **Gap B** — Diffusion-generated manipulation evaluation (separate held-out set)
-- **Gap C** — Controlled augmentation ablation (JPEG, blur, resize-reencode, combined)
-- **Gap D** — Loss-function ablation (BCE vs Focal vs class-weighted BCE)
-- **Gap E** — Backbone-capacity ablation (small vs larger EfficientNet / ViT)
-- **Gap F** — Explainability under distribution shift
-- **Gap G** — Full reproducibility and failure analysis
+- **Gap A** — Implemented and executed for FF++ ↔ Celeb-DF; DFDC pairs remain blocked by unavailable official data.
+- **Gap B** — Separate evaluator implemented; report is explicitly pending until diffusion samples are supplied.
+- **Gap C** — Controlled augmentation runner implemented with JPEG, blur, resize-reencode, and combined variants.
+- **Gap D** — Controlled BCE, focal, and weighted-BCE runner implemented.
+- **Gap E** — EfficientNet-B0/B4 and ViT-Small/Base capacity variants are supported by the runner.
+- **Gap F** — Grad-CAM/ViT attribution and perturbation faithfulness artifacts executed for available real checkpoints.
+- **Gap G** — Seeds, manifests, checkpoint metadata, prediction exports, ROC/confusion artifacts, stress reports, and failure statuses are persisted.
+
+No result is claimed for a dataset or condition that has not been executed with real samples.
 
 Primary scientific objective = measurable improvement in **generalization and robustness**, not merely highest within-dataset accuracy.

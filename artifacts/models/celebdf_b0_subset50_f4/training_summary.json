@@ -1,0 +1,273 @@
+{
+  "experiment_id": "celebdf_b0_subset50_f4",
+  "best_val_auroc": 0.9955357142857143,
+  "epochs_ran": 5,
+  "elapsed_seconds": 126.32843971252441,
+  "is_synthetic": false,
+  "history": [
+    {
+      "epoch": 0,
+      "train": {
+        "auroc": 0.6272141706924316,
+        "ap": 0.6624922109245126,
+        "accuracy": 0.58,
+        "precision": 0.5681818181818182,
+        "recall": 0.9259259259259259,
+        "f1": 0.704225352112676,
+        "eer": 0.43961352657004826,
+        "tn": 4,
+        "fp": 19,
+        "fn": 2,
+        "tp": 25,
+        "fpr": 0.8260869561625709,
+        "fnr": 0.07407407404663922,
+        "loss": 1.9741455614566803
+      },
+      "val": {
+        "auroc": 0.375,
+        "ap": 0.47408436530742565,
+        "accuracy": 0.36666666666666664,
+        "precision": 0.43478260869565216,
+        "recall": 0.625,
+        "f1": 0.5128205128205128,
+        "eer": 0.53125,
+        "tn": 1,
+        "fp": 13,
+        "fn": 6,
+        "tp": 10,
+        "fpr": 0.9285714279081632,
+        "fnr": 0.374999999765625,
+        "loss": 2.670133948326111
+      }
+    },
+    {
+      "epoch": 1,
+      "train": {
+        "auroc": 0.9951690821256038,
+        "ap": 0.996296296296296,
+        "accuracy": 0.92,
+        "precision": 0.896551724137931,
+        "recall": 0.9629629629629629,
+        "f1": 0.9285714285714286,
+        "eer": 0.018518518518518545,
+        "tn": 20,
+        "fp": 3,
+        "fn": 1,
+        "tp": 26,
+        "fpr": 0.13043478255198487,
+        "fnr": 0.03703703702331961,
+        "loss": 0.09134310955414549
+      },
+      "val": {
+        "auroc": 0.6830357142857143,
+        "ap": 0.7572725335193367,
+        "accuracy": 0.6333333333333333,
+        "precision": 0.631578947368421,
+        "recall": 0.75,
+        "f1": 0.6857142857142857,
+        "eer": 0.4017857142857143,
+        "tn": 7,
+        "fp": 7,
+        "fn": 4,
+        "tp": 12,
+        "fpr": 0.49999999964285713,
+        "fnr": 0.24999999984375,
+        "loss": 1.2406779527664185
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "auroc": 1.0,
+        "ap": 1.0,
+        "accuracy": 0.98,
+        "precision": 1.0,
+        "recall": 0.9629629629629629,
+        "f1": 0.9811320754716981,
+        "eer": 0.0,
+        "tn": 23,
+        "fp": 0,
+        "fn": 1,
+        "tp": 26,
+        "fpr": 0.0,
+        "fnr": 0.03703703702331961,
+        "loss": 0.3442789547461871
+      },
+      "val": {
+        "auroc": 0.84375,
+        "ap": 0.902236779088526,
+        "accuracy": 0.8333333333333334,
+        "precision": 1.0,
+        "recall": 0.6875,
+        "f1": 0.8148148148148148,
+        "eer": 0.23214285714285715,
+        "tn": 14,
+        "fp": 0,
+        "fn": 5,
+        "tp": 11,
+        "fpr": 0.0,
+        "fnr": 0.3124999998046875,
+        "loss": 0.6775633692741394
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "auroc": 0.9935587761674718,
+        "ap": 0.9943995236587828,
+        "accuracy": 0.96,
+        "precision": 0.9629629629629629,
+        "recall": 0.9629629629629629,
+        "f1": 0.9629629629629629,
+        "eer": 0.021739130434782608,
+        "tn": 22,
+        "fp": 1,
+        "fn": 1,
+        "tp": 26,
+        "fpr": 0.04347826085066162,
+        "fnr": 0.03703703702331961,
+        "loss": 0.1536201181797172
+      },
+      "val": {
+        "auroc": 0.9955357142857143,
+        "ap": 0.9963235294117647,
+        "accuracy": 0.9333333333333333,
+        "precision": 0.9375,
+        "recall": 0.9375,
+        "f1": 0.9375,
+        "eer": 0.06696428571428571,
+        "tn": 13,
+        "fp": 1,
+        "fn": 1,
+        "tp": 15,
+        "fpr": 0.07142857137755101,
+        "fnr": 0.0624999999609375,
+        "loss": 0.11314870789647102
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "auroc": 0.998389694041868,
+        "ap": 0.9986772486772487,
+        "accuracy": 0.98,
+        "precision": 0.9642857142857143,
+        "recall": 1.0,
+        "f1": 0.9818181818181818,
+        "eer": 0.04025764895330115,
+        "tn": 22,
+        "fp": 1,
+        "fn": 0,
+        "tp": 27,
+        "fpr": 0.04347826085066162,
+        "fnr": 0.0,
+        "loss": 0.717982083310801
+      },
+      "val": {
+        "auroc": 0.9910714285714286,
+        "ap": 0.9924172794117647,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9411764705882353,
+        "recall": 1.0,
+        "f1": 0.9696969696969697,
+        "eer": 0.09821428571428571,
+        "tn": 13,
+        "fp": 1,
+        "fn": 0,
+        "tp": 16,
+        "fpr": 0.07142857137755101,
+        "fnr": 0.0,
+        "loss": 0.1216893857344985
+      }
+    }
+  ],
+  "label": "REAL DATA",
+  "config": {
+    "optimizer": {
+      "name": "adamw",
+      "lr": 0.0001,
+      "weight_decay": 0.05,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    },
+    "scheduler": {
+      "name": "cosine",
+      "warmup_epochs": 2,
+      "min_lr": 1e-06
+    },
+    "loss": {
+      "name": "bce",
+      "focal_gamma": 2.0,
+      "pos_weight": null
+    },
+    "training": {
+      "epochs": 5,
+      "batch_size": 16,
+      "num_workers": 4,
+      "mixed_precision": true,
+      "gradient_clip": 1.0,
+      "early_stopping_patience": 7,
+      "save_every": 5,
+      "seed": 42
+    },
+    "aggregation": {
+      "method": "mean",
+      "topk": 5
+    },
+    "checkpoint": {
+      "dir": "artifacts/checkpoints",
+      "keep_last_n": 3,
+      "monitor": "val_auroc",
+      "mode": "max"
+    }
+  },
+  "dataset": "celebdf",
+  "model": "efficientnet_b0",
+  "seed": 42,
+  "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4\\best.pt",
+  "val_metrics": {
+    "auroc": 0.9955357142857143,
+    "ap": 0.9963235294117647,
+    "accuracy": 0.9333333333333333,
+    "precision": 0.9375,
+    "recall": 0.9375,
+    "f1": 0.9375,
+    "eer": 0.06696428571428571,
+    "tn": 13,
+    "fp": 1,
+    "fn": 1,
+    "tp": 15,
+    "fpr": 0.07142857137755101,
+    "fnr": 0.0624999999609375,
+    "dataset": "celebdf",
+    "split": "val",
+    "n_videos": 30,
+    "is_synthetic": false,
+    "experiment_id": "celebdf_b0_subset50_f4",
+    "model": "efficientnet_b0"
+  },
+  "test_metrics": {
+    "auroc": 0.9107142857142858,
+    "ap": 0.9076066458972252,
+    "accuracy": 0.7666666666666667,
+    "precision": 0.7333333333333333,
+    "recall": 0.7857142857142857,
+    "f1": 0.7586206896551724,
+    "eer": 0.20089285714285715,
+    "tn": 12,
+    "fp": 4,
+    "fn": 3,
+    "tp": 11,
+    "fpr": 0.24999999984375,
+    "fnr": 0.21428571413265304,
+    "dataset": "celebdf",
+    "split": "test",
+    "n_videos": 30,
+    "is_synthetic": false,
+    "experiment_id": "celebdf_b0_subset50_f4",
+    "model": "efficientnet_b0"
+  },
+  "artifact_dir": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\celebdf_b0_subset50_f4"
+}

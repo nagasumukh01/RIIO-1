@@ -21,7 +21,7 @@ logger = setup_logger("prepare_data")
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare RobustDeep data directories")
-    parser.add_argument("--dataset", type=str, default="all", choices=["all", "faceforensics", "celebdf", "dfdc"])
+    parser.add_argument("--dataset", type=str, default="all", choices=["all", "faceforensics", "celebdf", "dfdc", "diffusion"])
     parser.add_argument("--max-videos", type=int, default=None, help="Document the intended small-subset size")
     args = parser.parse_args()
 

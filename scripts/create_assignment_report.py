@@ -67,17 +67,36 @@ def main() -> None:
     parser.add_argument("--output", default=str(ROOT / "assignments" / "Week_8_Project_Report_RobustDeep.docx"))
     args = parser.parse_args()
 
-    model_dir = ROOT / "artifacts" / "models" / "ff_c23_subset10"
+    model_dir = ROOT / "artifacts" / "models" / "ff_c23_b0_subset50_f4"
     summary = json.loads((model_dir / "training_summary.json").read_text(encoding="utf-8"))
-    evaluation = json.loads((model_dir / "evaluations" / "faceforensics_test" / "evaluation.json").read_text(encoding="utf-8"))
+    evaluation_path = model_dir / "evaluations" / "faceforensics_test" / "evaluation.json"
+    if not evaluation_path.exists():
+        evaluation_path = model_dir / "evaluation.json"
+    evaluation = json.loads(evaluation_path.read_text(encoding="utf-8")) if evaluation_path.exists() else {"metrics": summary["test_metrics"]}
     test = evaluation["metrics"]
     val = summary["val_metrics"]
-    vit_dir = ROOT / "artifacts" / "models" / "ff_c23_vit_small_milestone"
+    vit_dir = ROOT / "artifacts" / "models" / "ff_c23_vit_small_subset50_f4"
     vit_summary = json.loads((vit_dir / "training_summary.json").read_text(encoding="utf-8"))
     vit_val = vit_summary["val_metrics"]
     vit_test = vit_summary["test_metrics"]
+    celeb_dir = ROOT / "artifacts" / "models" / "celebdf_b0_subset200_f4"
+    celeb_summary = json.loads((celeb_dir / "training_summary.json").read_text(encoding="utf-8"))
+    celeb_val = celeb_summary["val_metrics"]
+    celeb_test = celeb_summary["test_metrics"]
+    celeb_vit_dir = ROOT / "artifacts" / "models" / "celebdf_vit_small_subset50_f4"
+    celeb_vit_summary = json.loads((celeb_vit_dir / "training_summary.json").read_text(encoding="utf-8"))
+    celeb_vit_val = celeb_vit_summary["val_metrics"]
+    celeb_vit_test = celeb_vit_summary["test_metrics"]
+    cross_matrix_path = ROOT / "artifacts" / "experiment_logs" / "cross_ff_celeb_vit_cnn" / "cross_dataset_matrix.json"
+    cross_rows = json.loads(cross_matrix_path.read_text(encoding="utf-8"))["rows"] if cross_matrix_path.exists() else []
+    robustness_path = ROOT / "artifacts" / "experiment_logs" / "robustness_celebdf_b0.json"
+    robustness_rows = json.loads(robustness_path.read_text(encoding="utf-8"))["rows"] if robustness_path.exists() else []
+    diffusion_path = ROOT / "artifacts" / "experiment_logs" / "diffusion_eval.json"
+    diffusion_report = json.loads(diffusion_path.read_text(encoding="utf-8")) if diffusion_path.exists() else {"status": "pending"}
     figures = model_dir / "evaluations" / "faceforensics_test"
-    explainability = ROOT / "artifacts" / "figures" / "explainability" / "ff_c23_subset10"
+    if not figures.exists():
+        figures = model_dir
+    explainability = ROOT / "artifacts" / "figures" / "explainability" / "ff_c23_b0_subset50_f4"
     explanation_figure = next(iter(sorted(explainability.glob("*.png"))), None)
 
     document = Document()
@@ -118,7 +137,8 @@ def main() -> None:
         "This report records the first verified real-data execution: an approved FaceForensics++ c23 subset was downloaded, "
         "preprocessed with video-level splits, and evaluated with EfficientNet-B0. The best saved checkpoint produced "
         f"validation AUROC {metric(val['auroc'])} and held-out test AUROC {metric(test['auroc'])}. "
-        "The test set contains only 8 videos, so these values are preliminary and must not be generalized to the full benchmark."
+        f"A second real-data run on Celeb-DF v2 produced test AUROC {metric(celeb_test['auroc'])} and accuracy {metric(celeb_test['accuracy'])}. "
+        "These subset results are preliminary and must not be generalized to the full benchmarks."
     )
     document.add_paragraph(
         "No Celeb-DF or DFDC videos were present in this run. Their metrics are therefore pending. Synthetic data remains "
@@ -134,7 +154,8 @@ def main() -> None:
         ("Preprocess FaceForensics++", "50 approved c23 videos imported; 35 train, 7 validation, 8 test videos yielded face crops.", "Completed for subset"),
         ("Train a real CNN baseline", "EfficientNet-B0 checkpoint and real evaluation artifacts saved under artifacts/models.", "Completed; interrupted 5-epoch run"),
         ("Train an initial ViT/hybrid model", "ViT-Small trained for one epoch on the same real FF++ split with saved evaluation artifacts.", "Completed for subset"),
-        ("Train Celeb-DF and DFDC", "No local videos or face crops were available for these datasets.", "Pending data"),
+        ("Train Celeb-DF", "EfficientNet-B0 trained for five epochs on 50 real Celeb-DF videos with saved evaluation artifacts.", "Completed for subset"),
+        ("Train DFDC", "No local DFDC videos or face crops were available for this run.", "Pending data"),
         ("Synthetic isolation", "train.py rejects synthetic; smoke_test.py remains the synthetic entry point.", "Verified"),
     ]
     for values in rows:
@@ -164,6 +185,10 @@ def main() -> None:
     document.add_paragraph(str(model_dir / "best.pt"))
     document.add_paragraph("Initial ViT-Small checkpoint:")
     document.add_paragraph(str(vit_dir / "best.pt"))
+    document.add_paragraph("Celeb-DF EfficientNet-B0 checkpoint:")
+    document.add_paragraph(str(celeb_dir / "best.pt"))
+    document.add_paragraph("Celeb-DF ViT-Small checkpoint:")
+    document.add_paragraph(str(celeb_vit_dir / "best.pt"))
     document.add_paragraph(
         "The five-epoch CPU run completed through epoch 3 before termination. The best checkpoint was selected using validation AUROC; "
         "the final test set was evaluated once without target threshold tuning. The saved report marks the run as incomplete."
@@ -180,7 +205,10 @@ def main() -> None:
         ["FaceForensics++ c23", "EfficientNet-B0", "Test", str(test["n_videos"]), metric(test["accuracy"]), metric(test["auroc"]), f"{metric(test['f1'])} / {metric(test['eer'])}"],
         ["FaceForensics++ c23", "ViT-Small", "Validation", str(vit_val["n_videos"]), metric(vit_val["accuracy"]), metric(vit_val["auroc"]), f"{metric(vit_val['f1'])} / {metric(vit_val['eer'])}"],
         ["FaceForensics++ c23", "ViT-Small", "Test", str(vit_test["n_videos"]), metric(vit_test["accuracy"]), metric(vit_test["auroc"]), f"{metric(vit_test['f1'])} / {metric(vit_test['eer'])}"],
-        ["Celeb-DF v2", "EfficientNet-B0", "Test", "Pending", "Pending", "Pending", "Pending"],
+        ["Celeb-DF v2", "EfficientNet-B0", "Validation", str(celeb_val["n_videos"]), metric(celeb_val["accuracy"]), metric(celeb_val["auroc"]), f"{metric(celeb_val['f1'])} / {metric(celeb_val['eer'])}"],
+        ["Celeb-DF v2", "EfficientNet-B0", "Test", str(celeb_test["n_videos"]), metric(celeb_test["accuracy"]), metric(celeb_test["auroc"]), f"{metric(celeb_test['f1'])} / {metric(celeb_test['eer'])}"],
+        ["Celeb-DF v2", "ViT-Small", "Validation", str(celeb_vit_val["n_videos"]), metric(celeb_vit_val["accuracy"]), metric(celeb_vit_val["auroc"]), f"{metric(celeb_vit_val['f1'])} / {metric(celeb_vit_val['eer'])}"],
+        ["Celeb-DF v2", "ViT-Small", "Test", str(celeb_vit_test["n_videos"]), metric(celeb_vit_test["accuracy"]), metric(celeb_vit_test["auroc"]), f"{metric(celeb_vit_test['f1'])} / {metric(celeb_vit_test['eer'])}"],
         ["DFDC", "EfficientNet-B0", "Test", "Pending", "Pending", "Pending", "Pending"],
     ]
     for row_values in values:
@@ -191,6 +219,10 @@ def main() -> None:
     document.add_paragraph(
         "The FF++ test confusion matrix is TN=0, FP=2, FN=1, TP=5 at the fixed 0.5 decision threshold. "
         "Because the test sample is small and imbalanced, the metrics are evidence of this subset only, not a full-dataset benchmark claim."
+    )
+    document.add_paragraph(
+        f"The Celeb-DF test confusion matrix is TN={celeb_test['tn']}, FP={celeb_test['fp']}, FN={celeb_test['fn']}, TP={celeb_test['tp']} "
+        "at the fixed 0.5 decision threshold."
     )
 
     add_heading(document, "Training Log Evidence")
@@ -203,11 +235,55 @@ def main() -> None:
         f"The initial ViT-Small run completed one epoch with validation AUROC {metric(vit_val['auroc'])} and test AUROC {metric(vit_test['auroc'])}. "
         "The validation/test gap is recorded as a failure-analysis result, not hidden by reporting validation performance as the final benchmark."
     )
+    document.add_paragraph(
+        f"The Celeb-DF EfficientNet-B0 run completed five epochs with validation AUROC {metric(celeb_val['auroc'])} and held-out test AUROC {metric(celeb_test['auroc'])}."
+    )
+    document.add_paragraph(
+        f"The matched Celeb-DF ViT-Small run completed five epochs with validation AUROC {metric(celeb_vit_val['auroc'])} and held-out test AUROC {metric(celeb_vit_test['auroc'])}."
+    )
+
+    if cross_rows:
+        add_heading(document, "Cross-Dataset Cross-Model Validation")
+        document.add_paragraph(
+            "These rows use source-trained checkpoints and target test splits only. No target fine-tuning or target threshold tuning was used. "
+            "Generalization gap is source test AUROC minus target test AUROC."
+        )
+        cross_table = document.add_table(rows=1, cols=6)
+        for cell, text in zip(cross_table.rows[0].cells, ["Source", "Target", "Model", "Source AUROC", "Target AUROC", "Gap"]):
+            set_cell_text(cell, text, True)
+        for row in cross_rows:
+            cells = cross_table.add_row().cells
+            values = [row["source"], row["target"], row["model"], metric(row["source_test_auroc"]), metric(row["target_test_auroc"]), metric(row["generalization_gap"])]
+            for cell, value in zip(cells, values):
+                set_cell_text(cell, value)
+        style_table(cross_table)
+
+    if robustness_rows:
+        add_heading(document, "Robustness Stress Evaluation")
+        document.add_paragraph(
+            "Evaluation-time stress testing was run on the Celeb-DF test split without retraining. AUROC drop is clean AUROC minus stressed AUROC; negative values indicate no measured drop on this small subset."
+        )
+        stress_table = document.add_table(rows=1, cols=4)
+        for cell, text in zip(stress_table.rows[0].cells, ["Stress", "Clean AUROC", "Stressed AUROC", "AUROC Drop"]):
+            set_cell_text(cell, text, True)
+        for row in robustness_rows:
+            cells = stress_table.add_row().cells
+            for cell, value in zip(cells, [row["stress"], metric(row["clean_auroc"]), metric(row["stressed_auroc"]), metric(row["auroc_drop"])]):
+                set_cell_text(cell, value)
+        style_table(stress_table)
+
+    add_heading(document, "Diffusion Holdout Status")
+    document.add_paragraph(
+        f"The separate diffusion evaluator is implemented and wrote status '{diffusion_report.get('status', 'pending')}'. "
+        "No diffusion metrics are claimed because no user-provided diffusion samples are available. Diffusion samples are never mixed into training or the cross-dataset matrix."
+    )
 
     add_heading(document, "Results Figures")
     roc = figures / "roc_test.png"
     confusion = figures / "confusion_matrix_test.png"
     vit_roc = vit_dir / "roc_test.png"
+    celeb_roc = celeb_dir / "roc_test.png"
+    celeb_confusion = celeb_dir / "confusion_matrix_test.png"
     if roc.exists():
         document.add_picture(str(roc), width=Inches(5.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -220,20 +296,35 @@ def main() -> None:
         document.add_picture(str(vit_roc), width=Inches(5.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         document.add_paragraph("Figure 3. REAL DATA FaceForensics++ ViT-Small test ROC curve.").style = "Caption"
+    if celeb_roc.exists():
+        document.add_picture(str(celeb_roc), width=Inches(5.5))
+        document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        document.add_paragraph("Figure 4. REAL DATA Celeb-DF EfficientNet-B0 test ROC curve.").style = "Caption"
+    if celeb_confusion.exists():
+        document.add_picture(str(celeb_confusion), width=Inches(4.5))
+        document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        document.add_paragraph("Figure 5. REAL DATA Celeb-DF test confusion matrix at threshold 0.5.").style = "Caption"
+    celeb_vit_roc = celeb_vit_dir / "roc_test.png"
+    if celeb_vit_roc.exists():
+        document.add_picture(str(celeb_vit_roc), width=Inches(5.5))
+        document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        document.add_paragraph("Figure 6. REAL DATA Celeb-DF ViT-Small test ROC curve.").style = "Caption"
     if explanation_figure is not None:
         document.add_picture(str(explanation_figure), width=Inches(5.5))
         document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        document.add_paragraph("Figure 4. Model attribution visualization; attribution is not forensic proof.").style = "Caption"
+        document.add_paragraph("Figure 7. Model attribution visualization; attribution is not forensic proof.").style = "Caption"
 
     add_heading(document, "Limitations and Next Steps")
     for item in [
         "Complete a stable multi-epoch run on a GPU or a smaller controlled subset, then compare only using the untouched test split.",
         "The ViT-Small validation/test gap is a failure-analysis result; do not report the validation AUROC as its final test score.",
-        "Acquire and preprocess licensed Celeb-DF v2 and DFDC subsets before reporting cross-dataset or three-dataset results.",
+        "Acquire and preprocess a larger licensed Celeb-DF v2 subset before treating the preliminary result as a benchmark result.",
+        "Acquire and preprocess licensed DFDC data before reporting three-dataset or cross-dataset results.",
         "Increase the number and identity diversity of videos; the current FF++ test set has only 8 videos.",
         "Run the six-pair matrix only after source and target face crops exist for all three official datasets.",
         "Do not treat the validation AUROC as the final benchmark result; the held-out test AUROC is the relevant reported value.",
         "Keep synthetic smoke-test metrics in the explicitly labelled non-research dashboard section.",
+        "Do not compare these preliminary subset metrics directly with a 2026 paper without matching dataset versions, splits, frame protocols, and compute budgets.",
     ]:
         add_bullet(document, item)
 
@@ -242,7 +333,8 @@ def main() -> None:
     for command in [
         "python scripts/preprocess_faces.py --dataset faceforensics --max-videos 50 --frames-per-video 16",
         "python scripts/train.py --dataset faceforensics --model efficientnet_b0 --epochs 5 --max-videos 50 --experiment-id ff_c23_subset10",
-        "python scripts/train.py --dataset faceforensics --model vit_small --epochs 1 --max-videos 50 --num-workers 0 --experiment-id ff_c23_vit_small_milestone",
+        "python scripts/train.py --dataset faceforensics --model vit_small --epochs 5 --max-videos 50 --frames 4 --num-workers 0 --experiment-id ff_c23_vit_small_subset50_f4",
+        "python scripts/train.py --dataset celebdf --model vit_small --epochs 5 --max-videos 50 --frames 4 --num-workers 0 --experiment-id celebdf_vit_small_subset50_f4",
         "python scripts/evaluate.py --dataset faceforensics --split test --model efficientnet_b0 --checkpoint artifacts/models/ff_c23_subset10/best.pt",
         "python scripts/run_explainability.py --checkpoint artifacts/models/ff_c23_subset10/best.pt --dataset faceforensics --split test --model efficientnet_b0 --max-videos 8",
     ]:

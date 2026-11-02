@@ -9,7 +9,7 @@ RobustDeep is a modular, research-first video deepfake detection pipeline center
 - **Training / Evaluation** (`src/training/`, `src/evaluation/`): Config-driven, seed-controlled, checkpointed. Strict video-level splits. Zero target-set tuning.
 - **Experiments** (`src/experiments/`): Orchestrates within-dataset baselines, 6-pair cross-dataset matrix, ablations, diffusion interface.
 - **Explainability & Robustness** (`src/explainability/`, `src/robustness/`): Grad-CAM, Attention Rollout, faithfulness checks, compression/blur stress tests.
-- **UI / API** (`src/ui/`, `src/api/`, `app.py`): Streamlit research dashboard (12 pages) + optional FastAPI. All metrics shown must come from saved experiment artifacts or be labelled SYNTHETIC.
+- **UI / API** (`src/ui/`, `src/api/`, `frontend/`, `app.py`): Streamlit research dashboard + interactive React forensic console backed by a high-throughput FastAPI inference server. All metrics shown must come from saved experiment artifacts or be labelled SYNTHETIC.
 
 ## Data Flow (Mandatory)
 
@@ -62,6 +62,8 @@ All comparable models share identical sampling, crop size, normalization, and ag
 | `scripts/prepare_data.py` | Creates folder layout + instructions |
 | `scripts/preprocess_faces.py` | Resumable face extraction with `--max-videos` |
 | `scripts/train.py` | Entry point; requires `--dataset faceforensics\|celebdf\|dfdc` |
+| `src/api/server.py` | FastAPI multi-model inference service & embedded static server |
+| `frontend/` | React 19 + Vite interactive forensic dashboard with Grad-CAM heatmap visualization |
 | `app.py` | Streamlit research dashboard |
 
 ## Stage Progression

@@ -1,0 +1,273 @@
+{
+  "experiment_id": "ff_c23_vit_small_subset50_f4",
+  "best_val_auroc": 0.8,
+  "epochs_ran": 5,
+  "elapsed_seconds": 143.03345918655396,
+  "is_synthetic": false,
+  "history": [
+    {
+      "epoch": 0,
+      "train": {
+        "auroc": 0.5747126436781609,
+        "ap": 0.8983774429142103,
+        "accuracy": 0.5714285714285714,
+        "precision": 0.7916666666666666,
+        "recall": 0.6551724137931034,
+        "f1": 0.7169811320754716,
+        "eer": 0.49137931034482757,
+        "tn": 1,
+        "fp": 5,
+        "fn": 10,
+        "tp": 19,
+        "fpr": 0.8333333319444445,
+        "fnr": 0.34482758608799047,
+        "loss": 0.8188458681106567
+      },
+      "val": {
+        "auroc": 0.8,
+        "ap": 0.9428571428571428,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.09999999999999998,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.518471896648407
+      }
+    },
+    {
+      "epoch": 1,
+      "train": {
+        "auroc": 0.4770114942528736,
+        "ap": 0.8430171602037889,
+        "accuracy": 0.8285714285714286,
+        "precision": 0.8285714285714286,
+        "recall": 1.0,
+        "f1": 0.90625,
+        "eer": 0.5086206896551724,
+        "tn": 0,
+        "fp": 6,
+        "fn": 0,
+        "tp": 29,
+        "fpr": 0.9999999983333333,
+        "fnr": 0.0,
+        "loss": 0.619832436243693
+      },
+      "val": {
+        "auroc": 0.7,
+        "ap": 0.9028571428571428,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.45,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.5892723798751831
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "auroc": 0.5632183908045977,
+        "ap": 0.8782591655976572,
+        "accuracy": 0.8285714285714286,
+        "precision": 0.8285714285714286,
+        "recall": 1.0,
+        "f1": 0.90625,
+        "eer": 0.49137931034482757,
+        "tn": 0,
+        "fp": 6,
+        "fn": 0,
+        "tp": 29,
+        "fpr": 0.9999999983333333,
+        "fnr": 0.0,
+        "loss": 0.3682086666425069
+      },
+      "val": {
+        "auroc": 0.6000000000000001,
+        "ap": 0.8528571428571428,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.55,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.7833635210990906
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "auroc": 0.6839080459770115,
+        "ap": 0.9277377282929854,
+        "accuracy": 0.8285714285714286,
+        "precision": 0.8285714285714286,
+        "recall": 1.0,
+        "f1": 0.90625,
+        "eer": 0.3563218390804598,
+        "tn": 0,
+        "fp": 6,
+        "fn": 0,
+        "tp": 29,
+        "fpr": 0.9999999983333333,
+        "fnr": 0.0,
+        "loss": 0.3744799494743347
+      },
+      "val": {
+        "auroc": 0.6000000000000001,
+        "ap": 0.8528571428571428,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.55,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.7675057053565979
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "auroc": 0.6724137931034483,
+        "ap": 0.925126857175722,
+        "accuracy": 0.8285714285714286,
+        "precision": 0.8285714285714286,
+        "recall": 1.0,
+        "f1": 0.90625,
+        "eer": 0.32183908045977005,
+        "tn": 0,
+        "fp": 6,
+        "fn": 0,
+        "tp": 29,
+        "fpr": 0.9999999983333333,
+        "fnr": 0.0,
+        "loss": 0.36448181172211963
+      },
+      "val": {
+        "auroc": 0.6000000000000001,
+        "ap": 0.8528571428571428,
+        "accuracy": 0.7142857142857143,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1": 0.8333333333333334,
+        "eer": 0.55,
+        "tn": 0,
+        "fp": 2,
+        "fn": 0,
+        "tp": 5,
+        "fpr": 0.999999995,
+        "fnr": 0.0,
+        "loss": 0.8330493569374084
+      }
+    }
+  ],
+  "label": "REAL DATA",
+  "config": {
+    "optimizer": {
+      "name": "adamw",
+      "lr": 0.0001,
+      "weight_decay": 0.05,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    },
+    "scheduler": {
+      "name": "cosine",
+      "warmup_epochs": 2,
+      "min_lr": 1e-06
+    },
+    "loss": {
+      "name": "bce",
+      "focal_gamma": 2.0,
+      "pos_weight": null
+    },
+    "training": {
+      "epochs": 5,
+      "batch_size": 16,
+      "num_workers": 4,
+      "mixed_precision": true,
+      "gradient_clip": 1.0,
+      "early_stopping_patience": 7,
+      "save_every": 5,
+      "seed": 42
+    },
+    "aggregation": {
+      "method": "mean",
+      "topk": 5
+    },
+    "checkpoint": {
+      "dir": "artifacts/checkpoints",
+      "keep_last_n": 3,
+      "monitor": "val_auroc",
+      "mode": "max"
+    }
+  },
+  "dataset": "faceforensics",
+  "model": "vit_small",
+  "seed": 42,
+  "checkpoint": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_vit_small_subset50_f4\\best.pt",
+  "val_metrics": {
+    "auroc": 0.8,
+    "ap": 0.9428571428571428,
+    "accuracy": 0.7142857142857143,
+    "precision": 0.7142857142857143,
+    "recall": 1.0,
+    "f1": 0.8333333333333334,
+    "eer": 0.09999999999999998,
+    "tn": 0,
+    "fp": 2,
+    "fn": 0,
+    "tp": 5,
+    "fpr": 0.999999995,
+    "fnr": 0.0,
+    "dataset": "faceforensics",
+    "split": "val",
+    "n_videos": 7,
+    "is_synthetic": false,
+    "experiment_id": "ff_c23_vit_small_subset50_f4",
+    "model": "vit_small"
+  },
+  "test_metrics": {
+    "auroc": 0.0,
+    "ap": 0.594047619047619,
+    "accuracy": 0.75,
+    "precision": 0.75,
+    "recall": 1.0,
+    "f1": 0.8571428571428571,
+    "eer": 1.0,
+    "tn": 0,
+    "fp": 2,
+    "fn": 0,
+    "tp": 6,
+    "fpr": 0.999999995,
+    "fnr": 0.0,
+    "dataset": "faceforensics",
+    "split": "test",
+    "n_videos": 8,
+    "is_synthetic": false,
+    "experiment_id": "ff_c23_vit_small_subset50_f4",
+    "model": "vit_small"
+  },
+  "artifact_dir": "C:\\Users\\Lenovo\\Downloads\\robustdeep\\robustdeep\\artifacts\\models\\ff_c23_vit_small_subset50_f4"
+}

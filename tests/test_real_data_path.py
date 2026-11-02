@@ -17,12 +17,12 @@ from src.data.real_dataset import RealFaceVideoDataset
 def test_missing_faces_raises_file_not_found():
     """If faces are absent, FileNotFoundError with clear instructions must be raised."""
     with pytest.raises(FileNotFoundError) as exc_info:
-        RealFaceVideoDataset(dataset="faceforensics", split="train", max_videos=5)
+        RealFaceVideoDataset(dataset="dfdc", split="train", max_videos=5)
     msg = str(exc_info.value)
     assert "REAL FACE CROPS NOT FOUND" in msg
     assert "preprocess_faces.py" in msg
     assert "SYNTHETIC" in msg or "synthetic" in msg.lower()
-    assert "faceforensics" in msg
+    assert "dfdc" in msg
 
 
 def test_unsupported_dataset():

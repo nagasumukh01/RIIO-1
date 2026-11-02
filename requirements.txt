@@ -2,8 +2,8 @@
 # Python >= 3.10 recommended
 
 # Core ML
-torch>=2.1.0,<2.5.0
-torchvision>=0.16.0,<0.20.0
+torch>=2.1.0
+torchvision>=0.16.0
 timm>=0.9.12,<1.1.0
 transformers>=4.36.0,<4.45.0
 
@@ -36,7 +36,9 @@ streamlit-plotly-events>=0.0.6
 # Optional API
 fastapi>=0.109.0,<0.115.0
 uvicorn[standard]>=0.27.0,<0.31.0
+python-multipart>=0.0.9,<0.1.0
 pydantic>=2.5.0,<2.10.0
+httpx>=0.25.0,<0.29.0
 
 # Testing & Quality
 pytest>=7.4.0,<8.4.0

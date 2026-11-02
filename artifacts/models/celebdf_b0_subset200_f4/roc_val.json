@@ -1,0 +1,43 @@
+{
+  "dataset": "celebdf",
+  "split": "val",
+  "metrics": {
+    "auroc": 1.0,
+    "ap": 1.0,
+    "accuracy": 0.8666666666666667,
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1": 0.8571428571428571,
+    "eer": 0.0,
+    "tn": 14,
+    "fp": 0,
+    "fn": 4,
+    "tp": 12,
+    "fpr": 0.0,
+    "fnr": 0.24999999984375,
+    "dataset": "celebdf",
+    "split": "val",
+    "n_videos": 30,
+    "is_synthetic": false,
+    "experiment_id": "celebdf_b0_subset200_f4",
+    "model": "efficientnet_b0"
+  },
+  "fpr": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "tpr": [
+    0.0,
+    0.0625,
+    1.0,
+    1.0
+  ],
+  "thresholds": [
+    Infinity,
+    0.9999995231628418,
+    0.3453977704048157,
+    3.776349899453635e-08
+  ]
+}

@@ -28,6 +28,13 @@ datasets:
     methods: [real, fake]
     real_label: 0
     fake_label: 1
+  diffusion:
+    name: Diffusion-heldout
+    raw_subdir: diffusion
+    faces_subdir: diffusion
+    methods: [real, fake]
+    real_label: 0
+    fake_label: 1
 sampling:
   frames_per_video: 16
   face_size: 224
