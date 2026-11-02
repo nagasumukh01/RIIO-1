@@ -53,12 +53,30 @@ def test_models_endpoint(client):
     assert response.status_code == 200
     data = response.json()
     assert "models" in data
-    assert len(data["models"]) >= 4
+    assert len(data["models"]) >= 5
     model_ids = [m["id"] for m in data["models"]]
+    assert "cross_ensemble" in model_ids
     assert "celebdf_b0" in model_ids
     assert "ff_b0" in model_ids
     assert "celebdf_vit" in model_ids
     assert "ff_vit" in model_ids
+
+
+def test_predict_cross_ensemble(client, sample_image_bytes):
+    response = client.post(
+        "/api/predict",
+        params={"model_id": "cross_ensemble"},
+        files={"file": ("sample.png", sample_image_bytes, "image/png")},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["model"] == "cross_ensemble"
+    assert data["architecture"] == "Hybrid Ensemble (CNN + ViT)"
+    assert data["label"] in {"REAL", "FAKE"}
+    assert 0.0 <= data["score"] <= 1.0
+    assert data["ensemble_breakdown"] is not None
+    assert len(data["ensemble_breakdown"]) == 4
+    assert data["consensus"] is not None
 
 
 def test_predict_image_cnn(client, sample_image_bytes):
