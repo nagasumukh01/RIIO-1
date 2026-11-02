@@ -384,8 +384,19 @@ if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
     @app.get("/{full_path:path}")
-    async def serve_frontend(full_path: str):
+    def serve_frontend(full_path: str):
         file_path = FRONTEND_DIST / full_path
         if file_path.is_file():
             return FileResponse(file_path)
         return FileResponse(FRONTEND_DIST / "index.html")
+else:
+    @app.get("/")
+    def root():
+        return {
+            "service": "RobustDeep Inference API",
+            "status": "online",
+            "message": "Frontend build is not present. Run 'npm run build' inside frontend/ to serve the UI here.",
+            "docs_url": "/docs",
+            "health_url": "/api/health",
+            "models_url": "/api/models",
+        }
