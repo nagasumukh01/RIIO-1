@@ -1,9 +1,17 @@
 name: CI
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - just-face
+      - 'feature/**'
+      - 'fix/**'
+      - 'docs/**'
+
   pull_request:
-    branches: [main, master]
+
+  workflow_dispatch:
 
 jobs:
   test:
@@ -19,7 +27,7 @@ jobs:
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements.txt
       - name: Unit tests
-        run: pytest tests/ -v --tb=short
+        run: python -m pytest tests/ -v --tb=short
       - name: Smoke test (synthetic)
         run: python scripts/smoke_test.py
       - name: Real-data path guard
