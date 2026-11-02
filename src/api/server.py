@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
+os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir())
 import cv2
 import matplotlib
 matplotlib.use("Agg")
