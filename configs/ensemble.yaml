@@ -1,0 +1,160 @@
+ensemble:
+  threshold: 0.55
+  uncertain_low: 0.35
+  uncertain_high: 0.55
+  disagreement_std_threshold: 0.20
+video:
+  min_frames: 8
+  max_frames: 16
+  min_face_frames: 4
+models:
+  dfdc_b0:
+    display_name: EfficientNet-B0 (DFDC pilot)
+    architecture: efficientnet_b0
+    timm_name: efficientnet_b0
+    backbone_type: cnn
+    dataset: DFDC (8-video pilot)
+    checkpoint: artifacts/models/dfdc_b0_balanced_pilot8_cpu_20261109/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.5
+    val_auc: 0.4375
+    weight: 0.0  # one-epoch, 8-video pilot; exposed individually, not fused
+    enabled: true
+  celebdf_b0:
+    display_name: EfficientNet-B0 (Celeb-DF v2)
+    architecture: efficientnet_b0
+    timm_name: efficientnet_b0
+    backbone_type: cnn
+    dataset: Celeb-DF v2 (8-video pilot)
+    checkpoint: artifacts/models/celebdf_b0_balanced_pilot8_cpu_20261109/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.5
+    val_auc: 0.625
+    weight: 0.0  # one-epoch pilot; held out due to poor saved test AUROC
+    enabled: true
+  ff_b0:
+    display_name: EfficientNet-B0 (FaceForensics++)
+    architecture: efficientnet_b0
+    timm_name: efficientnet_b0
+    backbone_type: cnn
+    dataset: FaceForensics++ (200 videos)
+    checkpoint: artifacts/models/ff_c23_b0_balanced200_4f_20261109/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.50
+    val_auc: 0.6444444444
+    weight: 0.1444444444
+    enabled: true
+  celebdf_vit:
+    display_name: ViT-Small (Celeb-DF v2)
+    architecture: vit_small
+    timm_name: vit_small_patch16_224
+    backbone_type: vit
+    dataset: Celeb-DF v2 (50 videos)
+    checkpoint: artifacts/models/celebdf_vit_small_subset50_f4/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.50
+    val_auc: 0.71
+    weight: 0.21
+    enabled: true
+  ff_vit:
+    display_name: ViT-Small (FaceForensics++)
+    architecture: vit_small
+    timm_name: vit_small_patch16_224
+    backbone_type: vit
+    dataset: FaceForensics++ (50 videos)
+    checkpoint: artifacts/models/ff_c23_vit_small_subset50_f4/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.5
+    val_auc: 0.3955555556
+    weight: 0.0  # current checkpoint metrics conflict with its saved summary
+    enabled: true
+  combined_multidomain_b0:
+    display_name: EfficientNet-B0 (Universal Multi-Domain)
+    architecture: efficientnet_b0
+    timm_name: efficientnet_b0
+    backbone_type: cnn
+    dataset: All 4 Combined (FF++, Celeb-DF, DFDC, Diffusion)
+    checkpoint: artifacts/models/combined_multidomain_b0/best.pt
+    input_size: 224
+    interpolation: area
+    color_order: RGB
+    mean:
+    - 0.485
+    - 0.456
+    - 0.406
+    std:
+    - 0.229
+    - 0.224
+    - 0.225
+    num_classes: 2
+    output_units: 1
+    fake_index: 1
+    threshold: 0.5
+    val_auc: 0.5397779833
+    weight: 0.0  # no matching training summary for this checkpoint
+    enabled: true

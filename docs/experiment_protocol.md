@@ -1,110 +1,78 @@
 # Experiment Protocol
 
-## Overview
+## Seeds & Reproducibility
+- Global seed from `configs/training.yaml` (default 42).
+- Video-level splits fixed by seed; manifests saved under `data/processed/`.
+- Full config + prediction dumps stored with each experiment ID.
 
-This document defines the experimental protocol ensuring scientific validity and reproducibility.
+## Within-Dataset Baselines
+For each dataset ∈ {faceforensics, celebdf, dfdc} and model ∈ {efficientnet_b0, vit_small}:
+1. Train on train split.
+2. Early-stop on val AUROC.
+3. Evaluate once on held-out test split (no threshold tuning).
 
-## Experimental Design
+## Cross-Dataset Matrix
+For each ordered pair (source, target) in the 6-pair matrix:
+1. Train exclusively on source train split.
+2. Select checkpoint by source val AUROC only.
+3. Evaluate on target test split with the **same** decision threshold (default 0.5) or pure AUROC (threshold-free).
+4. Record generalization gap = source_test_AUROC − target_test_AUROC. A positive value is a target-domain drop.
 
-### A. Within-Dataset Baselines
-- Train and evaluate each model on each dataset separately
-- Disjoint video-level splits: 70/15/15
-- Seeds fixed at 42 (configurable)
-- Report: Accuracy, AUROC, F1, EER, Precision, Recall
+Run with a small real subset:
 
-### B. Cross-Dataset Matrix (6 Pairs)
-All directional pairs with NO target data leakage:
+```bash
+python scripts/run_cross_dataset.py --dry-run --max-videos 100
+python scripts/run_cross_dataset.py --execute --max-videos 100 --epochs 5
+```
 
-| # | Train | Test |
-|---|-------|------|
-| 1 | FF++ | Celeb-DF |
-| 2 | FF++ | DFDC |
-| 3 | Celeb-DF | FF++ |
-| 4 | Celeb-DF | DFDC |
-| 5 | DFDC | FF++ |
-| 6 | DFDC | Celeb-DF |
+The executable command trains each source independently, evaluates only the target test split, and writes CSV/JSON under `artifacts/experiment_logs/`.
 
-**Rules**:
-- Train model to convergence on source dataset
-- Evaluate as-is on target test set
-- NO fine-tuning on target
-- NO threshold tuning on target
-- NO hyperparameter selection using target metrics
-- Use threshold=0.5 for binary decisions (or EER threshold from source validation)
+## Ablations
+- **Augmentation**: none / jpeg / blur / resize-reencode / combined (train only).
+- **Loss**: BCE / Focal / class-weighted BCE.
+- **Capacity**: EfficientNet-B0 vs B4; ViT-Small vs Base.
 
-### C. Diffusion-Generated Evaluation
-- Completely separate from training
-- Same preprocessing pipeline
-- Report results with clear provenance
+```bash
+python scripts/run_ablations.py --dry-run --dataset faceforensics --max-videos 100
+python scripts/run_ablations.py --execute --dataset faceforensics --max-videos 100 --epochs 5
+```
 
-### D. Augmentation Ablation
-6 strategies compared with identical data, seeds, architecture, and training budget:
-1. None (baseline)
-2. JPEG compression (quality 30–95)
-3. Gaussian blur (kernel 3–7)
-4. Resize + re-encoding (scale 0.5–0.9)
-5. Combined compression + blur
-6. Full augmentation (all + color jitter + flip)
+Outputs are written as `ablation_results.csv` and `ablation_results.json`.
 
-### E. Loss Function Ablation
-3 loss functions with identical everything else:
-1. Cross-entropy
-2. Focal loss (γ=2.0, α=0.25)
-3. Weighted BCE
+## Artifact and Holdout Commands
 
-### F. Backbone Capacity Ablation
-4 architectures with identical training conditions:
-1. EfficientNet-B0 (5.3M)
-2. EfficientNet-B4 (19.3M)
-3. ViT-Small/16 (22.1M)
-4. ViT-Base/16 (86.6M)
+```bash
+python scripts/train.py --dataset faceforensics --model efficientnet_b0 --epochs 5 --max-videos 80
+python scripts/evaluate.py --dataset faceforensics --split test --checkpoint artifacts/models/<experiment_id>/best.pt --model efficientnet_b0
+python scripts/run_explainability.py --checkpoint artifacts/models/<experiment_id>/best.pt --dataset faceforensics --max-videos 32
+```
 
-### G. Explainability Evaluation
-- Generate attribution maps for correct and incorrect predictions
-- In-domain and cross-dataset examples
-- Perturbation-based faithfulness check (progressive masking)
+Real checkpoints and summaries are stored under `artifacts/models/<experiment_id>/`. The legacy `artifacts/checkpoints/` directory remains reserved for the Stage-1 smoke test.
 
-### H. Robustness Stress Tests
-Applied at evaluation time ONLY:
-- JPEG Q30, Q50
-- Gaussian blur K5, K7
-- Resize 0.5×
-- Combined stress
+## Explainability (Gap F)
+- Grad-CAM on CNN correct & incorrect predictions (in-domain + out-of-domain).
+- Attention Rollout on ViT.
+- Simple faithfulness: delete top-k% salient regions and measure confidence drop.
 
-## Metric Definitions
+## Robustness
+- Train-time: controlled JPEG/blur augmentation.
+- Eval-time stress: JPEG q=40/20, Gaussian σ=1.5/3.0; measure AUROC drop.
 
-| Metric | Formula | Range |
-|--------|---------|-------|
-| Accuracy | (TP+TN)/Total | [0,1] |
-| Precision | TP/(TP+FP) | [0,1] |
-| Recall | TP/(TP+FN) | [0,1] |
-| F1 | 2×P×R/(P+R) | [0,1] |
-| AUROC | Area under ROC curve | [0,1] |
-| EER | FPR = FNR crossover | [0,1] |
-| FPR | FP/(FP+TN) | [0,1] |
-| FNR | FN/(FN+TP) | [0,1] |
-| Gen. Gap | (in - cross)/in × 100% | [0,100] |
+```bash
+python scripts/run_robustness.py --checkpoint artifacts/models/<experiment_id>/best.pt --dataset faceforensics --model efficientnet_b0 --frames 4
+python scripts/run_robustness.py --checkpoint artifacts/models/<experiment_id>/best.pt --dataset celebdf --model efficientnet_b0 --frames 4
+```
 
-## Per-Experiment Recording
+Outputs are written as REAL DATA JSON/CSV stress reports under `artifacts/experiment_logs/`.
 
-Every experiment records:
-- Unique experiment ID
-- Timestamp (start + end)
-- Source and target dataset names
-- Model architecture + config
-- Random seed
-- Data split IDs
-- Hardware info (CPU/GPU, memory)
-- Training time
-- All metrics listed above
-- Per-sample predictions (for recomputation)
-- Checkpoint path
+## Separate Diffusion Holdout
 
-## Reporting Rules
+Diffusion samples are never used for training or mixed into the cross-dataset matrix. Place user-provided, licensed samples under `data/raw/diffusion/{real,fake}/`, preprocess them, and run:
 
-1. Never merge train/val/test scores
-2. Never use test data for model or threshold selection
-3. Report per-dataset AND macro-averaged results
-4. Include seed variability when compute permits
-5. Report negative/failed results honestly
-6. Never compare metrics from incompatible protocols
+```bash
+python scripts/prepare_data.py --dataset diffusion
+python scripts/preprocess_faces.py --dataset diffusion --max-videos 100
+python scripts/run_diffusion_eval.py --checkpoint artifacts/models/<experiment_id>/best.pt --model efficientnet_b0
+```
+
+With no samples present, the evaluator writes an explicit `pending - no diffusion samples found` report instead of fabricating metrics.

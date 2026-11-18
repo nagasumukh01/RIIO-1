@@ -1,0 +1,759 @@
+{
+  "project": "RobustDeep",
+  "model_evaluations": {
+    "status": "available",
+    "rows": [
+      {
+        "model_id": "celebdf_b0_balanced_pilot8_cpu_20261109",
+        "dataset": "celebdf",
+        "source": "artifacts\\models\\celebdf_b0_balanced_pilot8_cpu_20261109\\training_summary.json",
+        "metrics": {
+          "auroc": 0.375,
+          "ap": 0.48333333333333334,
+          "accuracy": 0.5,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "eer": 0.375,
+          "tn": 0,
+          "fp": 4,
+          "fn": 0,
+          "tp": 4,
+          "fpr": 0.9999999975,
+          "fnr": 0.0,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "celebdf_b0_subset200_f4",
+        "dataset": "celebdf",
+        "source": "artifacts\\models\\celebdf_b0_subset200_f4\\training_summary.json",
+        "metrics": {
+          "auroc": 0.9241071428571428,
+          "ap": 0.9186808056555955,
+          "accuracy": 0.8,
+          "precision": 0.7857142857142857,
+          "recall": 0.7857142857142857,
+          "f1": 0.7857142857142857,
+          "eer": 0.16517857142857145,
+          "tn": 13,
+          "fp": 3,
+          "fn": 3,
+          "tp": 11,
+          "fpr": 0.1874999998828125,
+          "fnr": 0.21428571413265304,
+          "n_videos": 30
+        }
+      },
+      {
+        "model_id": "celebdf_b0_subset50_f4",
+        "dataset": "celebdf",
+        "source": "artifacts\\models\\celebdf_b0_subset50_f4\\training_summary.json",
+        "metrics": {
+          "auroc": 0.9107142857142858,
+          "ap": 0.9076066458972252,
+          "accuracy": 0.7666666666666667,
+          "precision": 0.7333333333333333,
+          "recall": 0.7857142857142857,
+          "f1": 0.7586206896551724,
+          "eer": 0.20089285714285715,
+          "tn": 12,
+          "fp": 4,
+          "fn": 3,
+          "tp": 11,
+          "fpr": 0.24999999984375,
+          "fnr": 0.21428571413265304,
+          "n_videos": 30
+        }
+      },
+      {
+        "model_id": "celebdf_vit_small_subset50_f4",
+        "dataset": "celebdf",
+        "source": "artifacts\\models\\celebdf_vit_small_subset50_f4\\training_summary.json",
+        "metrics": {
+          "auroc": 0.7412,
+          "ap": 0.7662283549163793,
+          "accuracy": 0.64,
+          "precision": 0.6346153846153846,
+          "recall": 0.66,
+          "f1": 0.6470588235294118,
+          "eer": 0.35,
+          "tn": 31,
+          "fp": 19,
+          "fn": 17,
+          "tp": 33,
+          "fpr": 0.379999999924,
+          "fnr": 0.339999999932,
+          "n_videos": 100
+        }
+      },
+      {
+        "model_id": "dfdc_b0_balanced_pilot8_cpu_20261109",
+        "dataset": "dfdc",
+        "source": "artifacts\\models\\dfdc_b0_balanced_pilot8_cpu_20261109\\training_summary.json",
+        "metrics": {
+          "auroc": 0.125,
+          "ap": 0.3946428571428572,
+          "accuracy": 0.375,
+          "precision": 0.42857142857142855,
+          "recall": 0.75,
+          "f1": 0.5454545454545454,
+          "eer": 0.875,
+          "tn": 0,
+          "fp": 4,
+          "fn": 1,
+          "tp": 3,
+          "fpr": 0.9999999975,
+          "fnr": 0.249999999375,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "ff_c23_b0_balanced_pilot8_cpu_20261109",
+        "dataset": "faceforensics",
+        "source": "artifacts\\models\\ff_c23_b0_balanced_pilot8_cpu_20261109\\training_summary.json",
+        "metrics": {
+          "auroc": 0.625,
+          "ap": 0.7095238095238094,
+          "accuracy": 0.5,
+          "precision": 0.5,
+          "recall": 0.75,
+          "f1": 0.6,
+          "eer": 0.5,
+          "tn": 1,
+          "fp": 3,
+          "fn": 1,
+          "tp": 3,
+          "fpr": 0.7499999981250001,
+          "fnr": 0.249999999375,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "ff_c23_b0_subset50_f4",
+        "dataset": "faceforensics",
+        "source": "artifacts\\models\\ff_c23_b0_subset50_f4\\training_summary.json",
+        "metrics": {
+          "auroc": 0.5833333333333333,
+          "ap": 0.8773809523809524,
+          "accuracy": 0.625,
+          "precision": 0.7142857142857143,
+          "recall": 0.8333333333333334,
+          "f1": 0.7692307692307693,
+          "eer": 0.5,
+          "tn": 0,
+          "fp": 2,
+          "fn": 1,
+          "tp": 5,
+          "fpr": 0.999999995,
+          "fnr": 0.16666666638888888,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "ff_c23_subset10",
+        "dataset": "faceforensics",
+        "source": "artifacts\\models\\ff_c23_subset10\\training_summary.json",
+        "metrics": {
+          "auroc": 0.5,
+          "ap": 0.8551587301587301,
+          "accuracy": 0.625,
+          "precision": 0.7142857142857143,
+          "recall": 0.8333333333333334,
+          "f1": 0.7692307692307693,
+          "eer": 0.25,
+          "tn": 0,
+          "fp": 2,
+          "fn": 1,
+          "tp": 5,
+          "fpr": 0.999999995,
+          "fnr": 0.16666666638888888,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "ff_c23_vit_small_milestone",
+        "dataset": "faceforensics",
+        "source": "artifacts\\models\\ff_c23_vit_small_milestone\\training_summary.json",
+        "metrics": {
+          "auroc": 0.0,
+          "ap": 0.594047619047619,
+          "accuracy": 0.75,
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571,
+          "eer": 1.0,
+          "tn": 0,
+          "fp": 2,
+          "fn": 0,
+          "tp": 6,
+          "fpr": 0.999999995,
+          "fnr": 0.0,
+          "n_videos": 8
+        }
+      },
+      {
+        "model_id": "ff_c23_vit_small_subset50_f4",
+        "dataset": "faceforensics",
+        "source": "artifacts\\models\\ff_c23_vit_small_subset50_f4\\training_summary.json",
+        "metrics": {
+          "auroc": 0.0,
+          "ap": 0.594047619047619,
+          "accuracy": 0.75,
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571,
+          "eer": 1.0,
+          "tn": 0,
+          "fp": 2,
+          "fn": 0,
+          "tp": 6,
+          "fpr": 0.999999995,
+          "fnr": 0.0,
+          "n_videos": 8
+        }
+      }
+    ],
+    "errors": []
+  },
+  "cross_dataset_evaluations": {
+    "status": "available",
+    "rows": [
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.5475,
+          "accuracy": 0.475,
+          "f1": 0.5882,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.37,
+          "accuracy": 0.475,
+          "f1": 0.5333,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.5238,
+          "accuracy": 0.6,
+          "f1": 0.7143,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.8,
+          "accuracy": 0.7,
+          "f1": 0.7692,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.6225,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.3775,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.485,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.7,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.5075,
+          "accuracy": 0.5,
+          "f1": 0.5,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.485,
+          "accuracy": 0.45,
+          "f1": 0.2143,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.55,
+          "accuracy": 0.525,
+          "f1": 0.4242,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix.json",
+        "metrics": {
+          "auroc": 0.84,
+          "accuracy": 0.8,
+          "f1": 0.7778,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5475,
+          "accuracy": 0.475,
+          "f1": 0.5882,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.37,
+          "accuracy": 0.475,
+          "f1": 0.5333,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5238,
+          "accuracy": 0.6,
+          "f1": 0.7143,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "dfdc_b0",
+        "train_dataset": "dfdc",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.8,
+          "accuracy": 0.7,
+          "f1": 0.7692,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.6225,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.3775,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.485,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "celebdf_b0",
+        "train_dataset": "celebdf",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.7,
+          "accuracy": 0.5,
+          "f1": 0.0,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5075,
+          "accuracy": 0.5,
+          "f1": 0.5,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.485,
+          "accuracy": 0.45,
+          "f1": 0.2143,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.55,
+          "accuracy": 0.525,
+          "f1": 0.4242,
+          "n_samples": 40
+        }
+      },
+      {
+        "model_id": "ff_b0",
+        "train_dataset": "faceforensics",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.84,
+          "accuracy": 0.8,
+          "f1": 0.7778,
+          "n_samples": 20
+        }
+      },
+      {
+        "model_id": "ff_vit",
+        "train_dataset": "faceforensics",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.4444,
+          "accuracy": 0.5,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "ff_vit",
+        "train_dataset": "faceforensics",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5,
+          "accuracy": 0.575,
+          "n": 40
+        }
+      },
+      {
+        "model_id": "ff_vit",
+        "train_dataset": "faceforensics",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5333,
+          "accuracy": 0.4,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "ff_vit",
+        "train_dataset": "faceforensics",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.43,
+          "accuracy": 0.6,
+          "n": 20
+        }
+      },
+      {
+        "model_id": "celebdf_vit",
+        "train_dataset": "celebdf",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.6311,
+          "accuracy": 0.6,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "celebdf_vit",
+        "train_dataset": "celebdf",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.7625,
+          "accuracy": 0.725,
+          "n": 40
+        }
+      },
+      {
+        "model_id": "celebdf_vit",
+        "train_dataset": "celebdf",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.6756,
+          "accuracy": 0.6333,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "celebdf_vit",
+        "train_dataset": "celebdf",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.63,
+          "accuracy": 0.6,
+          "n": 20
+        }
+      },
+      {
+        "model_id": "combined_multidomain_b0",
+        "train_dataset": "all_combined",
+        "test_dataset": "faceforensics",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5111,
+          "accuracy": 0.6,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "combined_multidomain_b0",
+        "train_dataset": "all_combined",
+        "test_dataset": "celebdf",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.5725,
+          "accuracy": 0.5,
+          "n": 40
+        }
+      },
+      {
+        "model_id": "combined_multidomain_b0",
+        "train_dataset": "all_combined",
+        "test_dataset": "dfdc",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.56,
+          "accuracy": 0.5333,
+          "n": 30
+        }
+      },
+      {
+        "model_id": "combined_multidomain_b0",
+        "train_dataset": "all_combined",
+        "test_dataset": "diffusion",
+        "source": "artifacts\\experiment_logs\\cross_dataset_20261111_200945\\cross_dataset_matrix_full.json",
+        "metrics": {
+          "auroc": 0.97,
+          "accuracy": 0.85,
+          "n": 20
+        }
+      }
+    ],
+    "errors": []
+  },
+  "robustness_evaluations": {
+    "status": "available",
+    "rows": [
+      {
+        "dataset": "celebdf",
+        "stress": "jpeg_40",
+        "source": "artifacts\\experiment_logs\\robustness_celebdf_b0.json",
+        "metrics": {
+          "clean_auroc": 0.9241071428571428,
+          "stressed_auroc": 0.9464285714285714,
+          "auroc_drop": -0.022321428571428603,
+          "accuracy": 0.8,
+          "f1": 0.75,
+          "eer": 0.20089285714285715
+        }
+      },
+      {
+        "dataset": "celebdf",
+        "stress": "jpeg_20",
+        "source": "artifacts\\experiment_logs\\robustness_celebdf_b0.json",
+        "metrics": {
+          "clean_auroc": 0.9241071428571428,
+          "stressed_auroc": 0.9330357142857143,
+          "auroc_drop": -0.008928571428571508,
+          "accuracy": 0.7666666666666667,
+          "f1": 0.6666666666666666,
+          "eer": 0.20089285714285715
+        }
+      },
+      {
+        "dataset": "celebdf",
+        "stress": "gaussian_blur_1.5",
+        "source": "artifacts\\experiment_logs\\robustness_celebdf_b0.json",
+        "metrics": {
+          "clean_auroc": 0.9241071428571428,
+          "stressed_auroc": 0.6428571428571429,
+          "auroc_drop": 0.2812499999999999,
+          "accuracy": 0.4666666666666667,
+          "f1": 0.0,
+          "eer": 0.4330357142857143
+        }
+      },
+      {
+        "dataset": "celebdf",
+        "stress": "gaussian_blur_3.0",
+        "source": "artifacts\\experiment_logs\\robustness_celebdf_b0.json",
+        "metrics": {
+          "clean_auroc": 0.9241071428571428,
+          "stressed_auroc": 0.5267857142857142,
+          "auroc_drop": 0.3973214285714286,
+          "accuracy": 0.43333333333333335,
+          "f1": 0.0,
+          "eer": 0.46875
+        }
+      },
+      {
+        "dataset": "faceforensics",
+        "stress": "jpeg_40",
+        "source": "artifacts\\experiment_logs\\robustness_ff_c23_b0.json",
+        "metrics": {
+          "clean_auroc": 0.5833333333333333,
+          "stressed_auroc": 0.5833333333333333,
+          "auroc_drop": 0.0,
+          "accuracy": 0.625,
+          "f1": 0.7692307692307693,
+          "eer": 0.5
+        }
+      },
+      {
+        "dataset": "faceforensics",
+        "stress": "jpeg_20",
+        "source": "artifacts\\experiment_logs\\robustness_ff_c23_b0.json",
+        "metrics": {
+          "clean_auroc": 0.5833333333333333,
+          "stressed_auroc": 0.3333333333333333,
+          "auroc_drop": 0.24999999999999994,
+          "accuracy": 0.75,
+          "f1": 0.8571428571428571,
+          "eer": 0.8333333333333334
+        }
+      },
+      {
+        "dataset": "faceforensics",
+        "stress": "gaussian_blur_1.5",
+        "source": "artifacts\\experiment_logs\\robustness_ff_c23_b0.json",
+        "metrics": {
+          "clean_auroc": 0.5833333333333333,
+          "stressed_auroc": 0.5833333333333334,
+          "auroc_drop": -1.1102230246251565e-16,
+          "accuracy": 0.75,
+          "f1": 0.8571428571428571,
+          "eer": 0.5833333333333334
+        }
+      },
+      {
+        "dataset": "faceforensics",
+        "stress": "gaussian_blur_3.0",
+        "source": "artifacts\\experiment_logs\\robustness_ff_c23_b0.json",
+        "metrics": {
+          "clean_auroc": 0.5833333333333333,
+          "stressed_auroc": 0.5833333333333334,
+          "auroc_drop": -1.1102230246251565e-16,
+          "accuracy": 0.75,
+          "f1": 0.8571428571428571,
+          "eer": 0.5833333333333334
+        }
+      }
+    ],
+    "errors": []
+  },
+  "diffusion_evaluation": {
+    "status": "pending",
+    "message": "Unsupported artifact: every sample needs a valid ground truth and ensemble verdict."
+  }
+}

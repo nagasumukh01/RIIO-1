@@ -1,84 +1,83 @@
-# System Architecture
+# RobustDeep Architecture Plan
 
-## Overview
+## High-Level Design
 
-RobustDeep is a modular, research-oriented deepfake detection system designed for cross-dataset evaluation and explainability analysis.
+RobustDeep is a modular, research-first video deepfake detection pipeline centered on **cross-dataset generalization**. The system separates concerns strictly:
+
+- **Data layer** (`src/data/`): Real dataset loaders only. Synthetic data exists solely for Stage-1 unit/smoke tests and is never reachable from training/evaluation entry points after Stage 1.
+- **Model layer** (`src/models/`): CNN baselines (EfficientNet-B0/B4) and Vision Transformers (ViT-Small/Base) via `timm`. Optional hybrid interface.
+- **Training / Evaluation** (`src/training/`, `src/evaluation/`): Config-driven, seed-controlled, checkpointed. Strict video-level splits. Zero target-set tuning.
+- **Experiments** (`src/experiments/`): Orchestrates within-dataset baselines, 6-pair cross-dataset matrix, ablations, diffusion interface.
+- **Explainability & Robustness** (`src/explainability/`, `src/robustness/`): Grad-CAM, Attention Rollout, faithfulness checks, compression/blur stress tests.
+- **UI / API** (`src/ui/`, `src/api/`, `frontend/`, `app.py`): Streamlit research dashboard + interactive React forensic console backed by a high-throughput FastAPI inference server. All metrics shown must come from saved experiment artifacts or be labelled SYNTHETIC.
+
+## Data Flow (Mandatory)
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         DATA PIPELINE                          │
-│  Video → Validate → Sample Frames → Detect Faces → Crop/Norm  │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-                ┌──────────▼──────────┐
-                │   TRAINING ENGINE   │
-                │  Loss / Optimizer / │
-                │  Checkpointing      │
-                └──────────┬──────────┘
-                           │
-         ┌────────────────┼────────────────┐
-         │                │                │
-    ┌────▼─────┐    ┌────▼─────┐    ┌────▼──────┐
-    │ CNN (EN) │    │ ViT-B/16 │    │  Hybrid   │
-    └────┬─────┘    └────┬─────┘    └────┬──────┘
-         │                │                │
-         └────────────────┼────────────────┘
-                          │
-              ┌───────────▼────────────┐
-              │    EVALUATION ENGINE   │
-              │  Metrics / Predictions │
-              │  Cross-Dataset Matrix  │
-              └───────────┬────────────┘
-                          │
-         ┌────────────────┼──────────────────┐
-         │                │                  │
-    ┌────▼──────┐   ┌────▼───────┐    ┌────▼──────┐
-    │Experiment │   │Explain-    │    │Robustness │
-    │Tracker DB │   │ability     │    │Tester     │
-    └────┬──────┘   └────┬───────┘    └────┬──────┘
-         │                │                │
-         └────────────────┼──────────────────┘
-                          │
-              ┌───────────▼────────────┐
-              │   STREAMLIT DASHBOARD  │
-              │  11 Research Pages     │
-              └────────────────────────┘
+Raw Video
+  → Integrity + metadata validation
+  → Video-/identity-aware split (no leakage)
+  → Frame sampling (fixed strategy across models)
+  → Face detection + alignment (RetinaFace primary, MTCNN fallback)
+  → Normalized 224×224 crops (ImageNet mean/std)
+  → Training-only augmentation (Albumentations)
+  → Model (frame-level logits)
+  → Video-level aggregation (mean / median / top-k)
+  → Metrics (AUROC primary) + uncertainty
+  → Explanation maps + faithfulness
+  → Experiment record (JSON + CSV)
 ```
 
-## Module Descriptions
+All comparable models share identical sampling, crop size, normalization, and aggregation.
 
-### `src/data/`
-- **dataset.py**: Frame-level dataset classes (real + synthetic), weighted sampling
-- **preprocessing.py**: Video-to-face-crop pipeline with MTCNN/Haar detection
-- **augmentation.py**: Training-only augmentations (JPEG, blur, resize, color jitter)
+## Key Design Decisions
 
-### `src/models/`
-- **cnn_baseline.py**: EfficientNet-B0/B4 with custom classification head + Grad-CAM target layer
-- **vit_detector.py**: ViT-B/16 and ViT-S/16 with attention hooks + Hybrid CNN-ViT
-- **factory.py**: Model creation, checkpoint save/load, size estimation
+1. **No silent synthetic fallback**  
+   `train.py`, `evaluate.py`, and runners raise `FileNotFoundError` with exact instructions if real face crops are missing.
 
-### `src/training/`
-- **trainer.py**: Training loop with early stopping, gradient clipping, metric tracking
-- **losses.py**: Cross-entropy, focal loss, weighted BCE
+2. **Config-driven everything**  
+   `configs/*.yaml` control data paths, model names, training hyper-parameters, experiment matrices.
 
-### `src/evaluation/`
-- **evaluator.py**: Frame-level + video-level evaluation, cross-dataset matrix runner
+3. **Reproducibility first**  
+   Seeded splits, pinned requirements, experiment IDs containing config hash + seed, full prediction dumps.
 
-### `src/experiments/`
-- **tracker.py**: SQLite experiment database with metric logging and export
-- **runner.py**: Orchestration of complete experimental workflows
+4. **Research vs Demo separation**  
+   Dashboard pages that show live predictions on user uploads are clearly labelled “Demo”. Research metrics load only from `artifacts/experiment_logs/`.
 
-### `src/explainability/`
-- **explainer.py**: Grad-CAM (CNN), attention rollout (ViT), heatmap overlay, faithfulness check
+5. **Extensibility**  
+   New backbones register via a simple factory. New datasets implement a common `VideoDeepfakeDataset` interface.
 
-### `src/robustness/`
-- **tester.py**: Evaluation-time perturbation stress tests
+## Component Responsibilities
 
-## Design Decisions
+| Component | Responsibility |
+|-----------|----------------|
+| `src/data/real_dataset.py` | Canonical loader used by all training/eval |
+| `src/data/synthetic.py` | Stage-1 only; never imported by train/eval after Stage 1 |
+| `src/models/factory.py` | Builds EfficientNet / ViT / hybrid from config |
+| `src/training/trainer.py` | Mixed-precision, early stopping, class weighting, checkpointing |
+| `src/evaluation/metrics.py` | AUROC, EER, F1, confusion, cross-dataset gap |
+| `src/experiments/cross_dataset.py` | 6-pair matrix runner, zero target tuning |
+| `src/explainability/` | Grad-CAM + Attention Rollout + faithfulness |
+| `src/robustness/` | Compression / blur stress evaluation |
+| `scripts/prepare_data.py` | Creates folder layout + instructions |
+| `scripts/preprocess_faces.py` | Resumable face extraction with `--max-videos` |
+| `scripts/train.py` | Entry point; requires `--dataset faceforensics\|celebdf\|dfdc` |
+| `src/api/server.py` | FastAPI multi-model inference service & embedded static server |
+| `frontend/` | React 19 + Vite interactive forensic dashboard with Grad-CAM heatmap visualization |
+| `app.py` | Streamlit research dashboard |
 
-1. **CPU-compatible**: All code works without GPU; GPU is optional
-2. **No data fabrication**: Dashboard only shows actual experiment results
-3. **Config-driven**: All hyperparameters in YAML configs
-4. **Modular**: Each component independently testable
-5. **SQLite tracking**: Lightweight, server-free experiment database
-6. **Separation of concerns**: ML pipeline independent of UI
+## Stage Progression
+
+- **Stage 1**: Synthetic smoke test + unit tests. Metrics labelled SYNTHETIC.
+- **Stage 2**: Real loaders + preprocess + train on small real subset. FileNotFoundError if faces missing.
+- **Stage 3**: Within-dataset + 6-pair cross-dataset.
+- **Stage 4**: Ablations (aug, loss, capacity).
+- **Stage 5**: Diffusion interface + explainability + robustness.
+- **Stage 6**: Full dashboard + documentation package.
+
+## Non-Goals
+
+- Claiming novelty for ViT, cross-dataset evaluation, or temporal modeling.
+- Auto-downloading licensed datasets.
+- Hard-coded impressive metrics in the UI.
+- Target-test-set threshold tuning.

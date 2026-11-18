@@ -1,59 +1,23 @@
-"""
-Logging utilities for RobustDeep.
-"""
+"""Logging helpers."""
+from __future__ import annotations
 
 import logging
 import sys
 from pathlib import Path
-from datetime import datetime
 
 
-def setup_logger(
-    name: str = "robustdeep",
-    level: int = logging.INFO,
-    log_dir: str | Path | None = None,
-    console: bool = True
-) -> logging.Logger:
-    """Set up a logger with console and optional file output."""
+def setup_logger(name: str = "robustdeep", level: int = logging.INFO, log_file: str | None = None) -> logging.Logger:
     logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    # Avoid duplicate handlers
     if logger.handlers:
         return logger
-
-    formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
-
-    if console:
-        # Force UTF-8 on stdout to avoid cp1252 issues on Windows
-        try:
-            ch = logging.StreamHandler(
-                open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
-            )
-        except Exception:
-            ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(level)
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
-
-    if log_dir is not None:
-        log_dir = Path(log_dir)
-        log_dir.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        fh = logging.FileHandler(log_dir / f"{name}_{timestamp}.log", encoding="utf-8")
-        fh.setLevel(level)
-        fh.setFormatter(formatter)
+    logger.setLevel(level)
+    fmt = logging.Formatter("%(asctime)s | %(levelname)-7s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setFormatter(fmt)
+    logger.addHandler(sh)
+    if log_file:
+        Path(log_file).parent.mkdir(parents=True, exist_ok=True)
+        fh = logging.FileHandler(log_file)
+        fh.setFormatter(fmt)
         logger.addHandler(fh)
-
-    return logger
-
-
-def get_logger(name: str = "robustdeep") -> logging.Logger:
-    """Get existing logger or create a basic one."""
-    logger = logging.getLogger(name)
-    if not logger.handlers:
-        return setup_logger(name)
     return logger

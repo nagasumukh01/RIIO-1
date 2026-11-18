@@ -1,89 +1,34 @@
-# Results Template
+# Results Template (Research Report)
 
-## Experiment Report: [Experiment Name]
+## 1. Verified Results (from actual real-data runs only)
 
-**Date**: [YYYY-MM-DD]  
-**Experiment ID**: [auto-generated]  
-**Status**: [Completed / Failed / Pending]
+| Experiment ID | Dataset | Model | Split | AUROC | F1 | EER | Notes |
+|---------------|---------|-------|-------|-------|----|-----|-------|
+| pending | pending | pending | pending | pending | pending | pending | Fill only from `training_summary.json` after a real run |
 
----
+## 2. Cross-Dataset Matrix (AUROC)
 
-## Configuration
+| Source \ Target | FF++ | Celeb-DF | DFDC |
+|-----------------|------|----------|------|
+| FF++            | –    |          |      |
+| Celeb-DF        |      | –        |      |
+| DFDC            |      |          | –    |
 
-| Parameter | Value |
-|-----------|-------|
-| Model | [EfficientNet-B0 / ViT-Base / ...] |
-| Source Dataset | [FF++ / Celeb-DF / DFDC / Synthetic] |
-| Target Dataset | [same / other / N/A] |
-| Seed | [42] |
-| Epochs | [N] |
-| Batch Size | [16] |
-| Learning Rate | [0.0001] |
-| Loss Function | [cross_entropy / focal / weighted_bce] |
-| Augmentation | [none / jpeg / blur / combined / ...] |
-| Device | [cpu / cuda] |
+Generalization gaps to be filled after runs.
 
----
+## 3. Ablation Summaries
+Populate only from `ablation_results.csv` / `ablation_results.json` produced by an executed run.
 
-## Results
+## 4. Pending Experiments
+- Full 6-pair matrix on complete datasets
+- Diffusion held-out evaluation
+- Full capacity + loss ablations
+- Large-scale faithfulness study
 
-### Within-Dataset Performance
+## 5. Limitations
+See `docs/limitations.md`.
 
-| Metric | Train | Validation | Test |
-|--------|-------|------------|------|
-| Accuracy | | | |
-| AUROC | | | |
-| F1 | | | |
-| Precision | | | |
-| Recall | | | |
-| EER | | | |
-| FPR | | | |
-| FNR | | | |
+## 6. Synthetic / Smoke Results (NON-RESEARCH)
+Any numbers produced by `scripts/smoke_test.py` must be labelled:
 
-### Cross-Dataset Performance (if applicable)
-
-| Train → Test | AUROC | Accuracy | F1 | Gen. Gap (%) |
-|-------------|-------|----------|------|-------------|
-| FF++ → Celeb-DF | | | | |
-| FF++ → DFDC | | | | |
-| ... | | | | |
-
-### Model Information
-
-| Property | Value |
-|----------|-------|
-| Total Parameters | |
-| Trainable Parameters | |
-| Checkpoint Size (MB) | |
-| Training Time (s) | |
-| Inference Latency (ms/sample) | |
-| Peak Memory (MB) | |
-
----
-
-## Training Curves
-
-[Insert training loss / validation AUROC plots here]
-
----
-
-## Observations
-
-- [Key finding 1]
-- [Key finding 2]
-- [Unexpected behavior / failure mode]
-
-## Limitations of This Experiment
-
-- [Specific limitation 1]
-- [Specific limitation 2]
-
-## Negative Results (if any)
-
-- [Document poor performance honestly]
-- [Explain possible reasons]
-
----
-
-*This report was generated from actual model predictions stored in `artifacts/experiment_logs/[experiment_id]/`.*
-*Metrics can be independently recomputed from saved prediction logs.*
+> **SYNTHETIC – NOT A RESEARCH RESULT**

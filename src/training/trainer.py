@@ -1,340 +1,171 @@
-"""
-Training engine for deepfake detection models.
-Supports configurable training loops, early stopping, checkpointing.
-"""
+"""Training loop with mixed precision, early stopping, checkpointing."""
+from __future__ import annotations
 
-import os
-import time
 import json
-import numpy as np
+import time
 from pathlib import Path
-from typing import Dict, Optional, Any, List, Tuple
-from datetime import datetime
+from typing import Any, Dict, Optional
 
+import numpy as np
 import torch
 import torch.nn as nn
+from torch.cuda.amp import GradScaler, autocast
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR, ReduceLROnPlateau
+from tqdm import tqdm
 
-from src.utils.config import TrainingConfig
-from src.utils.metrics import compute_all_metrics
-from src.utils.logging_utils import get_logger
-from src.training.losses import create_loss_function
+from src.evaluation.metrics import compute_metrics
+from src.training.losses import get_loss
+from src.utils.config import PROJECT_ROOT, ensure_dir, get_training_config
+from src.utils.logging_utils import setup_logger
 
-logger = get_logger("trainer")
-
-
-class EarlyStopping:
-    """Early stopping to halt training when validation metric stops improving."""
-
-    def __init__(self, patience: int = 7, mode: str = 'max', min_delta: float = 0.001):
-        self.patience = patience
-        self.mode = mode
-        self.min_delta = min_delta
-        self.counter = 0
-        self.best_score = None
-        self.should_stop = False
-
-    def __call__(self, score: float) -> bool:
-        if self.best_score is None:
-            self.best_score = score
-            return False
-
-        if self.mode == 'max':
-            improved = score > self.best_score + self.min_delta
-        else:
-            improved = score < self.best_score - self.min_delta
-
-        if improved:
-            self.best_score = score
-            self.counter = 0
-        else:
-            self.counter += 1
-            if self.counter >= self.patience:
-                self.should_stop = True
-
-        return self.should_stop
+logger = setup_logger("robustdeep.trainer")
 
 
 class Trainer:
-    """
-    Model trainer with full experiment tracking.
-    Records all training metrics, configurations, and predictions.
-    """
-
     def __init__(
         self,
         model: nn.Module,
-        config: TrainingConfig,
-        device: str = "cpu",
-        experiment_id: Optional[str] = None,
+        train_loader: DataLoader,
+        val_loader: Optional[DataLoader] = None,
+        device: Optional[torch.device] = None,
+        config: Optional[Dict[str, Any]] = None,
+        experiment_id: str = "default",
+        is_synthetic: bool = False,
     ):
         self.model = model
-        self.config = config
-        self.device = device
-        self.experiment_id = experiment_id or datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
+        self.cfg = config or get_training_config()
+        self.experiment_id = experiment_id
+        self.is_synthetic = is_synthetic
 
-        # Setup optimizer
-        self.optimizer = self._create_optimizer()
-        self.scheduler = None  # Created after we know epochs
-
-        # Loss function
-        self.criterion = create_loss_function(
-            loss_type=config.loss_function,
-            focal_gamma=config.focal_loss_gamma,
-            focal_alpha=config.focal_loss_alpha,
-            device=device,
+        opt_cfg = self.cfg["optimizer"]
+        self.optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=opt_cfg["lr"],
+            weight_decay=opt_cfg["weight_decay"],
+            betas=tuple(opt_cfg.get("betas", [0.9, 0.999])),
         )
+        self.loss_fn = get_loss(self.cfg["loss"]["name"], focal_gamma=self.cfg["loss"].get("focal_gamma", 2.0))
+        self.scaler = GradScaler(enabled=self.cfg["training"].get("mixed_precision", True) and self.device.type == "cuda")
+        self.epochs = self.cfg["training"]["epochs"]
+        self.grad_clip = self.cfg["training"].get("gradient_clip", 1.0)
+        self.patience = self.cfg["training"].get("early_stopping_patience", 7)
+        checkpoint_root = self.cfg["checkpoint"]["dir"] if is_synthetic else "artifacts/models"
+        self.ckpt_dir = ensure_dir(PROJECT_ROOT / checkpoint_root / experiment_id)
+        self.best_metric = -np.inf
+        self.epochs_no_improve = 0
+        self.history: list[dict] = []
 
-        # Early stopping
-        self.early_stopping = None
-        if config.early_stopping_enabled:
-            self.early_stopping = EarlyStopping(
-                patience=config.early_stopping_patience,
-                mode=config.early_stopping_mode,
-                min_delta=config.early_stopping_min_delta,
-            )
-
-        # Training history
-        self.history = {
-            'train_loss': [],
-            'val_loss': [],
-            'train_acc': [],
-            'val_acc': [],
-            'val_auroc': [],
-            'val_f1': [],
-            'learning_rates': [],
-            'epoch_times': [],
-        }
-
-        self.best_metric = 0.0
-        self.best_epoch = 0
-
-    def _create_optimizer(self) -> torch.optim.Optimizer:
-        """Create optimizer from config."""
-        params = self.model.parameters()
-        if self.config.optimizer == "adamw":
-            return torch.optim.AdamW(
-                params,
-                lr=self.config.learning_rate,
-                weight_decay=self.config.weight_decay,
-                betas=tuple(self.config.betas),
-            )
-        elif self.config.optimizer == "adam":
-            return torch.optim.Adam(
-                params,
-                lr=self.config.learning_rate,
-                weight_decay=self.config.weight_decay,
-            )
-        elif self.config.optimizer == "sgd":
-            return torch.optim.SGD(
-                params,
-                lr=self.config.learning_rate,
-                momentum=self.config.momentum,
-                weight_decay=self.config.weight_decay,
-            )
+    def _step(self, batch: dict, train: bool = True) -> tuple[float, torch.Tensor, torch.Tensor]:
+        video = batch["video"].to(self.device)
+        label = batch["label"].to(self.device)
+        if train:
+            self.model.train()
+            self.optimizer.zero_grad(set_to_none=True)
+            with autocast(enabled=self.scaler.is_enabled()):
+                logits = self.model(video)
+                loss = self.loss_fn(logits, label)
+            self.scaler.scale(loss).backward()
+            if self.grad_clip:
+                self.scaler.unscale_(self.optimizer)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
         else:
-            return torch.optim.AdamW(params, lr=self.config.learning_rate)
+            self.model.eval()
+            with torch.no_grad(), autocast(enabled=self.scaler.is_enabled()):
+                logits = self.model(video)
+                loss = self.loss_fn(logits, label)
+        return loss.item(), logits.detach().cpu(), label.detach().cpu()
 
-    def _create_scheduler(self, num_epochs: int):
-        """Create learning rate scheduler."""
-        if self.config.scheduler == "cosine":
-            self.scheduler = CosineAnnealingLR(
-                self.optimizer,
-                T_max=num_epochs,
-                eta_min=self.config.min_lr,
-            )
-        elif self.config.scheduler == "step":
-            self.scheduler = StepLR(self.optimizer, step_size=10, gamma=0.1)
-        elif self.config.scheduler == "plateau":
-            self.scheduler = ReduceLROnPlateau(
-                self.optimizer, mode='max', patience=3, factor=0.5,
-            )
-
-    def train_epoch(self, train_loader: DataLoader) -> Dict[str, float]:
-        """Train for one epoch."""
-        self.model.train()
-        running_loss = 0.0
-        all_labels = []
-        all_preds = []
-        all_scores = []
-        num_batches = 0
-
-        for batch_idx, batch in enumerate(train_loader):
-            images = batch['image'].to(self.device)
-            labels = batch['label'].to(self.device)
-
-            # Forward pass
-            logits = self.model(images)
-            loss = self.criterion(logits, labels)
-
-            # Backward pass
-            loss.backward()
-
-            if self.config.gradient_clip > 0:
-                torch.nn.utils.clip_grad_norm_(
-                    self.model.parameters(), self.config.gradient_clip
-                )
-
-            self.optimizer.step()
-            self.optimizer.zero_grad()
-
-            # Track metrics
-            running_loss += loss.item()
-            probs = torch.softmax(logits, dim=1)
-            preds = torch.argmax(probs, dim=1)
-            all_labels.extend(labels.cpu().numpy())
-            all_preds.extend(preds.cpu().numpy())
-            all_scores.extend(probs[:, 1].detach().cpu().numpy())
-            num_batches += 1
-
-            if (batch_idx + 1) % self.config.log_interval == 0:
-                logger.info(
-                    f"  Batch [{batch_idx+1}/{len(train_loader)}] "
-                    f"Loss: {loss.item():.4f}"
-                )
-
-        avg_loss = running_loss / max(num_batches, 1)
-        metrics = compute_all_metrics(
-            np.array(all_labels), np.array(all_preds), np.array(all_scores)
-        )
-        metrics['loss'] = avg_loss
-
+    def train_epoch(self, epoch: int) -> Dict[str, float]:
+        losses, all_logits, all_labels = [], [], []
+        pbar = tqdm(self.train_loader, desc=f"Epoch {epoch+1}/{self.epochs} [train]", leave=False)
+        for batch in pbar:
+            loss, logits, labels = self._step(batch, train=True)
+            losses.append(loss)
+            all_logits.append(logits)
+            all_labels.append(labels)
+            pbar.set_postfix(loss=f"{np.mean(losses):.4f}")
+        metrics = compute_metrics(torch.cat(all_logits), torch.cat(all_labels))
+        metrics["loss"] = float(np.mean(losses))
         return metrics
 
     @torch.no_grad()
-    def validate(self, val_loader: DataLoader) -> Dict[str, float]:
-        """Validate the model."""
-        self.model.eval()
-        running_loss = 0.0
-        all_labels = []
-        all_preds = []
-        all_scores = []
-        num_batches = 0
-
-        for batch in val_loader:
-            images = batch['image'].to(self.device)
-            labels = batch['label'].to(self.device)
-
-            logits = self.model(images)
-            loss = self.criterion(logits, labels)
-
-            running_loss += loss.item()
-            probs = torch.softmax(logits, dim=1)
-            preds = torch.argmax(probs, dim=1)
-            all_labels.extend(labels.cpu().numpy())
-            all_preds.extend(preds.cpu().numpy())
-            all_scores.extend(probs[:, 1].cpu().numpy())
-            num_batches += 1
-
-        avg_loss = running_loss / max(num_batches, 1)
-        metrics = compute_all_metrics(
-            np.array(all_labels), np.array(all_preds), np.array(all_scores)
-        )
-        metrics['loss'] = avg_loss
-
+    def validate(self) -> Dict[str, float]:
+        if self.val_loader is None:
+            return {}
+        losses, all_logits, all_labels = [], [], []
+        for batch in tqdm(self.val_loader, desc="[val]", leave=False):
+            loss, logits, labels = self._step(batch, train=False)
+            losses.append(loss)
+            all_logits.append(logits)
+            all_labels.append(labels)
+        metrics = compute_metrics(torch.cat(all_logits), torch.cat(all_labels))
+        metrics["loss"] = float(np.mean(losses))
         return metrics
 
-    def train(
-        self,
-        train_loader: DataLoader,
-        val_loader: DataLoader,
-        num_epochs: Optional[int] = None,
-    ) -> Dict:
-        """Full training loop with validation, early stopping, and checkpointing."""
-        if num_epochs is None:
-            num_epochs = self.config.epochs
-
-        self._create_scheduler(num_epochs)
-
-        checkpoint_dir = Path(self.config.checkpoint_dir) / self.experiment_id
-        checkpoint_dir.mkdir(parents=True, exist_ok=True)
-
-        logger.info(f"Starting training: {num_epochs} epochs, device={self.device}")
-        logger.info(f"Experiment ID: {self.experiment_id}")
-
-        training_start = time.time()
-
-        for epoch in range(1, num_epochs + 1):
-            epoch_start = time.time()
-
-            # Train
-            logger.info(f"Epoch [{epoch}/{num_epochs}]")
-            train_metrics = self.train_epoch(train_loader)
-            logger.info(
-                f"  Train - Loss: {train_metrics['loss']:.4f}, "
-                f"Acc: {train_metrics['accuracy']:.4f}, "
-                f"AUROC: {train_metrics['auroc']:.4f}"
-            )
-
-            # Validate
-            val_metrics = self.validate(val_loader)
-            logger.info(
-                f"  Val   - Loss: {val_metrics['loss']:.4f}, "
-                f"Acc: {val_metrics['accuracy']:.4f}, "
-                f"AUROC: {val_metrics['auroc']:.4f}, "
-                f"F1: {val_metrics['f1_score']:.4f}"
-            )
-
-            epoch_time = time.time() - epoch_start
-
-            # Record history
-            self.history['train_loss'].append(train_metrics['loss'])
-            self.history['val_loss'].append(val_metrics['loss'])
-            self.history['train_acc'].append(train_metrics['accuracy'])
-            self.history['val_acc'].append(val_metrics['accuracy'])
-            self.history['val_auroc'].append(val_metrics['auroc'])
-            self.history['val_f1'].append(val_metrics['f1_score'])
-            self.history['learning_rates'].append(self.optimizer.param_groups[0]['lr'])
-            self.history['epoch_times'].append(epoch_time)
-
-            # Check for best model
-            monitor_value = val_metrics.get(
-                self.config.early_stopping_monitor.replace('val_', ''), 0
-            )
-            if monitor_value > self.best_metric:
-                self.best_metric = monitor_value
-                self.best_epoch = epoch
-
-                # Save best checkpoint
-                from src.models.factory import save_checkpoint
-                save_checkpoint(
-                    model=self.model,
-                    optimizer=self.optimizer,
-                    epoch=epoch,
-                    metrics=val_metrics,
-                    config={'training': vars(self.config), 'experiment_id': self.experiment_id},
-                    path=str(checkpoint_dir / "best_model.pt"),
-                )
-                logger.info(f"  [*] New best model! {self.config.early_stopping_monitor}: {monitor_value:.4f}")
-
-            # Learning rate scheduling
-            if self.scheduler:
-                if isinstance(self.scheduler, ReduceLROnPlateau):
-                    self.scheduler.step(monitor_value)
-                else:
-                    self.scheduler.step()
-
-            # Early stopping
-            if self.early_stopping:
-                if self.early_stopping(monitor_value):
-                    logger.info(f"  Early stopping triggered at epoch {epoch}")
-                    break
-
-        total_time = time.time() - training_start
-        logger.info(f"Training complete! Best epoch: {self.best_epoch}, "
-                    f"Best {self.config.early_stopping_monitor}: {self.best_metric:.4f}, "
-                    f"Total time: {total_time:.1f}s")
-
-        # Save training history
-        history_path = checkpoint_dir / "training_history.json"
-        with open(history_path, 'w') as f:
-            json.dump(self.history, f, indent=2)
-
-        return {
-            'best_epoch': self.best_epoch,
-            'best_metric': self.best_metric,
-            'total_time_s': total_time,
-            'history': self.history,
-            'checkpoint_dir': str(checkpoint_dir),
+    def save_checkpoint(self, epoch: int, metrics: Dict[str, float], is_best: bool = False) -> Path:
+        path = self.ckpt_dir / f"epoch_{epoch:03d}.pt"
+        payload = {
+            "epoch": epoch,
+            "model_state": self.model.state_dict(),
+            "optimizer_state": self.optimizer.state_dict(),
+            "metrics": metrics,
+            "experiment_id": self.experiment_id,
+            "is_synthetic": self.is_synthetic,
         }
+        torch.save(payload, path)
+        if is_best:
+            best_path = self.ckpt_dir / "best.pt"
+            torch.save(payload, best_path)
+            logger.info("New best checkpoint saved -> %s (auroc=%.4f)", best_path, metrics.get("auroc", -1))
+        return path
+
+    def fit(self) -> Dict[str, Any]:
+        logger.info("Starting training on device=%s | synthetic=%s | experiment=%s", self.device, self.is_synthetic, self.experiment_id)
+        start = time.time()
+        for epoch in range(self.epochs):
+            train_m = self.train_epoch(epoch)
+            val_m = self.validate()
+            record = {"epoch": epoch, "train": train_m, "val": val_m}
+            self.history.append(record)
+            monitor = val_m.get("auroc", train_m.get("auroc", -1))
+            is_best = monitor > self.best_metric
+            if is_best:
+                self.best_metric = monitor
+                self.epochs_no_improve = 0
+            else:
+                self.epochs_no_improve += 1
+            self.save_checkpoint(epoch, val_m or train_m, is_best=is_best)
+            logger.info(
+                "Epoch %d | train_loss=%.4f auroc=%.4f | val_auroc=%.4f | best=%.4f",
+                epoch + 1,
+                train_m["loss"],
+                train_m.get("auroc", -1),
+                val_m.get("auroc", -1) if val_m else -1,
+                self.best_metric,
+            )
+            if self.epochs_no_improve >= self.patience:
+                logger.info("Early stopping at epoch %d", epoch + 1)
+                break
+
+        elapsed = time.time() - start
+        summary = {
+            "experiment_id": self.experiment_id,
+            "best_val_auroc": float(self.best_metric),
+            "epochs_ran": len(self.history),
+            "elapsed_seconds": elapsed,
+            "is_synthetic": self.is_synthetic,
+            "history": self.history,
+            "label": "SYNTHETIC – NOT A RESEARCH RESULT" if self.is_synthetic else "REAL DATA",
+            "config": self.cfg,
+        }
+        out = self.ckpt_dir / "training_summary.json"
+        with open(out, "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, default=str)
+        logger.info("Training finished. Summary → %s", out)
+        return summary

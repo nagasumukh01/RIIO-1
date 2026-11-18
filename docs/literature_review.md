@@ -1,70 +1,35 @@
-# Literature Review
+# Literature Review (Focused)
 
 ## Primary Reference
 
-**Petmezas, G. (2026).** "Cross-dataset video deepfake detection using Transformer and CNN architectures." *Machine Vision and Applications*.  
-DOI: [10.1007/s00138-026-01809-w](https://doi.org/10.1007/s00138-026-01809-w)
+Georgios Petmezas, “Cross-dataset video deepfake detection using Transformer and CNN architectures”, *Machine Vision and Applications*, 2026.  
+DOI: https://doi.org/10.1007/s00138-026-01809-w
 
-### Key Findings
-- Evaluated XceptionNet, EfficientNet-B0, ViT-Base, and TimeSformer on FF++, Celeb-DF, DFD, and ReenactFaces.
-- Demonstrated that CNN and Transformer architectures perform comparably on within-dataset benchmarks.
-- Cross-dataset evaluation: trained on FF++ + Celeb-DF combined, tested on DFD + ReenactFaces combined.
-- Found that limited fine-tuning (10–30%) on target data significantly improves cross-dataset performance.
-- Temporal modeling (TimeSformer with clip-level inputs) provided marginal improvement over frame-level methods.
+**Key contributions of the paper (from abstract and publicly available descriptions):**
+- Comparative study of CNN and Transformer architectures for video deepfake detection.
+- Emphasis on cross-dataset evaluation.
+- Standardized preprocessing pipeline and temporal context modeling.
+- Reports that models trained on one set of datasets often degrade on others.
 
-### Methodology
-- **Preprocessing**: RetinaFace for face detection, 112×112 face crops, standardized normalization.
-- **Training**: Binary cross-entropy loss, AdamW optimizer, learning rate scheduling, early stopping.
-- **Evaluation**: Accuracy, AUC, EER as primary metrics.
-- **Protocol**: Within-dataset (disjoint splits) + cross-dataset (source→target) with optional fine-tuning.
+**Limitations / open gaps noted by the paper or by us:**
+- Limited directional cross-dataset matrix.
+- Limited or no dedicated explainability analysis under distribution shift.
+- Compression and post-processing robustness left largely as future work.
+- Diffusion-based or modern generative methods not the focus.
 
-### Limitations Noted by Authors
-1. No explainability analysis (explicitly listed as future work).
-2. Limited to face-swap and facial-reenactment manipulations.
-3. Did not test against diffusion-generated manipulations.
-4. Robustness to compression/blur noted as future work only.
-5. Did not provide per-pair directional cross-dataset results.
+## Broader Context
 
----
+Deepfake detection literature has evolved from early CNN frame classifiers (Xception, MesoNet, EfficientNet) to:
+- Spatio-temporal models (I3D, SlowFast, Video Transformers).
+- Face-centric pipelines with careful identity and video-level splitting.
+- Growing recognition that **in-distribution accuracy is a poor proxy** for real-world robustness.
+- Recent interest in foundation-model features, self-supervised pretraining, and explainable detection.
 
-## Related Work
+RobustDeep positions itself as a **controlled experimental platform** that:
+1. Makes the 6-pair zero-shot cross-dataset matrix first-class.
+2. Adds systematic ablations on augmentation, loss, and capacity.
+3. Integrates explainability (Grad-CAM + Attention Rollout) and faithfulness checks.
+4. Provides a clear path for diffusion-set evaluation.
+5. Prioritizes reproducibility and honest failure analysis over leaderboard chasing.
 
-### Vision Transformers for Deepfake Detection
-
-- **Coccomini et al. (2022)**: Combined CNNs and ViTs for video deepfake detection. Showed ViTs capture long-range dependencies missed by CNNs.
-- **Wodajo & Atnafu (2021)**: Applied ViT-based models to face forgery detection, showing competitive performance.
-- **Heo et al. (2023)**: Deep learning-based detection using multi-scale feature fusion with transformers.
-
-### Cross-Dataset Generalization
-
-- **Li et al. (2020)**: Face X-ray approach for detecting blending boundaries, showing improved cross-dataset generalization.
-- **Zhao et al. (2021)**: Multi-attentional deepfake detection. Demonstrated that attention-guided features generalize better.
-- **Wang et al. (2020)**: CNN-generated images are surprisingly easy to spot... for now. Showed simple classifiers can generalize across GAN types.
-
-### Explainability in Deepfake Detection
-
-- **Selvaraju et al. (2017)**: Grad-CAM — Visual explanations from deep networks. Foundation for CNN explainability.
-- **Abnar & Zuidema (2020)**: Quantifying attention flow in transformers. Attention rollout method.
-- **Chefer et al. (2021)**: Transformer interpretability beyond attention visualization. Relevancy-based attribution.
-
-### Robustness and Adversarial Concerns
-
-- **Carlini & Farid (2020)**: Evading deepfake-image detectors with white- and black-box attacks.
-- **Jiang et al. (2020)**: Deeperforensics: Large-scale benchmark with perturbation studies.
-- **Bonettini et al. (2021)**: Video face manipulation detection through ensemble of CNNs. Showed compression significantly degrades detector performance.
-
-### Diffusion-Based Manipulation
-
-- **Rombach et al. (2022)**: Latent diffusion models for high-resolution image synthesis.
-- **Corvi et al. (2023)**: On the detection of synthetic images generated by diffusion models. Showed existing detectors struggle with diffusion outputs.
-- **Wang et al. (2023)**: DIRE — Diffusion-generated image detection. Proposed reconstruction-based detection.
-
----
-
-## Key Takeaways for This Project
-
-1. Cross-dataset generalization remains an unsolved problem — most detectors suffer 15–40% accuracy drops.
-2. ViTs show promise for generalization but are not consistently superior to well-tuned CNNs.
-3. Explainability is critically underexplored in deepfake detection literature.
-4. Compression robustness is a practical necessity but rarely tested systematically.
-5. Diffusion-generated manipulations represent a new frontier that most existing benchmarks miss.
+We do **not** claim that using a Vision Transformer or performing cross-dataset evaluation is novel. The value lies in the strict protocol, the ablation design, the explainability under shift, and the fully documented, runnable research pipeline.

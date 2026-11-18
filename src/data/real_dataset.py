@@ -1,462 +1,250 @@
 """
-Real dataset loaders for FaceForensics++, Celeb-DF, and DFDC.
+Real dataset loaders for FaceForensics++, Celeb-DF, DFDC.
 
-These loaders assume datasets have been downloaded and preprocessed.
-Run `python scripts/prepare_data.py` for download instructions.
-
-Directory structure expected:
-    data/
-    ├── faceforensics/
-    │   ├── original_sequences/youtube/c23/videos/*.mp4
-    │   └── manipulated_sequences/Deepfakes/c23/videos/*.mp4
-    ├── celebdf/
-    │   ├── Celeb-real/*.mp4
-    │   ├── Celeb-synthesis/*.mp4
-    │   └── YouTube-real/*.mp4
-    └── dfdc/
-        ├── train_sample_videos/*.mp4
-        └── metadata.json
-
-Can also use pre-extracted face crops in:
-    data/{dataset}/faces/{video_id}/frame_{n:04d}.jpg
+CRITICAL RULES:
+- Never silently fall back to synthetic data.
+- If expected face crops are missing, raise FileNotFoundError with exact instructions.
+- Used by train.py, evaluate.py, and all research runners.
 """
+from __future__ import annotations
 
-import os
 import json
-import random
 from pathlib import Path
-from typing import List, Tuple, Optional, Dict, Callable
-from collections import defaultdict
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
-from PIL import Image
 import torch
-from torch.utils.data import Dataset, DataLoader
+from PIL import Image
+from torch.utils.data import Dataset
 
-from src.utils.logging_utils import get_logger
+from src.utils.config import PROJECT_ROOT, get_data_config
+from src.utils.logging_utils import setup_logger
 
-logger = get_logger("real_dataset")
-
-
-# ─── base ────────────────────────────────────────────────────────────────────
+logger = setup_logger("robustdeep.data")
 
 
-class BaseVideoDataset(Dataset):
+class RealFaceVideoDataset(Dataset):
     """
-    Base class for video deepfake datasets.
-    Loads pre-extracted frame-level face crops.
-    Enforces video-level train/val/test splits (no frame leakage).
+    Loads pre-extracted face crops organized as:
+      data/faces/<dataset>/<split>/<video_id>/*.jpg  (or .png)
+    Each video directory contains ordered face frames.
+    A manifest JSON under data/processed/ lists video_id, label, split, path.
     """
 
-    # Subclasses must override
-    DATASET_NAME: str = "base"
-    DATA_DIR: str = "data/base"
+    SUPPORTED = ("faceforensics", "celebdf", "dfdc")
 
     def __init__(
         self,
-        root_dir: str,
+        dataset: str,
         split: str = "train",
-        frames_per_video: int = 10,
-        face_size: int = 224,
+        frames_per_video: int = 16,
         transform: Optional[Callable] = None,
-        seed: int = 42,
-        train_ratio: float = 0.70,
-        val_ratio: float = 0.15,
+        max_videos: Optional[int] = None,
+        faces_root: Optional[str | Path] = None,
+        require_faces: bool = True,
+        allow_diffusion_holdout: bool = False,
     ):
-        """
-        Args:
-            root_dir: Path to dataset root (e.g. data/faceforensics)
-            split: One of 'train', 'val', 'test'
-            frames_per_video: Number of frames to sample per video
-            face_size: Target face crop size
-            transform: Optional augmentation transform
-            seed: Random seed for reproducible splitting
-            train_ratio: Fraction of videos for training
-            val_ratio: Fraction of videos for validation
-        """
-        self.root_dir = Path(root_dir)
+        if dataset not in self.SUPPORTED and not (dataset == "diffusion" and allow_diffusion_holdout):
+            raise ValueError(f"Unknown dataset '{dataset}'. Supported: {self.SUPPORTED}")
+        self.dataset = dataset
         self.split = split
         self.frames_per_video = frames_per_video
-        self.face_size = face_size
         self.transform = transform
-        self.seed = seed
-        self.train_ratio = train_ratio
-        self.val_ratio = val_ratio
+        self.max_videos = max_videos
 
-        if not self.root_dir.exists():
-            raise FileNotFoundError(
-                f"Dataset directory not found: {self.root_dir}\n"
-                f"Run `python scripts/prepare_data.py --dataset {self.DATASET_NAME}` for instructions."
-            )
+        cfg = get_data_config()
+        self.faces_root = Path(faces_root) if faces_root else PROJECT_ROOT / cfg["paths"]["faces_root"]
+        self.processed_root = PROJECT_ROOT / cfg["paths"]["processed_root"]
+        self.image_size = cfg["sampling"]["face_size"]
 
-        # Build sample list
-        self.samples: List[Dict] = []
-        self._build_samples()
+        self.samples = self._load_manifest_or_scan()
+        if len(self.samples) == 0:
+            self._raise_missing_faces()
+
+        if max_videos is not None and len(self.samples) > max_videos:
+            by_label: Dict[int, List[Dict[str, Any]]] = {}
+            for sample in self.samples:
+                by_label.setdefault(int(sample["label"]), []).append(sample)
+            rng = np.random.RandomState(42)
+            for samples in by_label.values():
+                rng.shuffle(samples)
+            selected = []
+            labels = sorted(by_label)
+            while len(selected) < max_videos:
+                added = False
+                for label in labels:
+                    if by_label[label] and len(selected) < max_videos:
+                        selected.append(by_label[label].pop())
+                        added = True
+                if not added:
+                    break
+            self.samples = selected
 
         logger.info(
-            f"{self.DATASET_NAME} [{split}]: {len(self.samples)} frames "
-            f"from {len(set(s['video_id'] for s in self.samples))} videos"
+            "Loaded %d videos for dataset=%s split=%s (max_videos=%s)",
+            len(self.samples),
+            dataset,
+            split,
+            max_videos,
         )
 
-    def _build_samples(self):
-        """Build (frame_path, label, video_id) list respecting video-level splits."""
-        raise NotImplementedError
+    def _manifest_path(self) -> Path:
+        return self.processed_root / self.dataset / f"{self.split}_manifest.json"
 
-    def _split_videos(
-        self, video_ids: List[str], labels: Dict[str, int]
-    ) -> List[str]:
-        """
-        Split videos into train/val/test at video level.
-        Same video's frames never appear in different splits.
-        """
-        rng = random.Random(self.seed)
-        all_vids = sorted(video_ids)
-        rng.shuffle(all_vids)
+    def _load_manifest_or_scan(self) -> List[Dict[str, Any]]:
+        man = self._manifest_path()
+        if man.exists():
+            with open(man, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            samples = data.get("samples", [])
+            # Verify paths still exist
+            valid = []
+            for s in samples:
+                p = Path(s["path"])
+                if not p.is_absolute():
+                    p = PROJECT_ROOT / p
+                if p.exists() and (any(p.glob("*.jpg")) or any(p.glob("*.png"))):
+                    s["path"] = str(p)
+                    valid.append(s)
+            if valid:
+                return valid
+            logger.warning("Manifest exists but no valid face directories found; rescanning.")
 
-        n = len(all_vids)
-        n_train = int(n * self.train_ratio)
-        n_val = int(n * self.val_ratio)
-
-        if self.split == "train":
-            return all_vids[:n_train]
-        elif self.split == "val":
-            return all_vids[n_train : n_train + n_val]
-        else:  # test
-            return all_vids[n_train + n_val :]
-
-    def _sample_frames(self, frame_dir: Path) -> List[Path]:
-        """Sample frames uniformly from a video's face crop directory."""
-        frames = sorted(frame_dir.glob("*.jpg")) + sorted(frame_dir.glob("*.png"))
-        if not frames:
+        # Scan directory structure
+        split_dir = self.faces_root / self.dataset / self.split
+        if not split_dir.exists():
             return []
-        if len(frames) <= self.frames_per_video:
-            return frames
-        indices = np.linspace(0, len(frames) - 1, self.frames_per_video, dtype=int)
-        return [frames[i] for i in indices]
+
+        samples = []
+        for video_dir in sorted(split_dir.iterdir()):
+            if not video_dir.is_dir():
+                continue
+            frames = sorted(list(video_dir.glob("*.jpg")) + list(video_dir.glob("*.png")))
+            if len(frames) == 0:
+                continue
+            # Infer label from parent name or video_id prefix
+            label = self._infer_label(video_dir.name)
+            samples.append(
+                {
+                    "video_id": video_dir.name,
+                    "path": str(video_dir),
+                    "label": label,
+                    "num_frames": len(frames),
+                }
+            )
+        return samples
+
+    def _infer_label(self, video_id: str) -> int:
+        vid = video_id.lower()
+        if any(k in vid for k in ("real", "original", "pristine", "authentic")):
+            return 0
+        if any(k in vid for k in ("fake", "deepfake", "manip", "synth", "df_", "fs_", "f2f", "nt_")):
+            return 1
+        # Default heuristic: if starts with 0_ or real_ → real
+        if vid.startswith("0_") or vid.startswith("real"):
+            return 0
+        return 1
+
+    def _raise_missing_faces(self) -> None:
+        expected = self.faces_root / self.dataset / self.split
+        msg = (
+            f"\n{'='*70}\n"
+            f"REAL FACE CROPS NOT FOUND for dataset='{self.dataset}' split='{self.split}'.\n"
+            f"Expected directory: {expected}\n\n"
+            f"This is a RESEARCH pipeline. Synthetic data is FORBIDDEN for training/evaluation.\n\n"
+            f"To fix:\n"
+            f"  1. Place raw videos under data/raw/{self.dataset}/ following docs/dataset_protocol.md\n"
+            f"  2. Run: python scripts/prepare_data.py --dataset {self.dataset}\n"
+            f"  3. Run: python scripts/preprocess_faces.py --dataset {self.dataset} --max-videos 100\n"
+            f"  4. Re-run training.\n\n"
+            f"See docs/REAL_DATA_QUICKSTART.md for the exact 4-command flow.\n"
+            f"{'='*70}\n"
+        )
+        raise FileNotFoundError(msg)
 
     def __len__(self) -> int:
         return len(self.samples)
 
-    def __getitem__(self, idx: int) -> Dict:
+    def _load_frames(self, video_dir: Path) -> List[Image.Image]:
+        frames = sorted(list(video_dir.glob("*.jpg")) + list(video_dir.glob("*.png")))
+        if len(frames) == 0:
+            raise FileNotFoundError(f"No frames in {video_dir}")
+        # Uniform temporal sampling
+        if len(frames) <= self.frames_per_video:
+            indices = list(range(len(frames)))
+            # Pad by repeating last frame
+            while len(indices) < self.frames_per_video:
+                indices.append(indices[-1])
+        else:
+            indices = np.linspace(0, len(frames) - 1, self.frames_per_video, dtype=int).tolist()
+        images = []
+        for i in indices:
+            img = Image.open(frames[i]).convert("RGB")
+            images.append(img)
+        return images
+
+    def __getitem__(self, idx: int) -> dict:
         sample = self.samples[idx]
-        img_path = sample["path"]
-        label = sample["label"]
-        video_id = sample["video_id"]
-
-        # Load image
-        try:
-            img = Image.open(img_path).convert("RGB")
-            img = img.resize((self.face_size, self.face_size))
-            img_np = np.array(img, dtype=np.uint8)
-        except Exception as e:
-            logger.warning(f"Failed to load {img_path}: {e}. Returning blank frame.")
-            img_np = np.zeros((self.face_size, self.face_size, 3), dtype=np.uint8)
-
-        # Apply transform
-        if self.transform:
-            result = self.transform(image=img_np)
-            img_np = result["image"]
-
-        # Normalize to [0, 1]
-        if img_np.dtype == np.uint8:
-            img_np = img_np.astype(np.float32) / 255.0
-
-        # Apply ImageNet normalization
-        mean = np.array([0.485, 0.456, 0.406])
-        std = np.array([0.229, 0.224, 0.225])
-        img_np = (img_np - mean) / std
-
-        tensor = torch.from_numpy(img_np.transpose(2, 0, 1)).float()
-
+        video_dir = Path(sample["path"])
+        images = self._load_frames(video_dir)
+        tensors = []
+        for img in images:
+            if self.transform is not None:
+                # Albumentations or torchvision-style
+                try:
+                    # Albumentations expects numpy HWC
+                    arr = np.array(img)
+                    out = self.transform(image=arr)
+                    t = out["image"]
+                    if isinstance(t, np.ndarray):
+                        t = torch.from_numpy(t).permute(2, 0, 1).float()
+                    tensors.append(t)
+                except TypeError:
+                    # torchvision transform
+                    tensors.append(self.transform(img))
+            else:
+                # Default: to tensor + ImageNet norm
+                arr = np.array(img).astype(np.float32) / 255.0
+                t = torch.from_numpy(arr).permute(2, 0, 1)
+                mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+                std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+                t = (t - mean) / std
+                tensors.append(t)
+        video = torch.stack(tensors, dim=0)  # (T, C, H, W)
         return {
-            "image": tensor,
-            "label": torch.tensor(label, dtype=torch.long),
-            "video_id": video_id,
-            "path": str(img_path),
-            "dataset": self.DATASET_NAME,
+            "video": video,
+            "label": torch.tensor(float(sample["label"]), dtype=torch.float32),
+            "video_id": sample["video_id"],
+            "dataset": self.dataset,
+            "is_synthetic": False,
         }
 
 
-# ─── FaceForensics++ ─────────────────────────────────────────────────────────
+def collate_real(batch: List[dict]) -> dict:
+    videos = torch.stack([b["video"] for b in batch], dim=0)
+    labels = torch.stack([b["label"] for b in batch], dim=0)
+    return {
+        "video": videos,
+        "label": labels,
+        "video_id": [b["video_id"] for b in batch],
+        "dataset": batch[0]["dataset"],
+        "is_synthetic": False,
+    }
 
 
-class FaceForensicsDataset(BaseVideoDataset):
-    """
-    FaceForensics++ dataset loader.
-
-    Expects pre-extracted face crops at:
-        data/faceforensics/faces/{real|deepfakes|face2face|faceswap|neuraltextures}/{video_id}/frame_*.jpg
-
-    Labels: 0=real, 1=fake
-    """
-
-    DATASET_NAME = "faceforensics"
-    DATA_DIR = "data/faceforensics"
-
-    MANIPULATION_METHODS = ["deepfakes", "face2face", "faceswap", "neuraltextures"]
-
-    def __init__(
-        self,
-        root_dir: str = "data/faceforensics",
-        manipulation_methods: Optional[List[str]] = None,
-        compression: str = "c23",
-        **kwargs,
-    ):
-        self.manipulation_methods = manipulation_methods or self.MANIPULATION_METHODS
-        self.compression = compression
-        super().__init__(root_dir, **kwargs)
-
-    def _build_samples(self):
-        faces_dir = self.root_dir / "faces"
-        if not faces_dir.exists():
-            logger.warning(
-                f"Face crops not found at {faces_dir}. "
-                f"Run preprocessing first: python scripts/preprocess_faces.py --dataset faceforensics"
-            )
-            return
-
-        # Collect real video IDs
-        real_dir = faces_dir / "real"
-        real_vids = [d.name for d in real_dir.iterdir() if d.is_dir()] if real_dir.exists() else []
-
-        # Collect fake video IDs (across all manipulation methods)
-        fake_vids = set()
-        for method in self.manipulation_methods:
-            method_dir = faces_dir / method
-            if method_dir.exists():
-                fake_vids.update(d.name for d in method_dir.iterdir() if d.is_dir())
-        fake_vids = list(fake_vids)
-
-        # Labels map
-        all_vids = [(v, 0) for v in real_vids] + [(v, 1) for v in fake_vids]
-        labels_map = dict(all_vids)
-
-        # Split at video level
-        split_vids = self._split_videos(
-            [v for v, _ in all_vids],
-            labels_map,
-        )
-        split_vid_set = set(split_vids)
-
-        # Build frame samples
-        for vid_id, label in all_vids:
-            if vid_id not in split_vid_set:
-                continue
-
-            if label == 0:
-                frame_dir = real_dir / vid_id
-            else:
-                # Randomly choose one method's version of this video
-                for method in self.manipulation_methods:
-                    frame_dir = faces_dir / method / vid_id
-                    if frame_dir.exists():
-                        break
-
-            frames = self._sample_frames(frame_dir)
-            for frame in frames:
-                self.samples.append({
-                    "path": frame,
-                    "label": label,
-                    "video_id": vid_id,
-                })
-
-
-# ─── Celeb-DF ────────────────────────────────────────────────────────────────
-
-
-class CelebDFDataset(BaseVideoDataset):
-    """
-    Celeb-DF v2 dataset loader.
-
-    Expects pre-extracted face crops at:
-        data/celebdf/faces/{real|fake}/{video_id}/frame_*.jpg
-
-    Labels: 0=real, 1=fake
-    """
-
-    DATASET_NAME = "celebdf"
-    DATA_DIR = "data/celebdf"
-
-    def _build_samples(self):
-        faces_dir = self.root_dir / "faces"
-        if not faces_dir.exists():
-            logger.warning(f"Face crops not found at {faces_dir}.")
-            return
-
-        all_vids = []
-        labels_map = {}
-
-        for class_dir, label in [("real", 0), ("fake", 1)]:
-            class_path = faces_dir / class_dir
-            if class_path.exists():
-                for vid_dir in class_path.iterdir():
-                    if vid_dir.is_dir():
-                        all_vids.append((vid_dir.name, label))
-                        labels_map[vid_dir.name] = label
-
-        split_vids = self._split_videos([v for v, _ in all_vids], labels_map)
-        split_vid_set = set(split_vids)
-
-        for vid_id, label in all_vids:
-            if vid_id not in split_vid_set:
-                continue
-
-            class_name = "real" if label == 0 else "fake"
-            frame_dir = faces_dir / class_name / vid_id
-            frames = self._sample_frames(frame_dir)
-
-            for frame in frames:
-                self.samples.append({
-                    "path": frame,
-                    "label": label,
-                    "video_id": vid_id,
-                })
-
-
-# ─── DFDC ────────────────────────────────────────────────────────────────────
-
-
-class DFDCDataset(BaseVideoDataset):
-    """
-    DeepFake Detection Challenge (DFDC) dataset loader.
-
-    Expects:
-        data/dfdc/metadata.json  (video_id -> {"label": "FAKE"|"REAL"})
-        data/dfdc/faces/{video_id}/frame_*.jpg
-
-    Labels: 0=real, 1=fake
-    """
-
-    DATASET_NAME = "dfdc"
-    DATA_DIR = "data/dfdc"
-
-    def _build_samples(self):
-        faces_dir = self.root_dir / "faces"
-        meta_path = self.root_dir / "metadata.json"
-
-        if not faces_dir.exists():
-            logger.warning(f"Face crops not found at {faces_dir}.")
-            return
-
-        # Load labels from metadata.json
-        labels_map = {}
-        if meta_path.exists():
-            with open(meta_path) as f:
-                meta = json.load(f)
-            for vid_name, info in meta.items():
-                vid_id = Path(vid_name).stem
-                label = 1 if info.get("label", "REAL") == "FAKE" else 0
-                labels_map[vid_id] = label
-        else:
-            logger.warning(f"metadata.json not found at {meta_path}. Inferring labels from directory.")
-            # Fall back: assume all are unlabeled
-            for vid_dir in faces_dir.iterdir():
-                if vid_dir.is_dir():
-                    labels_map[vid_dir.name] = -1  # Unknown
-
-        all_vids = [(v, l) for v, l in labels_map.items() if l != -1]
-        split_vids = self._split_videos([v for v, _ in all_vids], dict(all_vids))
-        split_vid_set = set(split_vids)
-
-        for vid_id, label in all_vids:
-            if vid_id not in split_vid_set:
-                continue
-
-            frame_dir = faces_dir / vid_id
-            if not frame_dir.exists():
-                continue
-
-            frames = self._sample_frames(frame_dir)
-            for frame in frames:
-                self.samples.append({
-                    "path": frame,
-                    "label": label,
-                    "video_id": vid_id,
-                })
-
-
-# ─── Dataset Registry ────────────────────────────────────────────────────────
-
-DATASET_REGISTRY: Dict[str, type] = {
-    "faceforensics": FaceForensicsDataset,
-    "celebdf": CelebDFDataset,
-    "dfdc": DFDCDataset,
-}
-
-
-def load_real_dataset(
-    dataset_name: str,
+def get_real_dataset(
+    dataset: str,
     split: str = "train",
-    **kwargs,
-) -> BaseVideoDataset:
-    """
-    Factory function to load a real dataset by name.
-
-    Args:
-        dataset_name: One of 'faceforensics', 'celebdf', 'dfdc'
-        split: 'train', 'val', or 'test'
-        **kwargs: Passed to the dataset class
-
-    Returns:
-        Dataset instance
-    """
-    if dataset_name not in DATASET_REGISTRY:
-        raise ValueError(
-            f"Unknown dataset: '{dataset_name}'. "
-            f"Available: {list(DATASET_REGISTRY.keys())}"
-        )
-
-    cls = DATASET_REGISTRY[dataset_name]
-    root_dir = kwargs.pop("root_dir", cls.DATA_DIR)
-
-    logger.info(f"Loading {dataset_name} [{split}] from {root_dir}")
-    return cls(root_dir=root_dir, split=split, **kwargs)
-
-
-def check_dataset_availability() -> Dict[str, bool]:
-    """Check which real datasets are available on disk."""
-    status = {}
-    for name, cls in DATASET_REGISTRY.items():
-        face_dir = Path(cls.DATA_DIR) / "faces"
-        status[name] = face_dir.exists() and any(face_dir.iterdir())
-    return status
-
-
-def create_real_dataloaders(
-    dataset_name: str,
-    batch_size: int = 16,
-    num_workers: int = 4,
-    frames_per_video: int = 10,
-    **dataset_kwargs,
-) -> Dict[str, DataLoader]:
-    """
-    Create train/val/test DataLoaders for a real dataset.
-
-    Args:
-        dataset_name: Dataset name
-        batch_size: Batch size
-        num_workers: DataLoader workers
-        frames_per_video: Frames to sample per video
-        **dataset_kwargs: Extra kwargs for dataset
-
-    Returns:
-        Dict with 'train', 'val', 'test' DataLoaders
-    """
-    loaders = {}
-    for split in ("train", "val", "test"):
-        dataset = load_real_dataset(
-            dataset_name,
-            split=split,
-            frames_per_video=frames_per_video,
-            **dataset_kwargs,
-        )
-        shuffle = (split == "train")
-        loaders[split] = DataLoader(
-            dataset,
-            batch_size=batch_size,
-            shuffle=shuffle,
-            num_workers=num_workers,
-            pin_memory=(num_workers > 0),
-        )
-
-    return loaders
+    frames_per_video: int = 16,
+    transform: Optional[Callable] = None,
+    max_videos: Optional[int] = None,
+) -> RealFaceVideoDataset:
+    """Factory used by train.py / evaluate.py. Raises FileNotFoundError if faces missing."""
+    return RealFaceVideoDataset(
+        dataset=dataset,
+        split=split,
+        frames_per_video=frames_per_video,
+        transform=transform,
+        max_videos=max_videos,
+        require_faces=True,
+    )

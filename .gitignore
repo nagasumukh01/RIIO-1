@@ -1,66 +1,24 @@
-
-# Python
 __pycache__/
 *.py[cod]
-*.pyo
+.venv/
+venv/
+.env
 *.egg-info/
 dist/
 build/
-*.egg
-
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Environment variables
-.env
-.env.*
-!.env.example
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# PyTorch checkpoints & model weights (large binary files)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+data/raw/
+data/faces/
+data/processed/
 *.pt
 *.pth
 *.ckpt
-artifacts/checkpoints/*
-!artifacts/checkpoints/.gitkeep
-
-# Experiment runtime outputs (regenerated on each run)
-artifacts/experiment_logs/*.db
-!artifacts/experiment_logs/experiments.db
-artifacts/experiment_logs/*.log
-artifacts/experiment_logs/run_ml_smoke.py
-
-# Keep directory structure
-!artifacts/checkpoints/.gitkeep
-!artifacts/experiment_logs/.gitkeep
-!artifacts/figures/.gitkeep
-!data/.gitkeep
-
-# Pytest / coverage
-.pytest_cache/
-htmlcov/
-.coverage
-coverage.xml
-
-# HuggingFace cache
-.cache/
-
-# Temporary user uploads
-data/temp_uploads/
-
-# Deployment (keep these tracked)
-!render.yaml
-!runtime.txt
-!requirements-deploy.txt
-!.streamlit/config.toml
+.DS_Store
+*.log
+.streamlit/
